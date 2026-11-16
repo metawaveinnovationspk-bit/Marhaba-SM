@@ -1,0 +1,8 @@
+{
+  "name": "Marhaba Supermarket",
+  "description": "Marhaba Supermarket — The Art of Shopping, Dining & Family Entertainment in Hyderabad & Karachi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

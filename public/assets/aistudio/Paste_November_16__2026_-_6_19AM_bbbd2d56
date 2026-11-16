@@ -1,0 +1,1495 @@
+# MARHABA SUPERMARKET
+## MASTER EXPERIENCE REFINEMENT — THE ART OF SHOPPING, DINING & FAMILY ENTERTAINMENT
+### MetaWave Innovations LTD | Existing Google AI Studio Project
+
+**MODE: UPDATE AND ENHANCE EXISTING PROJECT — DO NOT RESTART**
+
+**Original business reference:** https://marhabasupermarket.store/
+
+**Main focus:** Header & Navigation, Supermarket & Shopping, Restaurant & Dining, Play Land & Family Entertainment, Complete User Journeys, Functional QA, Visual Excellence.
+
+---
+
+# 1. PROJECT VISION AND RESPONSIBILITY
+
+You are working on the proposed digital experience of Marhaba Supermarket, an established retail and family destination.
+
+MetaWave Innovations LTD is responsible for demonstrating a dependable, thoughtfully engineered and beautifully designed digital transformation concept that respects Marhaba's existing identity, business operations and customer relationships.
+
+The objective is not to criticize, compare negatively with, or disregard Marhaba's current digital assets or the work performed by its existing team.
+
+The objective is to elevate the customer experience through outstanding digital product design, carefully organized information, accessible navigation, professional presentation and reliable functionality.
+
+**Marhaba should be experienced as a recognizable landmark, a trusted shopping destination, an inviting restaurant and an enjoyable family entertainment center.**
+
+The website must express:
+
+- Trust.
+- Quality.
+- Hospitality.
+- Convenience.
+- Accessibility.
+- Family comfort.
+- Professionalism.
+- Careful attention to detail.
+- Consistent brand recognition.
+
+Our design ambition is:
+
+**The Art of Shopping. The Pleasure of Dining. The Joy of Family Experiences.**
+
+This is an internal creative direction, not necessarily the website's final marketing slogan.
+
+Build a seamless brand experience where each interaction feels natural, comfortable and purposeful.
+
+# 2. CRITICAL — WORK WITH THE EXISTING PROJECT
+
+Do not create another standalone website.
+
+Do not replace the entire current project with a newly generated template.
+
+Start by inspecting the current implementation.
+
+Audit:
+
+1. Existing page architecture.
+2. Current navbar and header.
+3. All dropdown menus.
+4. Desktop and mobile navigation.
+5. Shop categories and sidebar.
+6. Product cards and imagery.
+7. Product detail templates.
+8. Cart and checkout.
+9. Restaurant pages and menu.
+10. Restaurant reservation journey.
+11. Play Land pages and attractions.
+12. Play Land package and inquiry journey.
+13. Shared design system.
+14. Footer and company information.
+15. Responsive behavior.
+16. Existing working interactions.
+
+Identify what is already successful and preserve it.
+
+Refine existing components where possible. Replace components only when a measurable usability, accessibility or architectural improvement justifies the change.
+
+Do not remove existing functionality while improving appearance.
+
+All changes must integrate into the existing application.
+
+# 3. MASTER DESIGN DIRECTION
+
+The complete platform must feel like a professionally art-directed digital product.
+
+It must be:
+
+- Beautiful without unnecessary decoration.
+- Modern without looking trendy or temporary.
+- Creative without becoming confusing.
+- Detailed without becoming crowded.
+- Sophisticated without becoming intimidating.
+- Responsive without sacrificing visual composition.
+- Smooth without excessive animation.
+- Family-friendly without appearing childish.
+- Commercially effective without aggressive selling techniques.
+
+Every element must contribute to clarity, function or visual identity.
+
+## Visual quality
+
+Use:
+
+- Balanced grids.
+- Thoughtful whitespace.
+- Harmonious typography.
+- Refined colors from Marhaba's real brand identity.
+- Consistent iconography.
+- Premium editorial composition.
+- High-quality product and lifestyle imagery.
+- Carefully controlled backgrounds.
+- Subtle depth and elevation.
+- Polished hover and focus states.
+- Well-designed interactive transitions.
+
+Avoid:
+
+- Generic oversized rounded rectangles.
+- Excessive gradients.
+- Random background colors.
+- Huge empty sections.
+- Identical layouts on every page.
+- Weak contrast.
+- Unnecessary shadows.
+- Generic icon-heavy cards.
+- Fake luxury effects.
+- Overdesigned navigation.
+- Cluttered product listings.
+- Cartoonish effects outside appropriate Play Land illustrations.
+
+The visual system must communicate an established, trustworthy business.
+
+# 4. FIRST MAJOR PRIORITY — NAVBAR AND HEADER MASTER REDESIGN
+
+This is a mandatory priority.
+
+The navbar and header connect the entire Marhaba ecosystem.
+
+They must be immediately understandable, visually distinctive and extremely smooth to use.
+
+## 4.1 Header information architecture
+
+Create three carefully organized levels where appropriate.
+
+### A. Utility strip
+
+A slim, elegant utility strip containing:
+
+- Current branch/location.
+- Customer support contact.
+- Relevant verified shopping or service information.
+- Important announcements only when necessary.
+
+Keep this subtle.
+
+No repetitive promotional text.
+
+No unnecessary moving tickers.
+
+### B. Main header
+
+Include:
+
+- Original Marhaba logo.
+- Prominent product search.
+- Account access.
+- Wishlist.
+- Cart with accurate item count and subtotal where available.
+
+The logo must remain clear, properly sized and visually balanced.
+
+The search must be easy to discover without overwhelming the design.
+
+Shopping actions must use consistent iconography and clear labels where beneficial.
+
+### C. Main navigation
+
+Use a thoughtfully organized navigation:
+
+HOME | SHOP | RESTAURANT | PLAY LAND | OFFERS | LOCATIONS | ABOUT | CONTACT
+
+Each item must be visually balanced.
+
+Do not distribute navigation links randomly.
+
+Ensure appropriate horizontal spacing, readable font weight and elegant active states.
+
+## 4.2 Shop mega menu
+
+SHOP must open a professionally organized mega menu.
+
+Structure:
+
+LEFT:
+Main shopping departments.
+
+CENTER:
+Subcategories belonging to the selected department.
+
+RIGHT:
+A contextually relevant category illustration, featured collection or verified promotional banner.
+
+Use the available product taxonomy.
+
+Avoid displaying every category in one endless dropdown.
+
+The menu should make it easy to understand where a customer wants to go.
+
+Requirements:
+
+- Keyboard navigable.
+- Smooth hover behavior.
+- Stable pointer transition between menu regions.
+- Click and touch support.
+- Correct focus management.
+- Clear active department.
+- Appropriate closing behavior.
+- No unwanted flickering.
+- No content overlap.
+- No invisible clickable areas.
+- Fully responsive.
+
+Hover is not the sole means of accessing menu items.
+
+## 4.3 Restaurant navigation
+
+RESTAURANT should open a compact, elegant navigation experience:
+
+- Overview.
+- Explore Menu.
+- Cuisines.
+- Deals & Offers.
+- Dining Experience.
+- Gallery.
+- Reservations.
+
+Use subtle food imagery where appropriate.
+
+Do not make this menu visually identical to the supermarket category mega menu.
+
+## 4.4 Play Land navigation
+
+PLAY LAND should provide clear options:
+
+- Overview.
+- Rides & Attractions.
+- Explore by Age.
+- Tickets & Packages.
+- Birthdays.
+- Parent Guide.
+- Plan Your Visit.
+
+Use a family-friendly visual identity without excessive decorative elements.
+
+## 4.5 Mobile navigation
+
+Create a purpose-built mobile navigation experience.
+
+Requirements:
+
+- Compact logo and action area.
+- Easily accessible product search.
+- Easy-to-open menu.
+- Expandable navigation groups.
+- Clear category nesting.
+- Touch-friendly buttons.
+- Cart access.
+- Consistent back navigation.
+- No horizontal scrolling.
+- No hidden inaccessible submenus.
+
+A mobile bottom navigation may be used when it improves access to Home, Shop, Search, Wishlist and Cart.
+
+Do not cover important content with unnecessary sticky bars.
+
+## 4.6 Header refinement acceptance criteria
+
+The header is complete only when:
+
+- Every navigation destination works.
+- All mega menus operate correctly.
+- Active pages are recognizable.
+- Search is accessible.
+- Cart state remains accurate.
+- Desktop, tablet and mobile layouts work.
+- Keyboard users can navigate it.
+- Menu transitions feel smooth.
+- No layout shift or overlap occurs.
+- It remains visually professional across all pages.
+
+# 5. SECOND MAJOR PRIORITY — SHOPPING EXPERIENCE
+
+The Shop must be designed as a comprehensive digital supermarket.
+
+It must manage a substantial catalogue without making customers feel overwhelmed.
+
+The primary objective is to help customers quickly discover, understand, compare and purchase products.
+
+## 5.1 Shop overview
+
+Design a premium Shop page with:
+
+- Shop heading and short introduction.
+- Breadcrumbs.
+- Featured departments.
+- Current category.
+- Product count.
+- Search and sorting.
+- Filter controls.
+- Organized product grid.
+- Pagination.
+- Relevant featured collections.
+
+Do not overload the top of the page with promotional banners.
+
+The product catalogue must remain the main focus.
+
+## 5.2 Shop sidebar — comprehensive redesign
+
+The sidebar is one of the most important components.
+
+Create a refined, structured filter sidebar.
+
+### Sidebar sections
+
+**Departments**
+- Grocery & Pantry.
+- Fresh Food.
+- Dairy & Bakery.
+- Frozen & Chilled.
+- Beverages.
+- Beauty & Cosmetics.
+- Personal Care.
+- Household & Cleaning.
+- Kitchen & Dining.
+- Electronics & Gadgets.
+- Fashion & Apparel.
+- Baby & Kids.
+- Toys & Sports.
+- School & Stationery.
+- Health & Wellness.
+- Pets.
+- Gifts & Seasonal.
+
+These should map to existing catalogue records, not create empty storefront categories.
+
+**Subcategories**
+
+Show dynamically according to the selected department.
+
+**Brands**
+
+Allow product brand selection and filtering.
+
+**Price range**
+
+Use the actual price distribution in the selected product set.
+
+**Availability**
+
+In Stock, Out of Stock or other statuses only when actual data is available.
+
+**Offers**
+
+Sale products and valid offers.
+
+**Attributes**
+
+Show context-specific filters.
+
+For example:
+
+- Grocery: pack size, weight, product type.
+- Fashion: size, color, gender and material.
+- Beauty: shade, skin category and product type.
+- Electronics: brand and relevant specifications.
+- Baby & Kids: age range and size.
+
+Do not show irrelevant filters in every department.
+
+### Sidebar interactions
+
+- Collapsible groups.
+- Multi-select options.
+- Search within long brand lists.
+- Clear visual selection.
+- Selected-filter chips.
+- Clear All Filters.
+- Result count feedback.
+- Consistent expansion behavior.
+- Preserved filter state when navigating back.
+
+On mobile, convert the sidebar into a well-designed filter drawer with Apply and Clear actions.
+
+Avoid hiding essential filters behind confusing icons.
+
+Use URL-query-based filter state where practical, so filtered views can be revisited.
+
+## 5.3 Product display system
+
+Every product must be showcased professionally.
+
+Use a consistent product card system with:
+
+1. Properly framed product image.
+2. Brand.
+3. Readable product title.
+4. Variant, weight or pack size.
+5. Actual price in PKR.
+6. Original price when discounted.
+7. Clear discount information.
+8. Product availability.
+9. Add to Cart.
+10. Wishlist.
+11. Quick View only when useful.
+
+### Product photography standards
+
+- Use authentic product images wherever possible.
+- Do not distort product packaging.
+- Preserve actual product logos.
+- Preserve product color and shape.
+- Avoid cropping important package details.
+- Use consistent image containers.
+- Prefer a neutral background for product packshots.
+- Apply subtle framing instead of heavy shadows.
+- Avoid stretching low-resolution product images.
+- Maintain proper object-fit behavior.
+- Use appropriate image ratios for apparel and other nonstandard products.
+
+Product image containers should remain visually consistent while allowing different product types to display correctly.
+
+### Product grid
+
+Create professionally balanced layouts:
+
+- Wide desktop: 4–5 columns when card width permits.
+- Standard desktop: 3–4 columns.
+- Tablet: 2–3 columns.
+- Mobile: 2 columns when readable, otherwise a single comfortable column.
+
+Never sacrifice readability merely to display more products.
+
+Product titles, prices and cart controls must remain aligned.
+
+## 5.4 Discount design
+
+Make offers visually appealing but credible.
+
+Discount presentation should include:
+
+- Current sale price.
+- Original price with strikethrough.
+- Percentage or amount saved when meaningful.
+- An understated discount label.
+- Campaign terms when relevant.
+
+Calculate the discount correctly:
+
+Discount % = ((Original Price - Sale Price) / Original Price) × 100.
+
+Never invent a discount.
+
+Do not display a false percentage or misleading savings.
+
+Use a restrained and consistent discount color.
+
+Avoid flashy badges on every product.
+
+## 5.5 Product hover and quick actions
+
+Hover interactions may include:
+
+- Subtle image emphasis.
+- Wishlist.
+- Quick View.
+- Add to Cart.
+
+Keep motion subtle.
+
+Do not rearrange the entire card on hover.
+
+Touch devices must expose equivalent actions without requiring hover.
+
+# 6. PRODUCT DETAIL PAGE — A COMPLETE BUYING EXPERIENCE
+
+The product detail page must be beautifully organized and commercially useful.
+
+## Recommended layout
+
+LEFT:
+Professional image gallery.
+
+RIGHT:
+Product information and purchasing controls.
+
+### Product image gallery
+
+- Main product image.
+- Thumbnail gallery.
+- Image zoom.
+- Multiple angles when available.
+- Video only when actually available.
+- Consistent loading and fallback states.
+
+### Product information
+
+- Product title.
+- Brand.
+- SKU, if available.
+- Category.
+- Weight, size or volume.
+- Product variation.
+- Current price.
+- Original price.
+- Discount.
+- Stock availability.
+- Quantity controls.
+- Add to Cart.
+- Wishlist.
+
+### Product information tabs or sections
+
+- Description.
+- Specifications.
+- Ingredients, if appropriate and available.
+- Storage and usage.
+- Shipping and delivery details.
+- Returns information.
+- Customer reviews, when available.
+
+Do not expose empty tabs.
+
+### Related products
+
+Include:
+
+- Same category.
+- Same brand.
+- Similar products.
+- Alternative sizes.
+- Complementary products.
+
+Recommendations must come from meaningful product relationships, not random product selections.
+
+## Add-to-cart behavior
+
+When the customer selects Add to Cart:
+
+1. Validate required variations.
+2. Validate quantity.
+3. Validate availability.
+4. Add the correct product and variant.
+5. Update the cart count and subtotal.
+6. Show a subtle success confirmation.
+7. Allow the customer to continue shopping or view the cart.
+
+Do not navigate away unnecessarily.
+
+Do not lose scroll position.
+
+Do not create duplicate cart entries when the customer adds the same variant; update quantity according to the intended cart model.
+
+## Cart
+
+Build a professional cart interface showing:
+
+- Product image.
+- Product name.
+- Selected variant.
+- Unit price.
+- Quantity.
+- Line total.
+- Remove control.
+- Order subtotal.
+- Discounts.
+- Delivery fee where applicable.
+- Final total.
+- Checkout CTA.
+
+Amounts must recalculate accurately.
+
+## Checkout
+
+Build a clean step-by-step customer journey:
+
+Customer information → Delivery details → Payment selection → Order review → Confirmation.
+
+Only connect payments and orders through authorized backend systems.
+
+For a demo, make the transaction status visibly simulated.
+
+# 7. THIRD MAJOR PRIORITY — RESTAURANT DIGITAL EXPERIENCE
+
+The restaurant must feel like an exceptional dining destination.
+
+Not merely a food menu attached to a supermarket.
+
+It needs its own elegant hospitality experience, carefully integrated into Marhaba's overall brand.
+
+The design direction should communicate:
+
+- Warm hospitality.
+- Exceptional food presentation.
+- Comfortable dining.
+- Family occasions.
+- Cuisine discovery.
+- Convenient reservations.
+- Trust and service quality.
+
+## 7.1 Restaurant overview
+
+Create a sophisticated restaurant homepage.
+
+### Section 1 — Restaurant hero
+
+Use high-quality food or verified dining photography.
+
+Compose the hero with restrained typography, warm visual tones and a strong but simple call to action.
+
+Primary CTA: Explore Menu.
+
+Secondary CTA: Reserve a Table.
+
+Avoid excessive visual effects.
+
+### Section 2 — The restaurant experience
+
+Present the dining environment and restaurant identity using verified business information.
+
+Use an editorial content layout rather than repetitive generic cards.
+
+### Section 3 — Explore cuisines
+
+Feature the four cuisines mentioned on the existing website:
+
+- Pakistani.
+- Chinese.
+- Italian.
+- Turkish.
+
+Each cuisine should open a complete menu collection with relevant verified dishes.
+
+Use professionally photographed cuisine imagery.
+
+### Section 4 — Featured dishes
+
+Present selected dishes through beautiful food photography, clean descriptions and clear pricing when available.
+
+### Section 5 — Restaurant menu
+
+Build the complete interactive menu experience.
+
+### Section 6 — Dining and occasions
+
+Present available dining experiences.
+
+### Section 7 — Deals and offers
+
+Display current verified promotions and meal deals.
+
+### Section 8 — Gallery
+
+Build a sophisticated food and dining gallery.
+
+### Section 9 — Reservations
+
+Create a beautiful and easy reservation request experience.
+
+### Section 10 — Location and contact
+
+Show verified restaurant contact information and directions.
+
+# 8. RESTAURANT MENU — COMPLETE STRUCTURAL REFINEMENT
+
+The menu must be a deep, flexible digital food catalogue.
+
+It should be easy to browse on mobile and desktop.
+
+## Menu layout
+
+Create a navigation area for cuisines and food categories.
+
+The content area should show:
+
+- Category name.
+- Short description where useful.
+- Dish cards.
+- Dish photograph.
+- Dish title.
+- Description.
+- Portion or serving size.
+- Price.
+- Availability.
+- Details and ordering/inquiry action.
+
+Use a well-organized layout rather than a long unstructured list.
+
+## Cuisine architecture
+
+### Pakistani
+
+Support:
+
+- Starters.
+- BBQ & Grill.
+- Karahi.
+- Handi.
+- Rice.
+- Biryani.
+- Traditional Meals.
+- Tandoor.
+- Family Platters.
+
+### Chinese
+
+Support:
+
+- Soups.
+- Starters.
+- Chicken Dishes.
+- Beef Dishes.
+- Rice.
+- Noodles.
+- Main Courses.
+- Family Meals.
+
+### Italian
+
+Support:
+
+- Pizza.
+- Pasta.
+- Appetizers.
+- Main Courses.
+- Sides.
+- Desserts.
+
+### Turkish
+
+Support:
+
+- Kebabs.
+- Grilled Dishes.
+- Platters.
+- Starters.
+- Rice.
+- Breads.
+- Accompaniments.
+
+### Additional groups where verified
+
+- Drinks.
+- Mocktails.
+- Hot Beverages.
+- Desserts.
+- Kids' Meals.
+- Family Deals.
+- Seasonal Specials.
+
+These are proposed data structures. Use only verified dishes and actual menu items in content presented as official.
+
+## Dish details
+
+Every dish may support:
+
+- High-quality food image.
+- Dish name.
+- Cuisine and category.
+- Ingredients where supplied.
+- Description.
+- Portion size.
+- Serving suggestion.
+- Actual price.
+- Allergens and dietary information when confirmed.
+- Available variations.
+- Add to Food Order, if actual ordering is supported.
+
+Create carefully composed dish-detail layouts.
+
+Avoid overly long dish descriptions.
+
+## Deals and offers
+
+Design a dedicated restaurant offers section.
+
+Allow deal data to include:
+
+- Deal title.
+- Included items.
+- Servings.
+- Original combined price where valid.
+- Offer price.
+- Terms.
+- Dates.
+- Availability.
+
+Never fabricate promotions.
+
+## Food ordering
+
+Architect a separate restaurant food-order basket where supported.
+
+Do not mix restaurant food orders with supermarket purchases unless the actual backend can handle combined orders, payments and fulfillment.
+
+If restaurant online ordering is not yet available, show reservation, call and inquiry actions instead.
+
+# 9. RESTAURANT — DINING, GALLERY AND KITCHEN PRESENTATION
+
+## Dining experience
+
+Design elegant visual storytelling sections showcasing:
+
+- Restaurant environment.
+- Dining spaces.
+- Table arrangements.
+- Family gatherings.
+- Group visits.
+- Evening ambiance.
+
+Use authentic imagery where available.
+
+## Gallery
+
+Organize images into meaningful galleries:
+
+- Food.
+- Dining.
+- Ambiance.
+- Events.
+- Kitchen & Preparation, where authentic assets are available.
+
+Provide:
+
+- Consistent image crops.
+- Fullscreen viewing.
+- Keyboard navigation.
+- Mobile swipe support.
+- Image captions.
+- Suitable loading states.
+
+## Kitchen and preparation
+
+Create an optional editorial section showing the culinary process and food preparation.
+
+Do not fabricate a real kitchen, chef or cooking process.
+
+Only describe operational standards, sourcing practices or kitchen facilities that Marhaba has actually confirmed.
+
+## Reservations
+
+The reservation form should be extremely simple.
+
+Collect:
+
+- Date.
+- Requested time.
+- Party size.
+- Customer name.
+- Contact number.
+- Special requests.
+
+Provide meaningful validation and an inquiry-submitted state.
+
+Never claim a table is confirmed until the restaurant's system or staff confirms it.
+
+Clearly display verified reservation conditions.
+
+# 10. FOURTH MAJOR PRIORITY — PLAY LAND EXPERIENCE
+
+Play Land must be designed for two different audiences:
+
+**Children and juniors: excitement, discovery and enjoyment.**
+
+**Parents and guardians: clarity, comfort, convenience and confidence.**
+
+The design must successfully serve both.
+
+It should be exciting without making the website difficult to navigate.
+
+Create a premium family entertainment experience.
+
+# 11. PLAY LAND — HOMEPAGE AND VISUAL DIRECTION
+
+## Section 1 — Hero
+
+Create an energetic but tasteful visual experience.
+
+Suggested concept:
+
+"Big Smiles. Wonderful Adventures."
+
+Use authentic attraction imagery where available.
+
+Provide immediate access to:
+
+- Explore Attractions.
+- View Packages.
+- Plan Your Visit.
+
+## Section 2 — Discover the fun
+
+Create a beautiful attraction showcase.
+
+Avoid generic amusement park illustrations that misrepresent the actual facility.
+
+Use verified photographs when possible.
+
+## Section 3 — Activities for different ages
+
+Organize attractions by age suitability once actual rules are provided.
+
+Proposed discovery groups:
+
+- Little Explorers.
+- Young Adventurers.
+- Juniors.
+- Family Activities.
+
+Do not invent age eligibility.
+
+## Section 4 — Rides and attractions
+
+Create a complete rides and attractions directory.
+
+Each attraction must have its own informative presentation.
+
+## Section 5 — Packages and tickets
+
+Design clear, easy-to-understand packages.
+
+## Section 6 — Birthday experiences
+
+Create a dedicated celebration area.
+
+## Section 7 — Parent comfort
+
+This is a major experience feature.
+
+## Section 8 — Plan your visit
+
+Provide useful visit-planning information and inquiry options.
+
+## Section 9 — Gallery
+
+Show the environment and real attractions.
+
+## Section 10 — Helpful information
+
+Include safety rules, contact, directions and FAQs using verified policies.
+
+# 12. PLAY LAND — RIDES AND ATTRACTIONS SYSTEM
+
+Build a structured attraction catalogue.
+
+Each attraction page should support:
+
+- Attraction name.
+- Category.
+- Main image.
+- Photo gallery.
+- Description.
+- Age suitability.
+- Height requirements.
+- Supervision rules.
+- Session duration.
+- Ticket eligibility.
+- Capacity where appropriate.
+- Availability.
+- Safety information.
+- Related attractions.
+
+Actual requirements and attractions must come from Marhaba.
+
+Provide attractive but restrained visual treatments for rides.
+
+Do not turn the site into a cartoon game.
+
+## Attraction discovery filters
+
+Visitors should be able to explore by:
+
+- Age suitability.
+- Activity type.
+- Package eligibility.
+- Supervision requirements.
+- Other verified restrictions.
+
+Only expose filters backed by actual information.
+
+## Attraction details
+
+Help parents decide confidently whether an activity is appropriate for their child.
+
+Information must be easy to scan, clearly arranged and accurate.
+
+# 13. PARENT COMFORT — A MAJOR DESIGN FEATURE
+
+Develop a dedicated parent convenience experience.
+
+The website must answer common questions before families arrive.
+
+Build a Parents' Guide containing:
+
+- Suitable activities for different ages.
+- Ticket and package information.
+- Entry policies.
+- Parent supervision requirements.
+- Session duration.
+- Restroom information.
+- Parent seating information.
+- Baby-related facilities.
+- Accessibility.
+- Food and restaurant access.
+- Safety rules.
+- Contact and assistance.
+- Refund policy.
+- Location.
+- Visiting hours.
+
+Only publish facility and policy claims verified with Marhaba management.
+
+Do not invent child supervision arrangements, trained staff, medical support, CCTV coverage or safety certifications.
+
+## Visit planner
+
+Create a simple visit planning interface.
+
+Allow families to select:
+
+- Number of children.
+- Children's age groups.
+- Number of adults.
+- Preferred date.
+- Package preference.
+- Special requirements.
+
+Present suitable packages using actual data when connected.
+
+Otherwise, create a transparent inquiry workflow.
+
+The purpose is to reduce uncertainty and simplify decision-making.
+
+# 14. PLAY LAND — TICKETS, PACKAGES AND BIRTHDAYS
+
+## Tickets and packages
+
+Create clean comparison layouts.
+
+Each package should show:
+
+- Name.
+- Price.
+- Number of participants.
+- Included attractions.
+- Duration.
+- Exclusions.
+- Terms.
+- Booking action.
+
+Do not show fabricated packages as active offers.
+
+## Birthday events
+
+Create an elegant and joyful birthday experience page.
+
+Possible sections:
+
+- Birthday introduction.
+- Celebration gallery.
+- Packages.
+- Food options, if offered.
+- Decoration options, if offered.
+- Event requirements.
+- Booking inquiry.
+
+## Group visits
+
+Provide an organized information and inquiry page for group visits.
+
+## Parent-friendly interactions
+
+- Clear forms.
+- Few unnecessary fields.
+- Immediate validation.
+- Useful explanatory text.
+- Easy back navigation.
+- Clear submitted/pending states.
+- Mobile-first layouts.
+
+# 15. CONNECT THE THREE EXPERIENCES CAREFULLY
+
+Marhaba is a connected destination.
+
+Customers must be able to discover all three business areas without friction.
+
+Examples:
+
+A supermarket customer may discover restaurant information.
+
+A restaurant guest may explore Play Land for a family outing.
+
+A parent viewing Play Land packages may easily access restaurant dining information.
+
+Create thoughtful, contextual links.
+
+Avoid aggressive cross-selling popups.
+
+Use:
+
+- Related experience sections.
+- Useful navigation.
+- Consistent location information.
+- Appropriate promotional collections.
+- Shared customer support.
+- Unified brand identity.
+
+Keep commercial systems separate where operationally necessary.
+
+# 16. USER JOURNEY AUDIT — THINK LIKE THE CUSTOMER
+
+After completing the design, review the website from the perspective of real users.
+
+## Customer A — Grocery shopper
+
+Scenario:
+
+A customer wants to buy milk, rice, cooking oil and shampoo.
+
+Test:
+
+1. Open website.
+2. Locate Shop.
+3. Find products.
+4. Read product names and sizes.
+5. Compare products.
+6. Select quantities.
+7. Add items to cart.
+8. Review cart.
+9. Proceed through checkout.
+10. Receive an accurate order state.
+
+Verify:
+
+- Products are discoverable.
+- Filters are useful.
+- Images are clear.
+- Prices are consistent.
+- Cart calculations are accurate.
+- Checkout is understandable.
+
+## Customer B — Restaurant visitor
+
+Scenario:
+
+A family wants to visit Marhaba Restaurant for dinner.
+
+Test:
+
+1. Open Restaurant.
+2. Understand the dining experience.
+3. Explore cuisine types.
+4. View actual dishes.
+5. Understand menu prices.
+6. Browse the dining gallery.
+7. Find restaurant location.
+8. Request a reservation or contact staff.
+
+Verify:
+
+- Menu navigation works.
+- Every dish belongs to the correct category.
+- Images display properly.
+- Offers are accurately represented.
+- Booking or inquiry states are trustworthy.
+
+## Customer C — Parent planning Play Land
+
+Scenario:
+
+A parent wants to bring two children for an enjoyable outing.
+
+Test:
+
+1. Open Play Land.
+2. Understand the available experience.
+3. Explore attractions.
+4. Check age suitability.
+5. View packages.
+6. Understand parent requirements.
+7. Find location.
+8. Submit booking inquiry if available.
+
+Verify:
+
+- Activities are understandable.
+- Age and safety information is accurate.
+- Prices and package inclusions are clear.
+- Parent convenience information is easy to find.
+- The experience feels reassuring and simple.
+
+## Customer D — First-time Marhaba visitor
+
+Scenario:
+
+A new customer does not know the Marhaba brand.
+
+Test:
+
+1. Open homepage.
+2. Understand the brand within seconds.
+3. Recognize Supermarket, Restaurant and Play Land.
+4. Select the desired experience.
+5. Find location and contact details.
+6. Complete the relevant task.
+
+The website must make Marhaba's identity immediately understandable.
+
+# 17. COMPLETE INTERACTION AUDIT
+
+Every interactive feature must be reviewed.
+
+## Navigation
+
+- Desktop navigation.
+- Mega menus.
+- Nested categories.
+- Mobile drawers.
+- Breadcrumbs.
+- Footer links.
+
+## Shopping
+
+- Product search.
+- Search suggestions.
+- Category navigation.
+- Filters.
+- Sorting.
+- Product cards.
+- Product variants.
+- Quantity controls.
+- Wishlist.
+- Add to Cart.
+- Cart updates.
+- Checkout forms.
+- Order summaries.
+
+## Restaurant
+
+- Cuisine navigation.
+- Menu categories.
+- Dish details.
+- Offer sections.
+- Gallery.
+- Reservation requests.
+- Contact actions.
+
+## Play Land
+
+- Attraction filters.
+- Attraction details.
+- Age suitability.
+- Package comparisons.
+- Visit planner.
+- Birthday inquiries.
+- Parent information.
+- Gallery.
+
+Every advertised action must work according to its demonstrated status.
+
+Do not create mock confirmations that look like genuine processed bookings or payments.
+
+# 18. RESPONSIVE DESIGN & MOTION QUALITY
+
+Test the full experience at:
+
+- 320px.
+- 375px.
+- 390px.
+- 430px.
+- 768px.
+- 1024px.
+- 1280px.
+- 1440px.
+- 1920px.
+
+## Touch and accessibility
+
+- Appropriate touch targets, preferably at least 44×44 CSS pixels.
+- Readable text.
+- Consistent spacing.
+- Clear focus indicators.
+- Accessible color contrast.
+- Keyboard support.
+- Escape-to-close behavior for overlays.
+- Correct ARIA semantics for menus and dialogs.
+- Sensible focus restoration.
+- Reduced-motion support.
+
+## Motion
+
+Use carefully controlled transitions for:
+
+- Menu opening.
+- Drawer opening.
+- Filter changes.
+- Product hover.
+- Image galleries.
+- Cart confirmation.
+- Section transitions.
+
+Motion should provide feedback and orientation.
+
+Avoid animation that causes delays, layout instability or unnecessary distraction.
+
+# 19. COMPONENT-LEVEL VISUAL QUALITY
+
+Inspect:
+
+- Header height.
+- Logo proportions.
+- Navigation spacing.
+- Mega menu dimensions.
+- Search-bar placement.
+- Product card dimensions.
+- Product image crop.
+- Product price hierarchy.
+- Discount labels.
+- Cart controls.
+- Restaurant food card dimensions.
+- Menu typography.
+- Gallery image ratios.
+- Play Land attraction cards.
+- Ticket-package comparison.
+- Buttons.
+- Form fields.
+- Borders.
+- Shadows.
+- Background transitions.
+- Footer hierarchy.
+
+Maintain a consistent design language.
+
+Do not use decorative elements simply to occupy empty space.
+
+# 20. DATA AND COMMERCIAL ACCURACY
+
+This is a mandatory engineering requirement.
+
+All content must be separated into:
+
+1. Verified Marhaba data.
+2. Existing but unverified data.
+3. Proposed features.
+4. Demonstration data.
+
+Do not represent demonstration data as actual business information.
+
+Product prices must come from the available source data.
+
+Discounts must be calculated correctly.
+
+Restaurant menu prices and availability must not be fabricated.
+
+Play Land rides, ticket prices and package inclusions must not be fabricated.
+
+Reservation availability must not be simulated as live availability.
+
+Customer reviews and statistics must be genuine and attributed.
+
+Preserve existing product identifiers and category relationships when mapping data.
+
+Do not use inaccurate product images merely to make the design look complete.
+
+# 21. FINAL MASTER REVIEW — LOOK AT THE COMPLETE PRODUCT
+
+After refining all four mandatory workstreams, stop thinking about individual sections and evaluate the entire website as one customer experience.
+
+Ask:
+
+- Does the header communicate Marhaba clearly?
+- Can anyone understand the website without assistance?
+- Can customers find the right products quickly?
+- Are shopping categories properly organized?
+- Are product images professionally displayed?
+- Are prices and discounts clearly communicated?
+- Can customers add items to the cart without confusion?
+- Is the checkout logical and consistent?
+- Does the restaurant feel like a complete hospitality experience?
+- Can guests explore dishes and cuisines easily?
+- Are deals, dining information and reservations clear?
+- Does Play Land look enjoyable for children?
+- Can parents easily understand attractions and suitability?
+- Are packages and visit-planning steps convenient?
+- Does the site feel consistent across all pages?
+- Does every interaction work?
+- Does the mobile experience feel professionally designed?
+- Are we representing Marhaba respectfully and accurately?
+- Is the result strong enough for an executive-level design presentation?
+
+Do not declare completion if any major customer journey is broken or incomplete.
+
+# 22. REQUIRED IMPLEMENTATION SEQUENCE
+
+Apply changes in the following order.
+
+**PASS 1 — Header & Navigation**
+Refine the full global navigation and all desktop/mobile menus.
+
+**PASS 2 — Shop**
+Refine the sidebar, taxonomy, product grids, product cards, product details, discounts, cart and checkout.
+
+**PASS 3 — Restaurant**
+Refine restaurant overview, cuisines, menu navigation, dishes, offers, gallery and reservations.
+
+**PASS 4 — Play Land**
+Refine attraction discovery, age-based experiences, parent guide, packages, birthdays and visit planning.
+
+**PASS 5 — Shared Experience**
+Refine related links, brand consistency, cross-navigation, content and support.
+
+**PASS 6 — Customer Journey Testing**
+Test complete customer journeys for shopping, dining and family visits.
+
+**PASS 7 — Visual & Functional QA**
+Inspect all pages, routes, breakpoints, images and interactions.
+
+**PASS 8 — Final Artistic Refinement**
+Improve typography, composition, spacing, color balance, imagery, transitions and overall presentation.
+
+Complete each pass in the existing application before proceeding to dependent changes.
+
+If implementation limits prevent all passes from completing in one execution, preserve working progress and provide an explicit remaining-work checklist. Do not claim unfinished work is complete.
+
+# 23. DELIVERABLES AND ACCEPTANCE
+
+At completion, provide:
+
+### A. Implementation summary
+
+Specify which components, routes and features were improved.
+
+### B. Functional status matrix
+
+Classify each feature as:
+
+- Functional and tested.
+- Functional frontend demonstration.
+- Awaiting live backend integration.
+- Awaiting verified Marhaba content.
+- Incomplete or blocked.
+
+### C. Visual QA summary
+
+Report tested breakpoints and any outstanding design issues.
+
+### D. Data integrity summary
+
+Identify missing product images, restaurant menu information, verified offers, Play Land attractions or other necessary business information.
+
+### E. Remaining work
+
+List only genuine outstanding work and implementation dependencies.
+
+Do not fabricate test results.
+
+Do not claim that the entire platform works if a major flow remains unimplemented.
+
+# 24. FINAL EXECUTIVE STANDARD
+
+The final website must demonstrate the values of both organizations.
+
+**Marhaba Supermarket:** Trust, quality, customer care, hospitality, community and convenient everyday experiences.
+
+**MetaWave Innovations LTD:** Responsibility, reliable engineering, professional design, attention to detail, technical integrity and business-focused digital transformation.
+
+The customer should never have to think about the complexity behind the platform.
+
+They should simply experience an organized, beautiful, dependable and effortless digital destination.
+
+This is the central principle of the entire enhancement:
+
+**Every product thoughtfully presented. Every dish beautifully discovered. Every family experience comfortably planned. Every customer journey carefully designed.**
+
+Do not prioritize visual decoration over usability.
+
+Do not prioritize technical complexity over customer value.
+
+Do not remove existing successful functionality.
+
+Do not substitute fictional content for authentic business information.
+
+Make Marhaba's identity stronger through clarity, consistency, creativity, accessibility and professional digital craftsmanship.
+
+**NOW BEGIN BY AUDITING AND REFINING THE EXISTING HEADER AND NAVIGATION, THEN PROCEED THROUGH SHOP, RESTAURANT, PLAY LAND AND THE COMPLETE CUSTOMER EXPERIENCE IN THE SPECIFIED SEQUENCE.**
+
+Implement the improvements directly in the existing Google AI Studio project.
