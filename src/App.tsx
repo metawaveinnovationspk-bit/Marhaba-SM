@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { CheckCircle2, X } from 'lucide-react';
 import { StoreProvider, useStore } from './context/StoreContext';
 import { SiteHeader } from './components/Header/SiteHeader';
@@ -19,8 +19,26 @@ import {
   WishlistPage,
 } from './components/Pages/SecondaryPages';
 
+const ManagementPortal = React.lazy(() => import('./components/Management/ManagementPortal'));
+
 function MarhabaShell() {
-  const { route, toast, dismissToast, isCartOpen } = useStore();
+  const { route, managementPath, toast, dismissToast, isCartOpen } = useStore();
+
+  if (managementPath !== null) {
+    return (
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center p-6">
+            <div className="bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl px-6 py-5 text-sm font-medium text-[#1C1917]">
+              Loading Marhaba Supermarket Management System...
+            </div>
+          </div>
+        }
+      >
+        <ManagementPortal />
+      </Suspense>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#1C1917]">

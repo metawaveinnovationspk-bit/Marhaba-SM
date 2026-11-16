@@ -169,6 +169,7 @@ interface ToastMessage {
 
 interface StoreContextValue {
   route: AppRoute;
+  managementPath: string | null;
   selectedProductId: string | null;
   restaurantSection: RestaurantSection;
   restaurantCuisine: CuisineType | 'All';
@@ -199,6 +200,8 @@ interface StoreContextValue {
       scrollTop?: boolean;
     }
   ) => void;
+  navigateToManagement: (subPath?: string) => void;
+  exitManagement: () => void;
   setBranchId: (id: string) => void;
   setShopFilter: React.Dispatch<React.SetStateAction<ShopFilterState>>;
   resetShopFilters: () => void;
@@ -227,6 +230,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const initialUrl = useMemo(() => parseRouteFromUrl(), []);
   const initialPersisted = useMemo(() => loadPersistedState(), []);
 
+  const [managementPath, setManagementPath] = useState<string | null>(() =>
+    window.location.pathname.startsWith('/management') ? window.location.pathname : null
+  );
   const [route, setRoute] = useState<AppRoute>(initialUrl.route);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(initialUrl.productId);
   const [restaurantSection, setRestaurantSection] = useState<RestaurantSection>(
@@ -271,8 +277,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
   }, [branchId, cart, wishlist, orders, reservations, playInquiries, isSignedIn, accountProfile, savedAddresses]);
 
-  // Sync URL query params for revisitability & back/forward browser navigation
+  // Sync URL query params for storefront views only (never overwrite /management/* pathnames)
   useEffect(() => {
+    if (managementPath !== null) return;
     const params = new URLSearchParams();
     if (route !== 'home') params.set('view', route);
     if (route === 'product' && selectedProductId) params.set('id', selectedProductId);
@@ -297,7 +304,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const qs = params.toString();
     const nextUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
     window.history.replaceState(null, '', nextUrl);
-  }, [route, selectedProductId, restaurantSection, restaurantCuisine, playLandSection, shopFilter]);
+  }, [managementPath, route, selectedProductId, restaurantSection, restaurantCuisine, playLandSection, shopFilter]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path.startsWith('/management')) {
+        setManagementPath(path);
+      } else {
+        setManagementPath(null);
+        const parsed = parseRouteFromUrl();
+        setRoute(parsed.route);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     if (!toast) return;
@@ -309,7 +331,30 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setToast({ ...next, id: Date.now() });
   }, []);
 
+  const navigateToManagement = useCallback((subPath = '/management') => {
+    const clean = subPath.startsWith('/management') ? subPath : `/management/${subPath.replace(/^\//, '')}`;
+    setIsCartOpen(false);
+    setManagementPath(clean);
+    if (window.location.pathname !== clean) {
+      window.history.pushState(null, '', clean);
+    }
+    window.scrollTo({ top: 0 });
+  }, []);
+
+  const exitManagement = useCallback(() => {
+    setManagementPath(null);
+    if (window.location.pathname.startsWith('/management')) {
+      window.history.pushState(null, '', '/');
+    }
+    setRoute('home');
+    window.scrollTo({ top: 0 });
+  }, []);
+
   const navigate = useCallback<StoreContextValue['navigate']>((nextRoute, options = {}) => {
+    if (window.location.pathname.startsWith('/management')) {
+      window.history.pushState(null, '', '/');
+    }
+    setManagementPath(null);
     setRoute(nextRoute);
     if (options.productId !== undefined) {
       setSelectedProductId(options.productId);
@@ -419,10 +464,38 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         items: [...cart],
         totals,
         customer: form,
-        status: 'Simulated Demonstration Order — Not Charged or Dispatched',
+        status: 'Simulated Demonstration Order — Synced to Management Orders Queue',
       };
       setOrders((prev) => [order, ...prev]);
       setCart([]);
+
+      // Sync storefront order directly into Management Online Fulfillment Queue
+      void fetch('/api/public/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idempotencyKey: order.orderNumber,
+          orderNumber: order.orderNumber,
+          branchId: form.branchId,
+          customerName: form.fullName,
+          customerPhone: form.phone,
+          fulfillmentMethod: form.fulfillmentMethod,
+          addressSummary:
+            form.fulfillmentMethod === 'delivery'
+              ? `${form.address}, ${form.city}`
+              : 'Store Pickup Counter',
+          paymentMethod: form.paymentMethod,
+          items: order.items.map((it) => ({
+            productId: it.productId,
+            quantity: it.quantity,
+            unitPrice: it.unitPrice,
+            name: it.name,
+          })),
+        }),
+      }).catch(() => {
+        // Non-blocking fallback for offline/preview
+      });
+
       return order;
     },
     [cart]
@@ -539,6 +612,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const value: StoreContextValue = {
     route,
+    managementPath,
     selectedProductId,
     restaurantSection,
     restaurantCuisine,
@@ -558,6 +632,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     savedAddresses,
     toast,
     navigate,
+    navigateToManagement,
+    exitManagement,
     setBranchId: setBranchIdState,
     setShopFilter,
     resetShopFilters,

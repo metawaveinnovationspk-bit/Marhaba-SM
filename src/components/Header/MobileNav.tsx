@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Building2,
   ChevronDown,
   ChevronRight,
   Home,
@@ -25,6 +26,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
     branchId,
     setBranchId,
     navigate,
+    navigateToManagement,
     cartTotals,
     openCart,
   } = useStore();
@@ -307,6 +309,17 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
                     <ChevronRight className="w-4 h-4 text-[#57534E]" />
                   </button>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => navAndClose(() => navigateToManagement('/management'))}
+                  className="w-full flex items-center justify-between px-3 min-h-[44px] rounded-lg text-sm font-semibold text-[#9B1C2E] bg-[#FAF9F6] border border-[#E6E2DA] mt-2"
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <Building2 className="w-4 h-4" />
+                    <span>Supermarket Management Portal</span>
+                  </span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </div>

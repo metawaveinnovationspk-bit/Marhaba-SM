@@ -1,0 +1,1577 @@
+# MARHABA SUPERMARKET
+## ENTERPRISE RETAIL MANAGEMENT SYSTEM — MASTER BUILD & INTEGRATION DIRECTIVE
+### MetaWave Innovations LTD | Google AI Studio
+
+**PROJECT MODE:** Extend and enhance the EXISTING Marhaba website project. Do not restart or replace the customer website.
+
+**NEW SYSTEM:** Marhaba Supermarket Management System.
+
+**SCOPE:** Supermarket retail operations only. Restaurant and Play Land management are excluded from this system.
+
+**OBJECTIVE:** Architect and build a comprehensive, intelligent, reliable and high-performance enterprise supermarket management experience covering the entire organization, from frontline cashier operations to CEO and ownership-level business intelligence.
+
+---
+
+# 1. YOUR ROLE AND PROFESSIONAL STANDARD
+
+Act as a combined team of:
+
+- Principal Enterprise Software Architect.
+- Senior Retail ERP Solutions Architect.
+- Supermarket Operations Consultant.
+- Principal UI/UX and Design Systems Architect.
+- Senior POS and Inventory Systems Engineer.
+- Procurement and Supply Chain Specialist.
+- Finance and Retail Accounting Systems Analyst.
+- Business Process Automation Engineer.
+- Senior Full-Stack Engineer.
+- Database and Systems Integration Architect.
+- Cybersecurity and Role-Based Access Control Specialist.
+- Application Performance Engineer.
+- Software QA and Testing Lead.
+
+Apply the professional principles and methodologies of:
+
+- SAP Retail and enterprise ERP architecture.
+- Microsoft Dynamics 365 Commerce.
+- Oracle Retail.
+- Modern supermarket POS systems.
+- GS1 barcode and product identification standards.
+- Material Design 3.
+- Nielsen Norman Group usability principles.
+- WCAG 2.2 AA accessibility.
+- ISO/IEC 25010 software quality principles.
+- OWASP application security practices.
+- Core Web Vitals and performance engineering.
+
+These are professional reference standards, not instructions to copy another vendor's interface, branding or proprietary software.
+
+Think like an enterprise retail systems architect.
+
+Design like an award-winning digital product designer.
+
+Develop like a senior software engineer responsible for real business operations.
+
+**The result must be a complete, coherent retail management ecosystem, not a collection of unrelated administrative dashboards.**
+
+# 2. UNDERSTAND MARHABA'S BUSINESS IDENTITY
+
+Marhaba is an established, family-led retail enterprise with published business experience dating back to 1998.
+
+The business emphasizes trust with:
+
+1. Customers.
+2. Business partners, stakeholders and the community.
+3. Employees.
+
+The company publishes the following leadership positions:
+
+- Riaz Ahmed Memon — Chief Executive Officer.
+- Dr. Niaz Ahmed Memon — Director Administration.
+- Sheeraz Ahmed Memon — Director Accounts.
+- Faraz Ahmed Memon — Director Purchasing.
+- Shahzad Ahmed Memon — Director MIS.
+
+Its public website has also reported approximately 145 employees and multiple business locations.
+
+These are company-published details and must be revalidated before use as current production records.
+
+Design the system to serve an established enterprise with significant operational responsibilities, staff, inventory, financial processes and customer relationships.
+
+**Marhaba's business identity must take priority over generic ERP conventions.**
+
+The system must demonstrate:
+
+- Trust.
+- Accuracy.
+- Responsibility.
+- Efficiency.
+- Accountability.
+- Operational clarity.
+- Financial control.
+- Employee convenience.
+- Management visibility.
+- Professional technological reliability.
+
+# 3. EXISTING PROJECT INTEGRATION — MANDATORY
+
+Inspect the current Google AI Studio project before making any changes.
+
+Preserve:
+
+- Existing Marhaba website.
+- Homepage.
+- Header and footer.
+- Supermarket product pages.
+- Shopping cart.
+- Customer accounts.
+- Restaurant.
+- Play Land.
+- Existing routing.
+- Shared design system.
+- Working functionality.
+
+**Do not redesign the entire public website.**
+
+Create a separate, secure management application experience connected to the existing project architecture.
+
+Recommended routes:
+
+- /management — Management login or authorized dashboard redirect.
+- /management/login — Staff authentication.
+- /management/dashboard — Role-based overview.
+- /management/pos — Point of sale.
+- /management/products — Product management.
+- /management/inventory — Inventory and warehouse.
+- /management/purchasing — Purchasing and suppliers.
+- /management/orders — Online order management.
+- /management/finance — Accounts and finance.
+- /management/staff — Employees and administration.
+- /management/branches — Branch operations.
+- /management/customers — Customer service.
+- /management/reports — Analytics and reporting.
+- /management/settings — MIS and administration.
+
+Use the existing application router or framework conventions where appropriate.
+
+Keep management components, business logic, permissions and data services logically separated from the public customer website.
+
+# 4. ADD MANAGEMENT BUTTON BESIDE CART
+
+This is a mandatory frontend change.
+
+On the existing Marhaba website header, add:
+
+**Management**
+
+Position it immediately to the RIGHT of the Cart button.
+
+## Desktop design
+
+Use:
+
+- A subtle dashboard or building icon.
+- Text: Management.
+- Refined Marhaba-consistent typography.
+- Soft corner radius.
+- Balanced padding.
+- Gentle border or background treatment.
+- Clear hover and active states.
+- Accessible focus state.
+
+The button must look like an intentional part of the existing header, not an unrelated attachment.
+
+Do not make it oversized, heavily shadowed or visually aggressive.
+
+## Tablet design
+
+Adapt spacing and label presentation without disturbing Search, Account, Wishlist or Cart.
+
+## Mobile design
+
+Use a compact accessible button or icon with an appropriate visible label/tooltip and accessible name.
+
+Keep it immediately after Cart in the responsive header action order where space permits.
+
+When space is insufficient, retain a clear Management entry in the mobile navigation without overcrowding the header.
+
+Do not cause horizontal overflow or clipped controls.
+
+## Button behavior
+
+On click:
+
+1. Open the dedicated management route.
+2. Check the authorized staff session.
+3. If authenticated, redirect to the appropriate role dashboard.
+4. If unauthenticated, show secure Management Login.
+5. After successful authentication, load permissions and permitted features.
+
+Public customers must not receive management access simply because they can see the button.
+
+The presence of the button must not expose business data.
+
+Apply authentication and authorization on the server, not merely by hiding frontend components.
+
+The existing customer login must not grant staff access.
+
+# 5. MASTER UI/UX VISION
+
+Create a professional, modern, intelligent and exceptionally easy-to-use supermarket management application.
+
+**Design philosophy: Reduce employee effort. Increase accuracy. Improve management clarity.**
+
+Avoid the common ERP problem of displaying too many controls, tables, tabs and irrelevant fields simultaneously.
+
+The interface must feel:
+
+- Clean.
+- Soft.
+- Professional.
+- Welcoming.
+- Well-organized.
+- Fast.
+- Predictable.
+- Comfortable.
+- Calm.
+- Efficient.
+- Dependable.
+
+## Visual design principles
+
+Use:
+
+- Marhaba's existing brand identity.
+- Elegant typography.
+- Harmonious neutral surfaces.
+- Refined colors.
+- Subtle shadows.
+- Gentle border radii.
+- Clear component boundaries.
+- Carefully balanced spacing.
+- Consistent iconography.
+- Appropriate content density.
+- Professionally arranged data tables.
+- Meaningful status indicators.
+- Comfortable form controls.
+
+Avoid:
+
+- Excessive dashboard cards.
+- Unnecessary charts.
+- Aggressive colors.
+- Harsh borders.
+- Complicated navigation.
+- Tiny unreadable text.
+- Unnecessary animation.
+- Repetitive forms.
+- Oversized empty panels.
+- Excessively long workflows.
+- Generic administration templates.
+- Modal dialogs for every simple action.
+
+Prioritize usability over visual decoration.
+
+# 6. MAIN MANAGEMENT APP LAYOUT
+
+Build a consistent application shell.
+
+## Left sidebar
+
+A professional, collapsible sidebar containing only the modules permitted for the authenticated user.
+
+Features:
+
+- Marhaba logo.
+- System name.
+- Role-aware navigation.
+- Clear active module.
+- Relevant subnavigation.
+- Collapse and expand.
+- Compact icon mode.
+- Accessible keyboard behavior.
+- Smooth transitions.
+- Mobile drawer behavior.
+
+## Top header
+
+Include:
+
+- Current module title.
+- Breadcrumb or contextual location.
+- Branch selector where authorized.
+- Global search or command search.
+- Notifications.
+- Pending approvals where relevant.
+- User profile.
+- Help.
+- Logout.
+
+Avoid showing irrelevant information.
+
+## Main content
+
+Use:
+
+- Clear page headings.
+- Useful primary actions.
+- Compact summary cards.
+- Searchable tables.
+- Contextual filters.
+- Lightweight forms.
+- Tabs only when necessary.
+- Details drawers for quick review.
+- Full detail pages for complex records.
+
+Each page must immediately answer:
+
+**Where am I? What can I see? What can I do? What requires attention?**
+
+# 7. COMPLETE MANAGEMENT MODULES
+
+Develop the following interconnected modules.
+
+## MODULE 01 — DASHBOARD & DAILY OPERATIONS
+
+The dashboard must adapt to the authenticated user's role.
+
+Possible widgets:
+
+- Today's sales.
+- Number of transactions.
+- Open cashier shifts.
+- Stock alerts.
+- Pending purchase orders.
+- Pending goods receipts.
+- Online orders.
+- Pending approvals.
+- Customer issues.
+- Business performance.
+
+Do not display every widget to every employee.
+
+Create a personalized overview based on responsibility.
+
+A cashier should see their shift.
+
+An inventory manager should see stock.
+
+An accounts manager should see reconciliations.
+
+The CEO should see enterprise performance.
+
+## MODULE 02 — POS & CASHIER MANAGEMENT
+
+Build a dedicated POS interface optimized for speed and retail accuracy.
+
+Submodules:
+
+- New Sale.
+- Sales Transactions.
+- Cashier Shifts.
+- Open / Close Register.
+- Returns & Exchanges.
+- Refund Requests.
+- Payment Records.
+- Supervisor Overrides.
+- POS Devices.
+- Closing & Reconciliation.
+
+### POS interface
+
+Design a fast, distraction-free billing screen.
+
+Include:
+
+- Barcode input with reliable scanner focus.
+- Product search.
+- Product name.
+- Variant and size.
+- Quantity.
+- Unit price.
+- Approved discounts.
+- Running cart total.
+- Payment selection.
+- Cash received.
+- Change calculation.
+- Receipt.
+- Hold / Resume Sale where supported.
+
+Support appropriate hardware interfaces when actual device integration becomes available.
+
+### Cashier workflow
+
+Login → Open Shift → Verify Float → Scan Products → Apply Approved Prices → Receive Payment → Complete Sale → Issue Receipt → Continue Billing.
+
+At shift end:
+
+Declare Cash → Submit Shift → Supervisor Review → Variance Handling → Finalize Closing.
+
+Require approval for sensitive overrides.
+
+A cashier must not have unrestricted access to product costs, supplier information, financial administration or completed-transaction deletion.
+
+### POS performance
+
+Optimize for high-frequency retail use.
+
+Barcode lookup, quantity updates and cart totals should feel immediate.
+
+Avoid full-page reloads during billing.
+
+Do not block routine scanning with unnecessary popups.
+
+Build safe, understandable handling for:
+
+- Missing barcode.
+- Incorrect price.
+- Product unavailable.
+- Transaction cancellation.
+- Failed payment.
+- Scanner disconnection.
+- Receipt printer error.
+- Temporary network failure.
+
+Implement offline billing only when the proper transaction queue, reconciliation, recovery and synchronization architecture is actually available.
+
+Do not falsely label an online-only POS as offline-ready.
+
+## MODULE 03 — PRODUCTS & CATALOGUE
+
+Create a central product management system.
+
+Submodules:
+
+- All Products.
+- Add Product.
+- Categories.
+- Subcategories.
+- Brands.
+- SKUs & Barcodes.
+- Units & Packaging.
+- Variants.
+- Product Images.
+- Pricing.
+- Promotions.
+- Product Approval.
+
+### Product record
+
+Support:
+
+- Product ID.
+- SKU.
+- Barcode/GTIN.
+- Product name.
+- Department.
+- Category.
+- Subcategory.
+- Brand.
+- Supplier association.
+- Product image.
+- Description.
+- Unit.
+- Pack conversion.
+- Variants.
+- Purchase cost.
+- Selling price.
+- Tax classification.
+- Stock policy.
+- Availability.
+- Product status.
+
+Build fast and simple product editing.
+
+Support bulk actions with safe preview, authorization and rollback/recovery options where feasible.
+
+Do not allow unauthorized product cost or price changes.
+
+Provide product data validation and duplicate detection.
+
+## MODULE 04 — INVENTORY & WAREHOUSE
+
+Submodules:
+
+- Inventory Overview.
+- Stock by Branch.
+- Warehouse Locations.
+- Goods Receiving.
+- Stock Movements.
+- Stock Transfers.
+- Stock Adjustments.
+- Batch & Expiry.
+- Damaged / Quarantined Stock.
+- Cycle Counts.
+- Reorder Alerts.
+- Stock Audit.
+
+### Inventory workflow
+
+Goods Received → Verified → Put Away → Available → Reserved / Sold / Transferred / Returned.
+
+Track:
+
+- On-hand stock.
+- Sellable stock.
+- Reserved stock.
+- Damaged stock.
+- In-transit stock.
+- Batch information.
+- Expiry dates where applicable.
+- Movement history.
+
+Implement accurate quantity calculations.
+
+Every adjustment must include a reason and traceable authorization.
+
+### Expiry management
+
+Provide:
+
+- Near-expiry alerts.
+- Expired-product identification.
+- Product blocking.
+- FIFO / FEFO support.
+- Damaged stock records.
+- Approved disposal / return workflows.
+
+Make stock counts easy for staff.
+
+Avoid complex multi-screen processes for routine stock verification.
+
+## MODULE 05 — PURCHASING & SUPPLIERS
+
+Submodules:
+
+- Supplier Directory.
+- Purchase Requisitions.
+- Purchase Orders.
+- Purchase Approvals.
+- Goods Receipt Notes.
+- Supplier Invoices.
+- Purchase Returns.
+- Supplier Claims.
+- Cost History.
+- Supplier Performance.
+
+### Purchasing lifecycle
+
+Stock Need → Purchase Request → Review → Supplier Selection → Purchase Order → Approval → Delivery → Goods Receipt → Invoice Verification → Payment Processing.
+
+Support:
+
+- Supplier details.
+- Supplier-product relationships.
+- Purchase prices.
+- Expected delivery.
+- Ordered quantities.
+- Received quantities.
+- Rejected quantities.
+- Outstanding quantities.
+- Approval history.
+
+Prevent unauthorized purchasing.
+
+Support partial receiving and documented discrepancies.
+
+Apply three-way matching where appropriate:
+
+Purchase Order → Accepted Goods Receipt → Supplier Invoice.
+
+## MODULE 06 — ONLINE ORDERS & FULFILLMENT
+
+Connect the existing Marhaba customer website to an integration-ready order management module.
+
+Submodules:
+
+- New Orders.
+- Confirmed Orders.
+- Picking.
+- Packing.
+- Ready for Pickup.
+- Delivery Management.
+- Completed Orders.
+- Cancelled Orders.
+- Returns.
+- Order Exceptions.
+
+### Order lifecycle
+
+Placed → Validated → Confirmed → Picking → Packed → Ready → Dispatched / Pickup → Completed.
+
+Provide separate handling for failed payments, unavailable items, partial fulfillment, cancellations and returns.
+
+### Staff interface
+
+Make the order handling screen practical and easy.
+
+For picking:
+
+- Show customer order number.
+- Show items.
+- Show quantities.
+- Show product images.
+- Show storage location when available.
+- Allow item verification.
+- Flag missing items.
+- Record substitutions only when approved.
+
+For packing:
+
+- Verify all items.
+- Check order completeness.
+- Confirm packaging.
+- Record handover readiness.
+
+Integrate with actual inventory reservation rules when authorized backend services are available.
+
+Do not merely subtract quantities in separate uncoordinated frontend states.
+
+## MODULE 07 — OFFERS & PRICING
+
+Submodules:
+
+- Price Lists.
+- Price Change Requests.
+- Promotional Campaigns.
+- Product Discounts.
+- Category Offers.
+- Bundle Offers.
+- Branch-Specific Prices.
+- Promotion Scheduling.
+- Approval History.
+
+Support:
+
+- Original price.
+- Promotional price.
+- Discount calculation.
+- Start date.
+- End date.
+- Eligible products.
+- Applicable branches.
+- Pricing rules.
+- Approval status.
+
+Always show accurate prices.
+
+Prevent conflicting discounts and invalid calculations.
+
+Synchronize approved changes with POS and website through proper integration services.
+
+## MODULE 08 — FINANCE & ACCOUNTS
+
+Develop an accurate, controlled financial operations interface.
+
+Submodules:
+
+- Finance Overview.
+- Daily Sales.
+- Cashier Reconciliation.
+- Payment Settlements.
+- Supplier Payables.
+- Supplier Payments.
+- Business Expenses.
+- Purchase Accounting.
+- Stock Valuation.
+- Refund Records.
+- Financial Reports.
+- Financial Periods.
+- Audit & Exceptions.
+
+### Required controls
+
+- Separate recorded sales from collected cash.
+- Separate cash, card and other payment tenders.
+- Record refunds.
+- Record payable balances.
+- Track authorized supplier payments.
+- Reconcile branch transactions.
+- Identify financial discrepancies.
+- Maintain audit history.
+
+### Financial reporting
+
+Support:
+
+- Gross sales.
+- Net sales.
+- Cost of goods sold.
+- Gross margin.
+- Expenses.
+- Inventory valuation.
+- Supplier payables.
+- Cash and bank reconciliation.
+- Branch comparisons.
+
+Use accounting-consistent calculation rules.
+
+Tax and invoicing requirements must be configurable and validated against applicable Pakistani requirements with authorized accounts personnel.
+
+Do not fabricate legal compliance or production tax integration.
+
+## MODULE 09 — EMPLOYEES & ADMINISTRATION
+
+Submodules:
+
+- Employee Directory.
+- Departments.
+- Employee Roles.
+- Attendance.
+- Duty Rosters.
+- Shifts.
+- Leave Requests.
+- Staff Assignments.
+- Payroll Integration.
+- Facilities.
+- Maintenance Requests.
+- Internal Tasks.
+- Incident Records.
+
+Keep employee interfaces simple.
+
+Employees should see:
+
+- My Profile.
+- My Shift.
+- My Tasks.
+- My Attendance.
+- My Requests.
+
+Supervisors should see team-level operations.
+
+Administration should see authorized workforce management and operational records.
+
+Do not expose confidential employee information to unrelated departments.
+
+## MODULE 10 — BRANCH OPERATIONS
+
+Build multi-branch capability.
+
+Submodules:
+
+- Branch Directory.
+- Branch Performance.
+- Department Operations.
+- Counter Management.
+- Shelf Replenishment.
+- Stock Transfers.
+- Equipment.
+- Maintenance.
+- Daily Opening Checklist.
+- Daily Closing Checklist.
+- Incident Management.
+
+Support branch-specific:
+
+- Inventory.
+- Employees.
+- Sales.
+- Registers.
+- Prices when configured.
+- Operating expenses.
+- Performance reports.
+
+Head Office should be able to review authorized consolidated information.
+
+Branch employees must remain restricted to permitted branches.
+
+## MODULE 11 — CUSTOMERS & SUPPORT
+
+Submodules:
+
+- Customer Directory.
+- Customer Inquiries.
+- Complaints.
+- Returns & Exchanges.
+- Refund Requests.
+- Order Assistance.
+- Customer Purchase History where authorized.
+- Customer Communication.
+- Loyalty Integration where implemented.
+
+Create a simple customer service interface.
+
+Show relevant customer and order information without unnecessarily exposing private data.
+
+Support case assignment, status, notes and resolution.
+
+Keep sensitive refund approval separate from general support case handling.
+
+## MODULE 12 — REPORTS & BUSINESS INTELLIGENCE
+
+Build role-based reporting.
+
+### Sales reports
+
+- Daily sales.
+- Branch sales.
+- Category sales.
+- Product sales.
+- Cashier activity.
+- Discounts and refunds.
+
+### Inventory reports
+
+- Stock availability.
+- Low stock.
+- Inventory turnover.
+- Expiry.
+- Stock movements.
+- Adjustments.
+- Shrinkage.
+
+### Purchasing reports
+
+- Purchase history.
+- Supplier performance.
+- Outstanding POs.
+- Cost trends.
+- Purchase discrepancies.
+
+### Finance reports
+
+- Revenue.
+- Gross profit.
+- Expenses.
+- Payment reconciliation.
+- Payables.
+- Financial variance.
+
+### Executive reports
+
+- Consolidated business performance.
+- Branch comparison.
+- Commercial trends.
+- Major exceptions.
+- Operational risks.
+- Management approvals.
+
+Reports must have appropriate filters, clear units, reliable calculation definitions and export permissions.
+
+Do not show arbitrary numbers or decorative charts unrelated to real decisions.
+
+## MODULE 13 — MIS, SECURITY & SYSTEM ADMINISTRATION
+
+Submodules:
+
+- Users.
+- Roles & Permissions.
+- Access Requests.
+- Approval Workflows.
+- Branch Permissions.
+- System Configuration.
+- POS Devices.
+- Integrations.
+- Website Sync.
+- Audit Logs.
+- Notifications.
+- Backup and Recovery Status.
+- System Health.
+- Error Monitoring.
+
+Ensure a secure and maintainable management architecture.
+
+Support authorized staff account provisioning, revocation and session management.
+
+Use server-enforced role permissions.
+
+Log sensitive operations.
+
+# 8. COMPLETE STAFF-TO-OWNER ROLE HIERARCHY
+
+Build configurable role-based dashboards and permissions.
+
+Do not give every role the same interface.
+
+## Frontline roles
+
+- Cashier.
+- Senior Cashier.
+- POS Supervisor.
+- Sales Assistant.
+- Shelf Replenishment Staff.
+- Department Supervisor.
+- Receiving Clerk.
+- Storekeeper.
+- Stock Controller.
+- Customer Service Officer.
+- Warehouse Staff.
+- Inventory Auditor.
+- Quality / Expiry Staff.
+
+## Operational management
+
+- Department Manager.
+- Warehouse Manager.
+- Inventory Manager.
+- Purchasing Officer.
+- Purchasing Manager.
+- Accounts Officer.
+- Accounts Manager.
+- HR / Administration Officer.
+- HR / Administration Manager.
+- Online Orders Manager.
+- Branch Manager.
+- Operations Manager.
+- General Manager.
+
+## Technical roles
+
+- Product Data Operator.
+- E-commerce Operator.
+- IT Support.
+- POS Administrator.
+- ERP Administrator.
+- MIS Manager.
+- Director MIS.
+
+## Senior management
+
+- Director Purchasing.
+- Director Accounts.
+- Director Administration.
+- Chief Executive Officer.
+- Authorized Owners / Partners.
+
+These roles describe the proposed operating model and are not claims that Marhaba has all these job titles.
+
+## Permissions
+
+Implement a configurable permission matrix with:
+
+- View.
+- Create.
+- Edit.
+- Submit.
+- Verify.
+- Approve.
+- Reject.
+- Cancel.
+- Export.
+- Administer.
+
+Permissions must also account for:
+
+- Branch.
+- Department.
+- Record ownership.
+- Transaction status.
+- Approval threshold.
+- Financial authority.
+- Sensitive data access.
+
+Enforce segregation of duties.
+
+A person must not approve their own sensitive transaction where the configured control requires independent approval.
+
+# 9. ROLE-SPECIFIC DASHBOARD EXPERIENCES
+
+Create dedicated dashboard compositions.
+
+### Cashier
+
+Show only:
+
+- Start / Resume Shift.
+- New Sale.
+- My Transactions.
+- Shift Totals.
+- Request Assistance.
+- Close Shift.
+
+### Department Supervisor
+
+Show:
+
+- Department Sales.
+- Stock Alerts.
+- Shelf Tasks.
+- Team Activities.
+- Product Issues.
+
+### Inventory Manager
+
+Show:
+
+- Inventory Overview.
+- Low Stock.
+- Goods Receiving.
+- Transfers.
+- Expiry Alerts.
+- Stock Counts.
+
+### Purchasing Manager
+
+Show:
+
+- Pending Purchase Requests.
+- Purchase Orders.
+- Supplier Deliveries.
+- Cost Changes.
+- Supplier Performance.
+
+### Accounts Manager
+
+Show:
+
+- Sales Reconciliation.
+- Cash Variances.
+- Supplier Invoices.
+- Payables.
+- Expenses.
+- Financial Exceptions.
+
+### Branch Manager
+
+Show:
+
+- Branch Performance.
+- Sales.
+- Cashier Shifts.
+- Staff.
+- Stock Issues.
+- Orders.
+- Approvals.
+- Operational Alerts.
+
+### Directors
+
+Display information appropriate to their published departmental responsibilities.
+
+### CEO / Owners
+
+Show:
+
+- Business Overview.
+- Branch Performance.
+- Sales and Profitability.
+- Inventory Value.
+- Cash and Financial Position.
+- Purchasing Performance.
+- Operational Exceptions.
+- Strategic Reports.
+
+Do not overwhelm senior management with low-level transaction screens unless they intentionally drill down.
+
+# 10. DESIGN THE REAL BUSINESS PROCESSES
+
+Every module must reflect a real business workflow.
+
+Build connected process models.
+
+## Procure-to-Pay
+
+Purchase Request → Review → Approval → PO → Goods Receiving → Invoice Matching → Payment → Reconciliation.
+
+## Inventory-to-Shelf
+
+Receiving → Stock Recording → Warehouse Storage → Shelf Replenishment → Sale.
+
+## In-Store Sale
+
+Cashier Shift → Barcode Scan → Price Validation → Payment → Receipt → Inventory Update → Reconciliation.
+
+## Online Order
+
+Website Order → Stock Validation → Reservation → Picking → Packing → Delivery/Pickup → Completion.
+
+## Return-to-Refund
+
+Return Request → Transaction Verification → Product Inspection → Approval → Refund/Exchange → Stock Disposition.
+
+## Employee Operations
+
+Employee Assignment → Role Access → Attendance → Shift → Assigned Tasks → Supervisor Review.
+
+## Management Reporting
+
+Operational Transactions → Validated Records → Aggregation → Reports → Exception Review → Decisions.
+
+Each workflow needs:
+
+- Defined actors.
+- Data requirements.
+- Status transitions.
+- Validations.
+- Approvals.
+- Audit trail.
+- Success and failure handling.
+- Recovery and escalation behavior.
+
+Do not implement workflows as merely decorative status cards.
+
+# 11. INTELLIGENT AUTOMATION — PRACTICAL, NOT COMPLICATED
+
+Introduce useful, explainable automation where appropriate.
+
+Examples:
+
+- Low-stock alerts.
+- Reorder suggestions.
+- Expiry alerts.
+- Pending-approval notifications.
+- Supplier delivery reminders.
+- Cash discrepancy alerts.
+- Failed website synchronization alerts.
+- Unfulfilled online order alerts.
+- Missing product data warnings.
+- Equipment maintenance reminders.
+- Daily closing reminders.
+
+Avoid overwhelming users with unnecessary notifications.
+
+Group alerts by priority.
+
+Provide clear actions.
+
+Keep human approval for sensitive financial, purchasing and inventory decisions.
+
+Advanced forecasting or AI-based suggestions must be clearly distinguished from deterministic business rules and must not silently execute commercial actions.
+
+# 12. PERFORMANCE — CRITICAL REQUIREMENT
+
+The system must be engineered for high-frequency retail operations and substantial product catalogues.
+
+Do not create a dashboard that becomes slow when thousands of products, transactions or records are available.
+
+Design for:
+
+- Fast initial loading.
+- Minimal unnecessary rerenders.
+- Efficient database queries.
+- Server-side filtering.
+- Server-side pagination.
+- Appropriate indexing.
+- Virtualized large tables where useful.
+- Request cancellation for outdated searches.
+- Debounced text search where appropriate.
+- Efficient caching with clear invalidation rules.
+- Background synchronization for noncritical operations.
+- Optimized code splitting.
+- Lazy-loaded modules.
+- Lightweight UI animations.
+- Optimized assets.
+- Clear loading indicators.
+- Reliable error recovery.
+
+## POS performance
+
+Prioritize:
+
+- Responsive barcode input.
+- Fast item lookup.
+- Immediate local cart calculations.
+- Predictable keyboard interaction.
+- No unnecessary navigation.
+- Minimal interruptions during a sale.
+
+## Data integrity
+
+Never improve perceived speed by skipping required validations, stock reservations or payment checks.
+
+Use appropriate transactional integrity, idempotency, concurrency controls and audit records.
+
+## Performance verification
+
+Set measurable performance budgets and validate them under realistic catalogue, transaction and concurrent-user loads.
+
+Do not claim zero lag or guaranteed performance without load testing.
+
+Report:
+
+- Initial load time.
+- Interaction latency.
+- API response times.
+- Large-table performance.
+- Transaction completion latency.
+- Error rate.
+- Synchronization health.
+- Concurrent-user behavior.
+
+# 13. SMART USER INTERACTIONS
+
+Make routine tasks shorter and easier.
+
+Use:
+
+- Clear primary actions.
+- Searchable selection fields.
+- Barcode-first workflows.
+- Keyboard shortcuts where useful.
+- Inline validation.
+- Contextual help.
+- Confirmation only for sensitive actions.
+- Reusable forms.
+- Fast editing.
+- Batch operations with authorization.
+- Clear success messages.
+- Recoverable errors.
+- Simple back navigation.
+- Persistent filters where useful.
+
+Avoid forcing employees through five pages to complete a simple task.
+
+For high-frequency workflows, minimize unnecessary steps.
+
+For financially sensitive workflows, retain appropriate approval and verification.
+
+**Simplicity must not compromise control.**
+
+# 14. RESPONSIVE APPLICATION DESIGN
+
+The management system must work professionally across devices.
+
+### Desktop
+
+Optimized for:
+
+- Cashier POS.
+- Inventory administration.
+- Purchasing.
+- Accounts.
+- Management reporting.
+
+### Tablet
+
+Optimized for:
+
+- Branch management.
+- Stock counts.
+- Goods receiving.
+- Floor supervision.
+
+### Mobile
+
+Optimized for:
+
+- Approvals.
+- Notifications.
+- Staff tasks.
+- Product lookup.
+- Inventory checks.
+- Order status.
+- Management monitoring.
+
+Do not force complex desktop financial tables onto small mobile screens.
+
+Use adaptive cards, priority columns and detail views where appropriate.
+
+Some high-risk transactions may be restricted to approved devices based on business policy.
+
+# 15. CUSTOMER WEBSITE AND MANAGEMENT SYSTEM CONNECTION
+
+The existing public supermarket website must be able to connect to approved backend services.
+
+Create integration-ready services for:
+
+- Product catalogue.
+- Categories.
+- Brands.
+- Selling prices.
+- Promotions.
+- Product availability.
+- Cart validation.
+- Online orders.
+- Order status.
+- Customer accounts.
+- Fulfillment.
+
+## Authoritative data ownership
+
+Define which system is the source of truth for each domain.
+
+Do not create competing independent stock or pricing records without a synchronization strategy.
+
+For example:
+
+- Product master: authorized catalogue system.
+- Pricing: authorized pricing system.
+- Inventory: designated inventory/POS source.
+- Orders: designated order management service.
+- Financial postings: authorized accounting system.
+
+Actual ownership must be confirmed through technical discovery.
+
+Use secure APIs and event-driven synchronization where appropriate.
+
+Prevent duplicate transactions.
+
+Support retried requests safely.
+
+Track failed synchronization jobs.
+
+Provide recovery workflows.
+
+# 16. COMPLETE BUSINESS DATA MODEL
+
+Create a structured, scalable data architecture.
+
+Core entities:
+
+- Organization.
+- Branch.
+- Warehouse.
+- Storage Location.
+- Department.
+- Employee.
+- User.
+- Role.
+- Permission.
+- Supplier.
+- Brand.
+- Category.
+- Product.
+- SKU.
+- Barcode.
+- Unit of Measure.
+- Product Variant.
+- Price List.
+- Promotion.
+- Stock Ledger.
+- Stock Reservation.
+- Stock Batch.
+- Goods Receipt.
+- Purchase Requisition.
+- Purchase Order.
+- Supplier Invoice.
+- Supplier Payment.
+- Stock Transfer.
+- Stock Adjustment.
+- Stock Count.
+- POS Register.
+- Cashier Shift.
+- Sale.
+- Sale Line.
+- Payment.
+- Refund.
+- Customer.
+- Customer Order.
+- Order Line.
+- Fulfillment.
+- Expense.
+- Financial Journal.
+- Approval.
+- Notification.
+- Audit Log.
+
+Define relationships, validation rules, indexes and lifecycle states.
+
+Do not scatter unrelated arrays of mock data throughout the frontend.
+
+Separate domain logic from presentation components.
+
+Use typed contracts and reusable services.
+
+# 17. APPROVALS, AUDIT AND FINANCIAL SAFETY
+
+Build a consistent approval framework.
+
+Potential controlled actions:
+
+- Product creation.
+- Price changes.
+- Special discounts.
+- Purchasing.
+- Supplier payments.
+- Stock write-offs.
+- Returns and refunds.
+- Financial adjustments.
+- Access changes.
+
+For each approval, store:
+
+- Requesting user.
+- Requested action.
+- Business justification.
+- Previous and proposed values.
+- Approver.
+- Approval time.
+- Status.
+- Relevant branch.
+- Supporting records.
+
+Apply configurable financial limits.
+
+Use traceable accounting and stock movements.
+
+Never permit ordinary users to erase completed financial records.
+
+Implement appropriate reversal or correction transactions instead.
+
+# 18. DATA ACCURACY AND DEMONSTRATION RULES
+
+This project is currently a proposed MWI solution for a prospective client.
+
+Do not modify real Marhaba systems.
+
+Do not claim access to their internal databases.
+
+Do not pretend the demo is already integrated with actual POS terminals, banks, suppliers or government services.
+
+Create a safe demonstration environment with clearly labeled fictional sample transactions.
+
+Use plausible but non-sensitive demonstration products, branches and operational scenarios.
+
+Use company-published information only with correct context.
+
+All sample statistics must be marked DEMO.
+
+Build integration-ready contracts and flows.
+
+Document what is functional and what requires authorized backend or hardware integration.
+
+# 19. QUALITY ASSURANCE — COMPLETE WORKFLOW TESTING
+
+Test every module and role.
+
+Mandatory scenarios:
+
+1. Cashier logs in and opens a shift.
+2. Cashier scans several products.
+3. Cashier updates quantities.
+4. Cashier applies permitted discounts.
+5. Supervisor approves a restricted action.
+6. Sale completes with correct totals.
+7. Cashier closes and reconciles the shift.
+8. Purchasing creates a purchase request.
+9. Authorized manager approves a purchase.
+10. Supplier delivers fewer goods than ordered.
+11. Receiving records accepted and damaged items.
+12. Inventory updates correctly.
+13. Product becomes available for sale.
+14. Staff performs a stock transfer.
+15. Stock count identifies a variance.
+16. Authorized user approves a stock adjustment.
+17. Website order is received.
+18. Order is picked and packed.
+19. Stock is reserved and released correctly.
+20. Customer requests a return.
+21. Accounts reconciles payment and refund records.
+22. Branch Manager reviews daily operations.
+23. Director reviews departmental reports.
+24. CEO views consolidated performance.
+25. Unauthorized user attempts a restricted action.
+26. Application handles a network or API failure.
+27. User refreshes during a multi-step workflow.
+28. Multiple users update relevant records concurrently.
+
+Check data integrity, user permissions, state transitions, calculations, responsiveness and accessibility.
+
+Never declare incomplete mock workflows production-ready.
+
+# 20. REQUIRED IMPLEMENTATION PLAN
+
+Develop within the existing project using the following sequence.
+
+**PHASE 1 — Architecture & Integration**
+- Inspect current project.
+- Add Management button.
+- Create protected management routes.
+- Establish application shell.
+- Create authentication and permission architecture.
+
+**PHASE 2 — UI/UX FOUNDATION**
+- Sidebar.
+- Header.
+- Dashboard layout.
+- Tables.
+- Forms.
+- Status indicators.
+- Notifications.
+- Reusable components.
+- Responsive behaviors.
+
+**PHASE 3 — CORE RETAIL**
+- Products.
+- Categories.
+- Pricing.
+- Inventory.
+- Purchasing.
+- Suppliers.
+
+**PHASE 4 — SALES**
+- POS.
+- Cashier shifts.
+- Sales transactions.
+- Discounts.
+- Returns.
+- Closing.
+
+**PHASE 5 — E-COMMERCE OPERATIONS**
+- Website order management.
+- Stock reservation.
+- Picking.
+- Packing.
+- Fulfillment.
+- Returns.
+
+**PHASE 6 — MANAGEMENT**
+- Finance.
+- Staff.
+- Branch operations.
+- Customer support.
+- Reports.
+
+**PHASE 7 — ENTERPRISE CONTROLS**
+- Role-based access.
+- Approval matrix.
+- Audit logs.
+- MIS administration.
+- Integrations.
+
+**PHASE 8 — PERFORMANCE & QA**
+- Large dataset testing.
+- Workflow testing.
+- Concurrency testing.
+- Mobile and tablet testing.
+- Accessibility.
+- Security.
+- Final design refinement.
+
+Preserve working progress after every phase.
+
+Do not claim that all modules are complete merely because navigation pages have been created.
+
+# 21. FINAL DESIGN ACCEPTANCE
+
+Review every screen against:
+
+1. Professional design.
+2. Ease of use.
+3. Operational relevance.
+4. Information clarity.
+5. Functional accuracy.
+6. Permission security.
+7. Performance.
+8. Responsiveness.
+9. Data integrity.
+10. Maintainability.
+
+The management application must feel simple for employees and powerful for management.
+
+A cashier should not feel like they are using enterprise accounting software.
+
+An inventory officer should not search through finance menus to receive stock.
+
+An accountant should see accurate financial records.
+
+A branch manager should immediately recognize what needs attention.
+
+A director should see their department's performance clearly.
+
+The CEO should understand overall performance without navigating dozens of screens.
+
+# 22. FINAL EXECUTIVE ORDER
+
+**MetaWave Innovations LTD is proposing a carefully engineered enterprise retail solution that respects Marhaba Supermarket's business history, leadership, investment, staff, customers and existing MIS capability.**
+
+Do not build an ordinary admin dashboard.
+
+Build a coherent, professional supermarket operating system concept.
+
+The solution must:
+
+- Simplify repetitive employee work.
+- Improve coordination between departments.
+- Reduce avoidable manual effort.
+- Strengthen purchasing and inventory accuracy.
+- Make POS billing efficient.
+- Support reliable website order fulfillment.
+- Improve financial visibility.
+- Provide meaningful management intelligence.
+- Preserve existing successful systems where appropriate.
+- Maintain a secure and scalable architecture.
+- Deliver a beautiful, responsive and dependable user experience.
+
+**The design must be friendly. The workflows must be practical. The calculations must be accurate. The controls must be reliable. The technology must be maintainable.**
+
+Begin by updating the existing Marhaba website header with the Management entry immediately to the right of Cart.
+
+Then create the protected Supermarket Management System architecture and implement the modules in the required sequence.
+
+**Inspect → Architect → Design → Develop → Integrate → Test → Refine.**
+
+Complete the working demonstration to the fullest extent supported by the project environment, clearly distinguishing implemented functionality from simulated operations and future production integrations.
+
+**BUILD AN ENTERPRISE-QUALITY DIGITAL RETAIL OPERATIONS EXPERIENCE WORTHY OF MARHABA'S BUSINESS IDENTITY AND METAWAVE INNOVATIONS LTD'S PROFESSIONAL ENGINEERING STANDARDS.**

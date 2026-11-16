@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Building2,
   ChevronDown,
   ChevronRight,
   Heart,
@@ -86,6 +87,7 @@ export function SiteHeader() {
     wishlist,
     openCart,
     navigate,
+    navigateToManagement,
     shopFilter,
   } = useStore();
 
@@ -260,8 +262,8 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {/* LEVEL B: Main Header (Logo, Prominent Search, Account, Wishlist, Cart) */}
-        <div className="max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-8 h-16 lg:h-[72px] flex items-center justify-between gap-2 sm:gap-4 lg:gap-8">
+        {/* LEVEL B: Main Header (Logo, Prominent Search, Account, Wishlist, Cart, Management) */}
+        <div className="max-w-[1440px] mx-auto px-2.5 sm:px-4 lg:px-8 h-16 lg:h-[72px] flex items-center justify-between gap-1.5 sm:gap-4 lg:gap-6">
           <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
             <button
               type="button"
@@ -427,14 +429,14 @@ export function SiteHeader() {
             )}
           </div>
 
-          {/* Right Header Actions: Mobile Search, Account, Wishlist, Cart */}
-          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
+          {/* Right Header Actions: Mobile Search, Account, Wishlist, Cart, Management */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setMobileSearchOpen((v) => !v)}
               aria-label="Toggle product search"
               aria-expanded={mobileSearchOpen}
-              className="md:hidden p-2 rounded-lg text-[#1C1917] hover:bg-[#F3F1EC] min-w-[40px] min-h-[44px] inline-flex items-center justify-center"
+              className="md:hidden p-1.5 sm:p-2 rounded-lg text-[#1C1917] hover:bg-[#F3F1EC] min-w-[36px] min-h-[40px] sm:min-w-[40px] sm:min-h-[44px] inline-flex items-center justify-center"
             >
               {mobileSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
             </button>
@@ -457,7 +459,7 @@ export function SiteHeader() {
               type="button"
               onClick={() => goTo('wishlist')}
               aria-label={`Wishlist (${wishlist.length} items)`}
-              className={`relative inline-flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-lg text-sm font-medium transition-colors min-w-[40px] min-h-[44px] justify-center whitespace-nowrap ${
+              className={`relative hidden sm:inline-flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-lg text-sm font-medium transition-colors min-w-[40px] min-h-[44px] justify-center whitespace-nowrap ${
                 route === 'wishlist'
                   ? 'bg-[#F3F1EC] text-[#9B1C2E]'
                   : 'text-[#1C1917] hover:bg-[#F3F1EC]'
@@ -476,7 +478,7 @@ export function SiteHeader() {
               type="button"
               onClick={openCart}
               aria-label={`Open shopping cart with ${cartTotals.itemCount} items`}
-              className="inline-flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-4 py-2 rounded-lg bg-[#9B1C2E] text-white hover:bg-[#7F1524] transition-colors min-h-[44px] whitespace-nowrap"
+              className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3.5 py-2 rounded-lg bg-[#9B1C2E] text-white hover:bg-[#7F1524] transition-colors min-h-[40px] sm:min-h-[44px] whitespace-nowrap"
             >
               <ShoppingBag className="w-4 h-4 shrink-0" aria-hidden="true" />
               <div className="flex items-center gap-1 text-xs sm:text-sm font-semibold tabular-nums">
@@ -488,6 +490,16 @@ export function SiteHeader() {
                   </span>
                 )}
               </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigateToManagement('/management')}
+              aria-label="Open Marhaba Supermarket Management Portal"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-[#1C1917] hover:border-[#9B1C2E] hover:text-[#9B1C2E] hover:bg-[#FFFFFF] transition-colors min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0"
+            >
+              <Building2 className="w-4 h-4 text-[#9B1C2E] shrink-0" aria-hidden="true" />
+              <span>Management</span>
             </button>
           </div>
         </div>
