@@ -71,11 +71,20 @@ export function ManagementShell({
   const isBranchLocked = data.role.branchRestricted || data.user.branchId !== 'all';
   const highPriorityCount = data.priorityAlerts.filter((a) => a.priority === 'high').length;
 
+  const getDisplayLabel = (mod: ManagementBootstrapPayload['permittedModules'][number]) => {
+    if (data.user.roleId === 'cashier' || data.user.roleId === 'senior_cashier') {
+      if (mod.id === 'products') return 'Product Lookup';
+      if (mod.id === 'staff') return 'My Shift & Leave';
+    }
+    return mod.label;
+  };
+
   const renderSidebarNav = (compact: boolean, onAfterClick?: () => void) => (
     <nav aria-label="Management Modules" className="flex-1 overflow-y-auto px-2.5 py-3 space-y-1">
       {data.permittedModules.map((mod) => {
         const Icon = MODULE_ICONS[mod.id] || LayoutDashboard;
         const active = activeModule === mod.id;
+        const displayLabel = getDisplayLabel(mod);
         return (
           <button
             key={mod.id}
@@ -84,7 +93,7 @@ export function ManagementShell({
               onSelectModule(mod.id);
               onAfterClick?.();
             }}
-            title={compact ? mod.label : undefined}
+            title={compact ? displayLabel : undefined}
             aria-current={active ? 'page' : undefined}
             className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-[13px] font-semibold transition-colors ${
               active
@@ -93,7 +102,7 @@ export function ManagementShell({
             } ${compact ? 'justify-center px-2' : ''}`}
           >
             <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-[#57534E]'}`} />
-            {!compact && <span className="truncate">{mod.label}</span>}
+            {!compact && <span className="truncate">{displayLabel}</span>}
           </button>
         );
       })}
@@ -215,7 +224,9 @@ export function ManagementShell({
               </div>
               <h1 className="text-sm sm:text-base font-bold text-[#1C1917] truncate">
                 <span className="sm:hidden">{currentModuleMeta?.shortLabel || 'Overview'}</span>
-                <span className="hidden sm:inline">{currentModuleMeta?.label || 'Operations Overview'}</span>
+                <span className="hidden sm:inline">
+                  {currentModuleMeta ? getDisplayLabel(currentModuleMeta) : 'Today'}
+                </span>
               </h1>
             </div>
           </div>
@@ -236,9 +247,9 @@ export function ManagementShell({
                     ? `Branch locked by RBAC (${data.activeBranchScope})`
                     : 'Filter operations by branch'
                 }
-                className="h-9 px-2 sm:px-2.5 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs font-semibold text-[#1C1917] disabled:opacity-80 max-w-[118px] sm:max-w-[200px]"
+                className="h-9 px-2 sm:px-2.5 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs font-semibold text-[#1C1917] disabled:opacity-80 max-w-[136px] sm:max-w-[200px]"
               >
-                {!isBranchLocked && <option value="all">All Branches (Consolidated)</option>}
+                {!isBranchLocked && <option value="all">All Branches</option>}
                 {data.branches.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.shortName}
@@ -338,6 +349,12 @@ export function ManagementShell({
             <strong className="text-[#1C1917]">
               {data.role.canViewCostAndMargin ? 'Authorized' : 'Redacted by RBAC'}
             </strong>
+            {data.role.isReadOnlyAudit && (
+              <>
+                {' · '}
+                <strong className="text-[#9B1C2E]">Read-Only Audit Lock Active</strong>
+              </>
+            )}
           </span>
           <span className="font-medium">
             Proposed MWI Solution (Safe Demo Environment · Retail Supermarket Only)

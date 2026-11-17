@@ -47,16 +47,23 @@ export default function ManagementPortal() {
     extractModuleFromPath(managementPath)
   );
 
+  const [deniedModule, setDeniedModule] = useState<ManagementModuleId | null>(null);
+
   const loadBootstrap = useCallback(async (branchScope = 'all') => {
     try {
       const payload = await managementApi.bootstrap(branchScope);
       setData(payload);
-      setActiveModule((prev) => {
-        const fromUrl = extractModuleFromPath(window.location.pathname);
-        const preferred = window.location.pathname === '/management' ? prev : fromUrl;
-        const permitted = payload.permittedModules.some((m) => m.id === preferred);
-        return permitted ? preferred : 'dashboard';
-      });
+      const fromUrl = extractModuleFromPath(window.location.pathname);
+      const permitted = payload.permittedModules.some((m) => m.id === fromUrl);
+      if (window.location.pathname.startsWith('/management/') && !window.location.pathname.endsWith('/login') && fromUrl && !permitted) {
+        setDeniedModule(fromUrl);
+      } else {
+        setDeniedModule(null);
+        setActiveModule((prev) => {
+          const preferred = window.location.pathname === '/management' ? prev : fromUrl;
+          return payload.permittedModules.some((m) => m.id === preferred) ? preferred : 'dashboard';
+        });
+      }
       return true;
     } catch {
       setData(null);
@@ -89,12 +96,18 @@ export default function ManagementPortal() {
   useEffect(() => {
     if (!data) return;
     const slug = extractModuleFromPath(managementPath);
-    if (data.permittedModules.some((m) => m.id === slug)) {
-      setActiveModule(slug);
+    if (managementPath && managementPath.startsWith('/management/') && !managementPath.endsWith('/login')) {
+      if (data.permittedModules.some((m) => m.id === slug)) {
+        setDeniedModule(null);
+        setActiveModule(slug);
+      } else {
+        setDeniedModule(slug);
+      }
     }
   }, [managementPath, data]);
 
   const handleSelectModule = (moduleId: ManagementModuleId) => {
+    setDeniedModule(null);
     setActiveModule(moduleId);
     navigateToManagement(`/management/${moduleId}`);
   };
@@ -102,6 +115,7 @@ export default function ManagementPortal() {
   const handleLogout = async () => {
     await managementApi.logout();
     setData(null);
+    setDeniedModule(null);
     navigateToManagement('/management/login');
   };
 
@@ -142,23 +156,46 @@ export default function ManagementPortal() {
       onLogout={handleLogout}
       onExitToPublic={exitManagement}
     >
-      {activeModule === 'dashboard' && (
-        <ManagementDashboard data={data} onSelectModule={handleSelectModule} />
-      )}
-      {activeModule === 'pos' && <PosModule data={data} onRefresh={refreshData} />}
-      {(activeModule === 'products' || activeModule === 'offers') && (
-        <CatalogOffersModule mode={activeModule} data={data} onRefresh={refreshData} />
-      )}
-      {(activeModule === 'inventory' || activeModule === 'purchasing') && (
-        <InventoryPurchasingModule mode={activeModule} data={data} onRefresh={refreshData} />
-      )}
-      {activeModule === 'orders' && <OrdersModule data={data} onRefresh={refreshData} />}
-      {activeModule === 'finance' && <FinanceModule data={data} onRefresh={refreshData} />}
-      {(activeModule === 'staff' || activeModule === 'branches' || activeModule === 'customers') && (
-        <StaffBranchesCustomersModule mode={activeModule} data={data} onRefresh={refreshData} />
-      )}
-      {(activeModule === 'reports' || activeModule === 'settings') && (
-        <ReportsSettingsModule mode={activeModule} data={data} onRefresh={refreshData} />
+      {deniedModule ? (
+        <div className="max-w-xl mx-auto my-8 bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl p-6 sm:p-8 space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#9B1C2E]">
+            HTTP 403 · Role Access Restricted
+          </p>
+          <h2 className="font-serif text-2xl font-bold text-[#1C1917]">
+            Access Denied to "{deniedModule}"
+          </h2>
+          <p className="text-sm text-[#57534E]">
+            Your active role (<strong className="text-[#1C1917]">{data.role.label}</strong>) is not authorized to open this module under Marhaba Supermarket RBAC controls.
+          </p>
+          <button
+            type="button"
+            onClick={() => handleSelectModule('dashboard')}
+            className="h-10 px-4 rounded-xl bg-[#9B1C2E] text-white text-xs font-semibold hover:bg-[#7F1524]"
+          >
+            Return to Today Overview
+          </button>
+        </div>
+      ) : (
+        <>
+          {activeModule === 'dashboard' && (
+            <ManagementDashboard data={data} onSelectModule={handleSelectModule} />
+          )}
+          {activeModule === 'pos' && <PosModule data={data} onRefresh={refreshData} />}
+          {(activeModule === 'products' || activeModule === 'offers') && (
+            <CatalogOffersModule mode={activeModule} data={data} onRefresh={refreshData} />
+          )}
+          {(activeModule === 'inventory' || activeModule === 'purchasing') && (
+            <InventoryPurchasingModule mode={activeModule} data={data} onRefresh={refreshData} />
+          )}
+          {activeModule === 'orders' && <OrdersModule data={data} onRefresh={refreshData} />}
+          {activeModule === 'finance' && <FinanceModule data={data} onRefresh={refreshData} />}
+          {(activeModule === 'staff' || activeModule === 'branches' || activeModule === 'customers') && (
+            <StaffBranchesCustomersModule mode={activeModule} data={data} onRefresh={refreshData} />
+          )}
+          {(activeModule === 'reports' || activeModule === 'settings') && (
+            <ReportsSettingsModule mode={activeModule} data={data} onRefresh={refreshData} />
+          )}
+        </>
       )}
     </ManagementShell>
   );

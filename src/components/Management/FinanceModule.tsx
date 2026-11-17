@@ -20,6 +20,7 @@ export function FinanceModule({ data, onRefresh }: FinanceModuleProps) {
   const [busy, setBusy] = useState(false);
 
   const canVerifyShift = hasPermission(data.user.roleId, 'finance', 'verify');
+  const canPreparePay = hasPermission(data.user.roleId, 'finance', 'submit');
   const canApprovePay = hasPermission(data.user.roleId, 'finance', 'approve');
   const canCreateExp = hasPermission(data.user.roleId, 'finance', 'create');
 
@@ -32,6 +33,40 @@ export function FinanceModule({ data, onRefresh }: FinanceModuleProps) {
       await onRefresh();
     } catch (err) {
       setFeedback({ type: 'err', text: err instanceof Error ? err.message : 'Reconciliation failed.' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleReconcileBank = async (bankId: string) => {
+    setBusy(true);
+    setFeedback(null);
+    try {
+      const res = await managementApi.reconcileBankSettlement(bankId);
+      setFeedback({
+        type: 'ok',
+        text: `Bank batch ${res.bankSettlement.batchRef} reconciled (${res.bankSettlement.status}).`,
+      });
+      await onRefresh();
+    } catch (err) {
+      setFeedback({ type: 'err', text: err instanceof Error ? err.message : 'Bank reconciliation failed.' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handlePrepareInvoice = async (invId: string) => {
+    setBusy(true);
+    setFeedback(null);
+    try {
+      const res = await managementApi.prepareSupplierInvoice(invId);
+      setFeedback({
+        type: 'ok',
+        text: `Invoice ${res.invoice.invoiceNumber} prepared for payment release.`,
+      });
+      await onRefresh();
+    } catch (err) {
+      setFeedback({ type: 'err', text: err instanceof Error ? err.message : 'Preparation failed.' });
     } finally {
       setBusy(false);
     }
@@ -181,9 +216,71 @@ export function FinanceModule({ data, onRefresh }: FinanceModuleProps) {
                         type="button"
                         disabled={busy}
                         onClick={() => handleReconcile(sh.id)}
-                        className="px-3 py-1.5 rounded-lg bg-[#9B1C2E] text-white font-semibold hover:bg-[#7F1524]"
+                        className="px-3 py-1.5 rounded-lg bg-[#9B1C2E] text-white font-semibold hover:bg-[#7F1524] whitespace-nowrap"
                       >
                         Reconcile &amp; Close
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Bank & Card Settlement Batches */}
+      <section className="bg-[#FFFFFF] border border-[#E6E2DA] rounded-2xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#E6E2DA] flex items-center justify-between">
+          <h3 className="text-sm font-bold text-[#1C1917]">
+            Bank &amp; Card Settlement Reconciliation ({data.bankSettlements.length})
+          </h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#FAF9F6] text-[#57534E] border-b border-[#E6E2DA]">
+              <tr>
+                <th className="py-2.5 px-4 font-semibold">Batch Ref</th>
+                <th className="py-2.5 px-4 font-semibold">Branch &amp; Date</th>
+                <th className="py-2.5 px-4 font-semibold text-right">POS Card Expected</th>
+                <th className="py-2.5 px-4 font-semibold text-right">Bank Settled</th>
+                <th className="py-2.5 px-4 font-semibold">Status</th>
+                <th className="py-2.5 px-4 font-semibold text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E6E2DA]">
+              {data.bankSettlements.map((bnk) => (
+                <tr key={bnk.id} className="hover:bg-[#FAF9F6]">
+                  <td className="py-2.5 px-4 font-mono font-semibold text-[#1C1917]">{bnk.batchRef}</td>
+                  <td className="py-2.5 px-4 text-[#57534E]">
+                    {bnk.branchId} · {bnk.date}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums">
+                    {formatPKR(bnk.posCardExpected)}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums">
+                    {formatPKR(bnk.bankSettledAmount)}
+                  </td>
+                  <td className="py-2.5 px-4">
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                        bnk.status === 'Matched'
+                          ? 'bg-[#166534]/10 text-[#166534]'
+                          : 'bg-[#B45309]/10 text-[#B45309]'
+                      }`}
+                    >
+                      {bnk.status}
+                    </span>
+                  </td>
+                  <td className="py-2.5 px-4 text-right">
+                    {bnk.status !== 'Matched' && canVerifyShift && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => handleReconcileBank(bnk.id)}
+                        className="px-3 py-1.5 rounded-lg bg-[#1C1917] text-white font-semibold hover:bg-[#292524] whitespace-nowrap"
+                      >
+                        Verify Settlement
                       </button>
                     )}
                   </td>
@@ -223,16 +320,26 @@ export function FinanceModule({ data, onRefresh }: FinanceModuleProps) {
                     {inv.threeWayMatchStatus}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="font-semibold text-[#57534E]">{inv.paymentStatus}</span>
+                  {inv.paymentStatus === 'Unpaid' && canPreparePay && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => handlePrepareInvoice(inv.id)}
+                      className="px-3 py-1.5 rounded-lg border border-[#1C1917] text-[#1C1917] font-semibold hover:bg-[#FAF9F6] whitespace-nowrap"
+                    >
+                      Prepare Batch
+                    </button>
+                  )}
                   {inv.paymentStatus !== 'Paid' && canApprovePay && (
                     <button
                       type="button"
                       disabled={busy}
                       onClick={() => handlePayInvoice(inv.id)}
-                      className="px-3 py-1.5 rounded-lg bg-[#1C1917] text-white font-semibold hover:bg-[#292524]"
+                      className="px-3 py-1.5 rounded-lg bg-[#1C1917] text-white font-semibold hover:bg-[#292524] whitespace-nowrap"
                     >
-                      Post Payment
+                      Release Payment
                     </button>
                   )}
                 </div>

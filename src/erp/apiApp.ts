@@ -4,6 +4,7 @@ import { SHOP_DEPARTMENTS, VERIFIED_BRANCHES } from '../data/marhabaData';
 import {
   calculateShiftClosing,
   classifyExpiryStatus,
+  computeDepartmentMargins,
   computeFinanceSummary,
   computePosLineTotal,
   computePosTotals,
@@ -96,6 +97,7 @@ function stripCredential(u: StaffCredentialSeed): StaffUser {
 export function createApiApp(initialDb?: ErpDatabaseState) {
   let db: ErpDatabaseState = initialDb || createInitialErpDatabase();
   const processedOrderKeys = new Set<string>();
+  let totalRefundDeductions = 0;
 
   const app = express();
   app.use(express.json({ limit: '1mb' }));
@@ -103,11 +105,11 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
   const addAudit = (entry: Omit<AuditLogEntry, 'id' | 'timestamp'>) => {
     db.auditLogs.unshift({
       ...entry,
-      id: `aud-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      id: `aud-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
       timestamp: new Date().toISOString(),
     });
-    if (db.auditLogs.length > 250) {
-      db.auditLogs = db.auditLogs.slice(0, 250);
+    if (db.auditLogs.length > 400) {
+      db.auditLogs = db.auditLogs.slice(0, 400);
     }
   };
 
@@ -135,7 +137,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     }
     const found = db.staffUsers.find((u) => u.id === payload.uid);
     if (!found || !found.active) {
-      res.status(401).json({ error: 'Staff account is inactive or no longer recognized.' });
+      res.status(401).json({ error: 'Staff account is inactive or disabled.' });
       return;
     }
     req.staffUser = stripCredential(found);
@@ -155,20 +157,41 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       return null;
     }
     const role = ROLE_DEFINITIONS[user.roleId];
-    if (!hasPermission(user.roleId, moduleId, action)) {
+    if (!role) {
+      res.status(403).json({ error: 'Unrecognized staff role.' });
+      return null;
+    }
+    if (role.isReadOnlyAudit && action !== 'view' && action !== 'export' && action !== 'verify') {
       addAudit({
         actorUserId: user.id,
         actorName: user.fullName,
-        actorRole: role?.label || user.roleId,
+        actorRole: role.label,
         branchId: branchId || user.branchId,
         module: moduleId,
         action: `${moduleId.toUpperCase()}_${action.toUpperCase()}`,
         target: req.originalUrl,
         outcome: 'Denied',
-        detail: `Role "${role?.label}" lacks "${action}" permission on ${moduleId}.`,
+        detail: `Read-only audit role "${role.label}" blocked from write mutation.`,
       });
       res.status(403).json({
-        error: `Access denied: Role "${role?.label}" does not have "${action}" permission in ${moduleId}.`,
+        error: `Read-only audit control: "${role.label}" cannot modify transactions or stock.`,
+      });
+      return null;
+    }
+    if (!hasPermission(user.roleId, moduleId, action)) {
+      addAudit({
+        actorUserId: user.id,
+        actorName: user.fullName,
+        actorRole: role.label,
+        branchId: branchId || user.branchId,
+        module: moduleId,
+        action: `${moduleId.toUpperCase()}_${action.toUpperCase()}`,
+        target: req.originalUrl,
+        outcome: 'Denied',
+        detail: `Role "${role.label}" lacks "${action}" permission on ${moduleId}.`,
+      });
+      res.status(403).json({
+        error: `Access denied: Role "${role.label}" does not have "${action}" permission in ${moduleId}.`,
       });
       return null;
     }
@@ -176,7 +199,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       addAudit({
         actorUserId: user.id,
         actorName: user.fullName,
-        actorRole: role?.label || user.roleId,
+        actorRole: role.label,
         branchId,
         module: moduleId,
         action: `${moduleId.toUpperCase()}_BRANCH_SCOPE`,
@@ -270,6 +293,8 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
           branchId,
           type: 'ONLINE_RESERVE',
           quantityDelta: -qty,
+          sourceLocation: stockRec.locationCode,
+          destinationLocation: 'Online Order Hold',
           referenceId: body.orderNumber || 'WEB-ORDER',
           actorName: 'Storefront Order Intake',
           reason: 'Auto-reserved sellable inventory for website order',
@@ -302,6 +327,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
         body.addressSummary?.trim() ||
         (body.fulfillmentMethod === 'pickup' ? 'Store Pickup Desk' : 'Delivery Address Provided'),
       paymentMethod: body.paymentMethod === 'card-counter' ? 'card-counter' : 'cod',
+      paymentStatus: body.paymentMethod === 'card-counter' ? 'Paid' : 'Pending',
       stage: 'Confirmed',
       reservationStatus: 'Reserved',
       packingVerified: false,
@@ -351,6 +377,17 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     }
 
     if (!found.active) {
+      addAudit({
+        actorUserId: found.id,
+        actorName: found.fullName,
+        actorRole: ROLE_DEFINITIONS[found.roleId]?.label || found.roleId,
+        branchId: found.branchId,
+        module: 'auth',
+        action: 'MGMT_LOGIN_DISABLED',
+        target: found.employeeCode,
+        outcome: 'Denied',
+        detail: 'Offboarded / disabled staff account attempted login.',
+      });
       res.status(403).json({ error: 'Staff account is disabled by MIS Administrator.' });
       return;
     }
@@ -438,7 +475,6 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     const role = ROLE_DEFINITIONS[user.roleId];
     const requestedBranch = typeof req.query.branchId === 'string' ? req.query.branchId : 'all';
 
-    // Branch-restricted roles are strictly locked to their assigned branch
     const activeBranchScope =
       role.branchRestricted || user.branchId !== 'all'
         ? user.branchId
@@ -471,7 +507,6 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       canPos || canFinance || canReports || user.roleId === 'ceo'
         ? db.posSales.filter((s) => inScope(s.branchId))
         : [];
-
     const onlineOrdersInScope =
       canOrders || canCustomers || canReports || user.roleId === 'ceo' || user.roleId === 'branch_manager'
         ? db.onlineOrders.filter((o) => inScope(o.branchId))
@@ -507,6 +542,16 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
           });
         }
       }
+      for (const tr of db.stockTransfers.filter((t) => t.status === 'In Transit' && (inScope(t.toBranchId) || inScope(t.fromBranchId)))) {
+        alerts.push({
+          id: `al-trf-${tr.id}`,
+          priority: 'medium',
+          module: 'inventory',
+          title: `Transfer In Transit: ${tr.transferRef}`,
+          detail: `${tr.dispatchedQty} × ${tr.productName} (${tr.fromBranchId} -> ${tr.toBranchId}) awaiting receipt`,
+          branchId: tr.toBranchId,
+        });
+      }
     }
 
     if (canFinance || user.roleId === 'pos_supervisor' || user.roleId === 'ceo') {
@@ -534,6 +579,19 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       }
     }
 
+    if (canBranches) {
+      for (const mnt of db.maintenanceTickets.filter((t) => inScope(t.branchId) && t.status !== 'Verified Resolved')) {
+        alerts.push({
+          id: `al-mnt-${mnt.id}`,
+          priority: mnt.priority === 'Urgent' ? 'high' : 'medium',
+          module: 'branches',
+          title: `Equipment Issue: ${mnt.equipment}`,
+          detail: `${mnt.issue} (${mnt.status})`,
+          branchId: mnt.branchId,
+        });
+      }
+    }
+
     if (canOrders || user.roleId === 'branch_manager') {
       const openWebOrders = db.onlineOrders.filter(
         (o) => inScope(o.branchId) && !['Completed', 'Cancelled'].includes(o.stage)
@@ -550,24 +608,28 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       }
     }
 
-    const approvalsVisible = db.approvals
-      .filter((a) => inScope(a.branchId))
-      .map((a) => ({
-        ...a,
-        authority: evaluateApprovalAuthority(user, a),
-      }));
+    const approvalsVisible = canSettings || canPurchasing || canFinance || canInventory || canOffers || canPos || user.roleId === 'ceo' || user.roleId === 'owner_partner'
+      ? db.approvals
+          .filter((a) => inScope(a.branchId))
+          .map((a) => ({
+            ...a,
+            authority: evaluateApprovalAuthority(user, a),
+          }))
+      : [];
 
-    const canManageStaffRoster = hasPermission(user.roleId, 'staff', 'approve') || hasPermission(user.roleId, 'staff', 'verify');
+    const canManageStaffRoster =
+      hasPermission(user.roleId, 'staff', 'approve') || hasPermission(user.roleId, 'staff', 'verify');
 
     const onlineOrdersRevenue = db.onlineOrders
-      .filter((o) => inScope(o.branchId) && o.stage !== 'Cancelled')
+      .filter((o) => inScope(o.branchId) && o.stage !== 'Cancelled' && o.paymentStatus !== 'Refunded')
       .reduce((sum, o) => sum + o.totalAmount, 0);
 
     const financeSummary =
-      canFinance || canReports || user.roleId === 'ceo' || user.roleId === 'branch_manager'
+      canFinance || canReports || user.roleId === 'ceo' || user.roleId === 'owner_partner' || user.roleId === 'branch_manager'
         ? computeFinanceSummary({
             sales: db.posSales,
             onlineOrdersRevenue,
+            refundDeductions: totalRefundDeductions,
             products: db.products,
             stock: db.stock,
             expenses: db.expenses,
@@ -575,6 +637,38 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
             branchId: activeBranchScope,
           })
         : null;
+
+    // Executive intelligence helpers (only attached when cost/margin authorized)
+    const soldProductIds = new Set<string>();
+    for (const sale of db.posSales.filter((s) => inScope(s.branchId) && s.status !== 'Returned')) {
+      for (const l of sale.items) soldProductIds.add(l.productId);
+    }
+    for (const ord of db.onlineOrders.filter((o) => inScope(o.branchId) && o.stage !== 'Cancelled')) {
+      for (const l of ord.items) soldProductIds.add(l.productId);
+    }
+
+    const slowMovingSkus = role.canViewCostAndMargin
+      ? db.products
+          .filter((p) => !soldProductIds.has(p.id))
+          .slice(0, 12)
+          .map((p) => {
+            const qty = stockInScope
+              .filter((st) => st.productId === p.id)
+              .reduce((sum, st) => sum + st.onHand, 0);
+            return {
+              productId: p.id,
+              sku: p.sku,
+              name: p.name,
+              departmentName: p.departmentName,
+              stockUnits: qty,
+              stockCostValue: qty * p.purchaseCost,
+            };
+          })
+      : [];
+
+    const departmentMargins = role.canViewCostAndMargin
+      ? computeDepartmentMargins(db.products, db.posSales, activeBranchScope)
+      : [];
 
     res.json({
       user,
@@ -586,20 +680,51 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       activeBranchScope,
       products: permittedProducts,
       stock: stockInScope,
-      stockMovements: canInventory || canOrders || canPos ? db.stockMovements.filter((m) => inScope(m.branchId)).slice(0, 60) : [],
+      stockMovements:
+        canInventory || canOrders || canPos
+          ? db.stockMovements.filter((m) => inScope(m.branchId)).slice(0, 80)
+          : [],
+      stockTransfers:
+        canInventory || canBranches || user.roleId === 'ceo'
+          ? db.stockTransfers.filter((t) => inScope(t.fromBranchId) || inScope(t.toBranchId))
+          : [],
+      cycleCounts:
+        canInventory || user.roleId === 'ceo'
+          ? db.cycleCounts.filter((c) => inScope(c.branchId))
+          : [],
       suppliers: canPurchasing || canFinance || canInventory || canSettings ? db.suppliers : [],
       requisitions: canPurchasing || canInventory ? db.requisitions.filter((r) => inScope(r.branchId)) : [],
-      purchaseOrders: canPurchasing || canFinance || canInventory ? db.purchaseOrders.filter((p) => inScope(p.branchId)) : [],
-      goodsReceipts: canPurchasing || canInventory || canFinance ? db.goodsReceipts.filter((g) => inScope(g.branchId)) : [],
-      supplierInvoices: canFinance || canPurchasing ? db.supplierInvoices.filter((i) => inScope(i.branchId)) : [],
+      purchaseOrders:
+        canPurchasing || canFinance || canInventory ? db.purchaseOrders.filter((p) => inScope(p.branchId)) : [],
+      goodsReceipts:
+        canPurchasing || canInventory || canFinance ? db.goodsReceipts.filter((g) => inScope(g.branchId)) : [],
+      supplierInvoices:
+        canFinance || canPurchasing || user.roleId === 'ceo' || user.roleId === 'owner_partner'
+          ? db.supplierInvoices.filter((i) => inScope(i.branchId))
+          : [],
+      bankSettlements:
+        canFinance || user.roleId === 'ceo' || user.roleId === 'owner_partner'
+          ? db.bankSettlements.filter((b) => inScope(b.branchId))
+          : [],
       shifts: shiftsInScope,
       posSales: salesInScope,
       onlineOrders: onlineOrdersInScope,
-      promotions: canOffers || canPos || user.roleId === 'ceo' || user.roleId === 'branch_manager' ? db.promotions : [],
-      expenses: canFinance || user.roleId === 'branch_manager' || user.roleId === 'ceo' ? db.expenses.filter((e) => inScope(e.branchId)) : [],
-      customerCases: canCustomers || canOrders || user.roleId === 'branch_manager' || user.roleId === 'ceo' ? db.customerCases.filter((c) => inScope(c.branchId)) : [],
+      promotions:
+        canOffers || canPos || user.roleId === 'ceo' || user.roleId === 'branch_manager' ? db.promotions : [],
+      expenses:
+        canFinance || user.roleId === 'branch_manager' || user.roleId === 'ceo'
+          ? db.expenses.filter((e) => inScope(e.branchId))
+          : [],
+      customerCases:
+        canCustomers || canOrders || user.roleId === 'branch_manager' || user.roleId === 'ceo'
+          ? db.customerCases.filter((c) => inScope(c.branchId))
+          : [],
       approvals: approvalsVisible,
       checklists: canBranches || user.roleId === 'ceo' ? db.checklists.filter((c) => inScope(c.branchId)) : [],
+      maintenanceTickets:
+        canBranches || user.roleId === 'ceo' || user.roleId === 'director_admin'
+          ? db.maintenanceTickets.filter((m) => inScope(m.branchId))
+          : [],
       attendance: canStaff
         ? canManageStaffRoster
           ? db.attendance.filter((a) => inScope(a.branchId))
@@ -610,12 +735,17 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
           ? db.leaveRequests.filter((l) => inScope(l.branchId))
           : db.leaveRequests.filter((l) => l.userId === user.id)
         : [],
-      auditLogs: canSettings || user.roleId === 'ceo' || user.roleId === 'director_accounts' ? db.auditLogs.slice(0, 80) : [],
+      auditLogs:
+        canSettings || user.roleId === 'ceo' || user.roleId === 'director_accounts' || user.roleId === 'internal_auditor'
+          ? db.auditLogs.slice(0, 120)
+          : [],
       syncJobs: canSettings || canProductsOnly(user.roleId) ? db.syncJobs : [],
       staffUsers: canSettings || canStaff ? db.staffUsers.map(stripCredential) : [],
       roleDefinitions: canSettings ? ROLE_DEFINITIONS : undefined,
       financeSummary,
-      priorityAlerts: alerts.slice(0, 12),
+      departmentMargins,
+      slowMovingSkus,
+      priorityAlerts: alerts.slice(0, 15),
     });
   });
 
@@ -714,12 +844,21 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       paymentMethod?: 'Cash' | 'Card' | 'Split';
       cashReceived?: number;
       cardAmount?: number;
-      supervisorOverrideNote?: string;
+      cardTerminalFailed?: boolean;
+      supervisorOverrideId?: string;
     };
 
     const branchId = body.branchId || (req.staffUser!.branchId === 'all' ? 'hyderabad' : req.staffUser!.branchId);
     const user = checkPermOrDeny(req, res, 'pos', 'create', branchId);
     if (!user) return;
+
+    if (body.cardTerminalFailed) {
+      res.status(402).json({
+        error: 'Card terminal declined / timed out (Simulated). Retry card swipe or collect Cash / Split tender.',
+        paymentFailure: true,
+      });
+      return;
+    }
 
     const shift = db.shifts.find((s) => s.id === body.shiftId && s.branchId === branchId && s.status === 'Open');
     if (!shift) {
@@ -736,6 +875,17 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     const role = ROLE_DEFINITIONS[user.roleId];
     const saleLines: PosSaleLine[] = [];
 
+    // Check if there is an approved supervisor override passed in
+    const approvedOverride = body.supervisorOverrideId
+      ? db.approvals.find(
+          (a) =>
+            a.id === body.supervisorOverrideId &&
+            a.type === 'POS_DISCOUNT_OVERRIDE' &&
+            a.status === 'Approved' &&
+            a.branchId === branchId
+        )
+      : undefined;
+
     for (const item of rawItems) {
       const prod = db.products.find((p) => p.id === item.productId);
       if (!prod) {
@@ -745,7 +895,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       const qty = Math.max(1, Math.floor(Number(item.quantity || 1)));
       const disc = Math.min(100, Math.max(0, Number(item.discountPercent || 0)));
 
-      if (disc > role.maxPosDiscountPercent) {
+      if (disc > role.maxPosDiscountPercent && !approvedOverride) {
         addAudit({
           actorUserId: user.id,
           actorName: user.fullName,
@@ -821,10 +971,16 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
 
     const receiptNumber = `RCP-${branchId.slice(0, 3).toUpperCase()}-${1004 + db.posSales.length}`;
 
-    // Deduct stock and log movement
     for (const line of saleLines) {
       const stockRec = db.stock.find((s) => s.productId === line.productId && s.branchId === branchId)!;
       stockRec.onHand -= line.quantity;
+      if (stockRec.floorQty >= line.quantity) {
+        stockRec.floorQty -= line.quantity;
+      } else {
+        const remainder = line.quantity - stockRec.floorQty;
+        stockRec.floorQty = 0;
+        stockRec.warehouseQty = Math.max(0, stockRec.warehouseQty - remainder);
+      }
       db.stockMovements.unshift({
         id: `mov-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         timestamp: new Date().toISOString(),
@@ -832,6 +988,8 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
         branchId,
         type: 'POS_SALE',
         quantityDelta: -line.quantity,
+        sourceLocation: `${stockRec.locationCode} (Sales Floor)`,
+        destinationLocation: 'Customer Checkout',
         referenceId: receiptNumber,
         actorName: user.fullName,
         reason: `POS counter sale (${paymentMethod})`,
@@ -867,6 +1025,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       cardAmount,
       changeDue,
       status: 'Completed' as const,
+      supervisorOverrideId: approvedOverride?.id,
     };
 
     db.posSales.unshift(sale);
@@ -886,7 +1045,13 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
   });
 
   app.post('/api/mgmt/pos/discount-override-request', requireAuth, (req: AuthedRequest, res) => {
-    const body = req.body as { branchId?: string; sku?: string; requestedDiscountPercent?: number; reason?: string; amountPkr?: number };
+    const body = req.body as {
+      branchId?: string;
+      sku?: string;
+      requestedDiscountPercent?: number;
+      reason?: string;
+      amountPkr?: number;
+    };
     const branchId = body.branchId || (req.staffUser!.branchId === 'all' ? 'hyderabad' : req.staffUser!.branchId);
     const user = checkPermOrDeny(req, res, 'pos', 'create', branchId);
     if (!user) return;
@@ -928,7 +1093,11 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
   });
 
   app.post('/api/mgmt/pos/returns', requireAuth, (req: AuthedRequest, res) => {
-    const { receiptNumber, reason } = req.body as { receiptNumber?: string; reason?: string };
+    const { receiptNumber, reason, disposition } = req.body as {
+      receiptNumber?: string;
+      reason?: string;
+      disposition?: 'Restock Sellable' | 'Damaged Quarantine';
+    };
     const sale = db.posSales.find((s) => s.receiptNumber === receiptNumber);
     if (!sale) {
       res.status(404).json({ error: 'Receipt number not found.' });
@@ -941,20 +1110,30 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       return;
     }
 
+    const disp = disposition === 'Damaged Quarantine' ? 'Damaged Quarantine' : 'Restock Sellable';
     sale.status = 'Returned';
     for (const line of sale.items) {
       const stockRec = db.stock.find((s) => s.productId === line.productId && s.branchId === sale.branchId);
-      if (stockRec) stockRec.onHand += line.quantity;
+      if (stockRec) {
+        if (disp === 'Restock Sellable') {
+          stockRec.onHand += line.quantity;
+          stockRec.floorQty += line.quantity;
+        } else {
+          stockRec.damaged += line.quantity;
+        }
+      }
       db.stockMovements.unshift({
         id: `mov-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         timestamp: new Date().toISOString(),
         productId: line.productId,
         branchId: sale.branchId,
         type: 'RETURN',
-        quantityDelta: line.quantity,
+        quantityDelta: disp === 'Restock Sellable' ? line.quantity : 0,
+        sourceLocation: 'Customer Return Counter',
+        destinationLocation: disp === 'Restock Sellable' ? 'Sales Floor' : 'Damaged Quarantine',
         referenceId: sale.receiptNumber,
         actorName: user.fullName,
-        reason: reason?.trim() || 'POS counter return',
+        reason: `${reason?.trim() || 'POS counter return'} (${disp})`,
       });
     }
 
@@ -973,7 +1152,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       action: 'POS_RETURN',
       target: sale.receiptNumber,
       outcome: 'Success',
-      detail: `Processed counter return for PKR ${sale.grandTotal.toLocaleString()}.`,
+      detail: `Processed counter return PKR ${sale.grandTotal.toLocaleString()} (${disp}).`,
     });
 
     res.json({ sale });
@@ -1038,7 +1217,10 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
         productId: newProd.id,
         branchId: branch.id,
         locationCode: `${branch.id.slice(0, 3).toUpperCase()}-NEW`,
+        zone: 'Sales Floor',
         onHand: 15,
+        floorQty: 8,
+        warehouseQty: 7,
         reserved: 0,
         damaged: 0,
         inTransit: 0,
@@ -1203,7 +1385,68 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     res.status(201).json({ approval });
   });
 
-  // ==================== INVENTORY & PURCHASING ENDPOINTS ====================
+  // ==================== INVENTORY ENDPOINTS ====================
+  app.post('/api/mgmt/inventory/putaway', requireAuth, (req: AuthedRequest, res) => {
+    const { productId, branchId, quantity, locationCode } = req.body as {
+      productId: string;
+      branchId: string;
+      quantity: number;
+      locationCode?: string;
+    };
+    const user = checkPermOrDeny(req, res, 'inventory', 'create', branchId);
+    if (!user) return;
+
+    const stockRec = db.stock.find((s) => s.productId === productId && s.branchId === branchId);
+    const prod = db.products.find((p) => p.id === productId);
+    if (!stockRec || !prod) {
+      res.status(404).json({ error: 'Stock record not found.' });
+      return;
+    }
+
+    const qty = Math.max(1, Math.floor(Number(quantity || 0)));
+    if (stockRec.warehouseQty < qty) {
+      res.status(400).json({
+        error: `Only ${stockRec.warehouseQty} units available in Backroom Warehouse for putaway.`,
+      });
+      return;
+    }
+
+    stockRec.warehouseQty -= qty;
+    stockRec.floorQty += qty;
+    stockRec.zone = 'Sales Floor';
+    if (locationCode?.trim()) {
+      stockRec.locationCode = locationCode.trim().toUpperCase();
+    }
+
+    db.stockMovements.unshift({
+      id: `mov-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      productId,
+      branchId,
+      type: 'PUTAWAY_FLOOR',
+      quantityDelta: qty,
+      sourceLocation: `${branchId.slice(0, 3).toUpperCase()}-WAREHOUSE`,
+      destinationLocation: `${stockRec.locationCode} (Sales Floor)`,
+      referenceId: `PUT-${Date.now().toString().slice(-4)}`,
+      actorName: user.fullName,
+      reason: 'Replenished sales floor shelf from backroom warehouse',
+    });
+
+    addAudit({
+      actorUserId: user.id,
+      actorName: user.fullName,
+      actorRole: ROLE_DEFINITIONS[user.roleId].label,
+      branchId,
+      module: 'inventory',
+      action: 'FLOOR_PUTAWAY',
+      target: prod.sku,
+      outcome: 'Success',
+      detail: `Moved ${qty} units from Backroom Warehouse to ${stockRec.locationCode} (Sales Floor).`,
+    });
+
+    res.json({ stockRec });
+  });
+
   app.post('/api/mgmt/inventory/transfers', requireAuth, (req: AuthedRequest, res) => {
     const { productId, fromBranchId, toBranchId, quantity } = req.body as {
       productId: string;
@@ -1220,14 +1463,38 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     const qty = Math.max(1, Math.floor(Number(quantity || 0)));
     const source = db.stock.find((s) => s.productId === productId && s.branchId === fromBranchId);
     const dest = db.stock.find((s) => s.productId === productId && s.branchId === toBranchId);
-    if (!source || !dest || getSellableStock(source) < qty) {
+    const prod = db.products.find((p) => p.id === productId);
+    if (!source || !dest || !prod || getSellableStock(source) < qty) {
       res.status(400).json({ error: 'Insufficient sellable stock at source branch for transfer.' });
       return;
     }
 
     source.onHand -= qty;
+    if (source.warehouseQty >= qty) {
+      source.warehouseQty -= qty;
+    } else {
+      const rem = qty - source.warehouseQty;
+      source.warehouseQty = 0;
+      source.floorQty = Math.max(0, source.floorQty - rem);
+    }
     dest.inTransit += qty;
-    const ref = `TRF-${Date.now().toString().slice(-5)}`;
+
+    const ref = `TRF-2026-${902 + db.stockTransfers.length}`;
+    const transferRecord = {
+      id: `trf-${Date.now()}`,
+      transferRef: ref,
+      productId,
+      productName: prod.name,
+      fromBranchId,
+      toBranchId,
+      dispatchedQty: qty,
+      receivedQty: 0,
+      damagedInTransitQty: 0,
+      status: 'In Transit' as const,
+      dispatchedByName: user.fullName,
+      dispatchedAt: new Date().toISOString(),
+    };
+    db.stockTransfers.unshift(transferRecord);
 
     db.stockMovements.unshift({
       id: `mov-${Date.now()}`,
@@ -1236,9 +1503,11 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       branchId: fromBranchId,
       type: 'TRANSFER_OUT',
       quantityDelta: -qty,
+      sourceLocation: `${source.locationCode} (${fromBranchId})`,
+      destinationLocation: `In-Transit -> ${toBranchId}`,
       referenceId: ref,
       actorName: user.fullName,
-      reason: `Inter-branch transfer to ${toBranchId}`,
+      reason: `Inter-branch transfer dispatched to ${toBranchId}`,
     });
 
     addAudit({
@@ -1250,10 +1519,144 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       action: 'INITIATE_STOCK_TRANSFER',
       target: ref,
       outcome: 'Success',
-      detail: `Transferred ${qty} units (${fromBranchId} -> ${toBranchId}).`,
+      detail: `Dispatched ${qty} units of ${prod.sku} (${fromBranchId} -> ${toBranchId}).`,
     });
 
-    res.status(201).json({ transferRef: ref, source, dest });
+    res.status(201).json({ transferRef: ref, transfer: transferRecord, source, dest });
+  });
+
+  app.post('/api/mgmt/inventory/transfers/:id/receive', requireAuth, (req: AuthedRequest, res) => {
+    const trf = db.stockTransfers.find((t) => t.id === req.params.id || t.transferRef === req.params.id);
+    if (!trf) {
+      res.status(404).json({ error: 'Stock transfer record not found.' });
+      return;
+    }
+    const user = checkPermOrDeny(req, res, 'inventory', 'verify', trf.toBranchId);
+    if (!user) return;
+    if (trf.status !== 'In Transit') {
+      res.status(400).json({ error: 'Transfer has already been received.' });
+      return;
+    }
+
+    const receivedQty = Math.max(0, Math.min(trf.dispatchedQty, Math.floor(Number(req.body?.receivedQty ?? trf.dispatchedQty))));
+    const damagedQty = Math.max(0, Math.min(trf.dispatchedQty - receivedQty, Math.floor(Number(req.body?.damagedQty ?? 0))));
+    const varianceNote = typeof req.body?.varianceNote === 'string' ? req.body.varianceNote.trim() : '';
+
+    const dest = db.stock.find((s) => s.productId === trf.productId && s.branchId === trf.toBranchId);
+    if (dest) {
+      dest.inTransit = Math.max(0, dest.inTransit - trf.dispatchedQty);
+      dest.onHand += receivedQty;
+      dest.warehouseQty += receivedQty;
+      dest.damaged += damagedQty;
+    }
+
+    const hasVariance = receivedQty < trf.dispatchedQty || damagedQty > 0;
+    trf.receivedQty = receivedQty;
+    trf.damagedInTransitQty = damagedQty;
+    trf.status = hasVariance ? 'Completed with Variance' : 'Completed';
+    trf.receivedByName = user.fullName;
+    trf.receivedAt = new Date().toISOString();
+    trf.varianceNote = varianceNote || undefined;
+
+    db.stockMovements.unshift({
+      id: `mov-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      productId: trf.productId,
+      branchId: trf.toBranchId,
+      type: 'TRANSFER_IN',
+      quantityDelta: receivedQty,
+      sourceLocation: `In-Transit (${trf.fromBranchId})`,
+      destinationLocation: `${dest?.locationCode || trf.toBranchId} (Warehouse)`,
+      referenceId: trf.transferRef,
+      actorName: user.fullName,
+      reason: hasVariance
+        ? `Transfer received with transit variance (${receivedQty} ok, ${damagedQty} damaged)`
+        : 'Confirmed full inter-branch transfer receipt',
+    });
+
+    addAudit({
+      actorUserId: user.id,
+      actorName: user.fullName,
+      actorRole: ROLE_DEFINITIONS[user.roleId].label,
+      branchId: trf.toBranchId,
+      module: 'inventory',
+      action: 'RECEIVE_STOCK_TRANSFER',
+      target: trf.transferRef,
+      outcome: 'Success',
+      detail: `Received ${receivedQty}/${trf.dispatchedQty} units at ${trf.toBranchId}.`,
+    });
+
+    res.json({ transfer: trf, dest });
+  });
+
+  app.post('/api/mgmt/inventory/cycle-counts', requireAuth, (req: AuthedRequest, res) => {
+    const { productId, branchId, physicalQty, notes } = req.body as {
+      productId: string;
+      branchId: string;
+      physicalQty: number;
+      notes?: string;
+    };
+    const user = checkPermOrDeny(req, res, 'inventory', 'verify', branchId);
+    if (!user) return;
+
+    const stockRec = db.stock.find((s) => s.productId === productId && s.branchId === branchId);
+    const prod = db.products.find((p) => p.id === productId);
+    if (!stockRec || !prod) {
+      res.status(404).json({ error: 'Stock record not found.' });
+      return;
+    }
+
+    const phys = Math.max(0, Math.floor(Number(physicalQty)));
+    const variance = phys - stockRec.onHand;
+
+    const countRecord = {
+      id: `cnt-${Date.now()}`,
+      branchId,
+      productId,
+      productName: prod.name,
+      systemQty: stockRec.onHand,
+      physicalQty: phys,
+      variance,
+      countedByName: user.fullName,
+      countedAt: new Date().toISOString(),
+      status: variance === 0 ? ('Matched' as const) : ('Pending Approval' as const),
+      notes: notes?.trim() || (variance === 0 ? 'Physical count verified exact match.' : 'Cycle count variance detected.'),
+    };
+    db.cycleCounts.unshift(countRecord);
+
+    let approval: ApprovalRequest | undefined;
+    if (variance !== 0) {
+      approval = {
+        id: `apr-cnt-${Date.now()}`,
+        type: 'STOCK_WRITE_OFF',
+        title: `Cycle Count Variance (${variance > 0 ? '+' : ''}${variance} units): ${prod.name}`,
+        branchId,
+        requestedByUserId: user.id,
+        requestedByName: user.fullName,
+        requestedAt: new Date().toISOString(),
+        amountPkr: Math.abs(variance) * prod.purchaseCost,
+        previousValue: `System: ${stockRec.onHand} units`,
+        proposedValue: `Physical: ${phys} units`,
+        justification: countRecord.notes,
+        referenceId: `${branchId}::${productId}::${variance}::${countRecord.id}`,
+        status: 'Pending',
+      };
+      db.approvals.unshift(approval);
+    }
+
+    addAudit({
+      actorUserId: user.id,
+      actorName: user.fullName,
+      actorRole: ROLE_DEFINITIONS[user.roleId].label,
+      branchId,
+      module: 'inventory',
+      action: 'SUBMIT_CYCLE_COUNT',
+      target: prod.sku,
+      outcome: 'Success',
+      detail: `Counted ${phys} vs system ${stockRec.onHand} (Variance: ${variance}).`,
+    });
+
+    res.status(201).json({ cycleCount: countRecord, approval });
   });
 
   app.post('/api/mgmt/inventory/adjustments', requireAuth, (req: AuthedRequest, res) => {
@@ -1287,7 +1690,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       hasPermission(user.roleId, 'inventory', 'approve') &&
       valuePkr <= ROLE_DEFINITIONS[user.roleId].approvalLimitPkr;
 
-    if (!canAutoApprove || intDelta < -5) {
+    if (!canAutoApprove || intDelta < 0) {
       const approval: ApprovalRequest = {
         id: `apr-wo-${Date.now()}`,
         type: 'STOCK_WRITE_OFF',
@@ -1313,6 +1716,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     }
 
     stockRec.onHand = Math.max(0, stockRec.onHand + intDelta);
+    stockRec.warehouseQty = Math.max(0, stockRec.warehouseQty + intDelta);
     db.stockMovements.unshift({
       id: `mov-${Date.now()}`,
       timestamp: new Date().toISOString(),
@@ -1320,6 +1724,8 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       branchId,
       type: 'ADJUSTMENT',
       quantityDelta: intDelta,
+      sourceLocation: stockRec.locationCode,
+      destinationLocation: stockRec.locationCode,
       referenceId: `ADJ-${Date.now().toString().slice(-4)}`,
       actorName: user.fullName,
       reason: reason.trim(),
@@ -1327,6 +1733,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     res.json({ pendingApproval: false, stockRec });
   });
 
+  // ==================== PURCHASING ENDPOINTS ====================
   app.post('/api/mgmt/purchasing/requisitions', requireAuth, (req: AuthedRequest, res) => {
     const { branchId, supplierId, productId, quantity, notes } = req.body as {
       branchId: string;
@@ -1349,13 +1756,97 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       requestedByUserId: user.id,
       requestedByName: user.fullName,
       createdAt: new Date().toISOString(),
-      status: 'Pending Approval' as const,
+      status: 'Approved' as const,
       supplierId: supplierId || prod.supplierId,
       items: [{ productId: prod.id, quantity: qty, estimatedUnitCost: prod.purchaseCost }],
       notes: notes?.trim() || 'Replenishment requisition.',
     };
     db.requisitions.unshift(pr);
     res.status(201).json({ requisition: pr });
+  });
+
+  app.post('/api/mgmt/purchasing/requisitions/:id/convert-to-po', requireAuth, (req: AuthedRequest, res) => {
+    const pr = db.requisitions.find((r) => r.id === req.params.id);
+    if (!pr) {
+      res.status(404).json({ error: 'Purchase requisition not found.' });
+      return;
+    }
+    const user = checkPermOrDeny(req, res, 'purchasing', 'create', pr.branchId);
+    if (!user) return;
+    if (pr.status === 'Converted to PO' || pr.status === 'Rejected') {
+      res.status(400).json({ error: `Requisition already in status "${pr.status}".` });
+      return;
+    }
+
+    const firstItem = pr.items[0];
+    const supplierId = (req.body?.supplierId as string) || pr.supplierId;
+    const qty = firstItem?.quantity || 1;
+    const unitCost = firstItem?.estimatedUnitCost || 100;
+    const totalAmount = qty * unitCost;
+    const poNumber = `PO-2026-${String(16 + db.purchaseOrders.length).padStart(3, '0')}`;
+
+    const withinLimit =
+      hasPermission(user.roleId, 'purchasing', 'approve') &&
+      totalAmount <= ROLE_DEFINITIONS[user.roleId].approvalLimitPkr;
+
+    const po = {
+      id: `po-${Date.now()}`,
+      poNumber,
+      supplierId,
+      branchId: pr.branchId,
+      requisitionId: pr.id,
+      createdByUserId: user.id,
+      createdByName: user.fullName,
+      approvedByName: withinLimit ? user.fullName : undefined,
+      createdAt: new Date().toISOString(),
+      expectedDeliveryDate: '2026-11-19',
+      status: withinLimit ? ('Approved' as const) : ('Pending Approval' as const),
+      items: [
+        {
+          productId: firstItem.productId,
+          orderedQty: qty,
+          receivedQty: 0,
+          damagedQty: 0,
+          unitCost,
+        },
+      ],
+      totalAmount,
+    };
+
+    pr.status = 'Converted to PO';
+    db.purchaseOrders.unshift(po);
+
+    if (!withinLimit) {
+      db.approvals.unshift({
+        id: `apr-po-${Date.now()}`,
+        type: 'PURCHASE_ORDER',
+        title: `Purchase Order Approval: ${poNumber} (from ${pr.id})`,
+        branchId: pr.branchId,
+        requestedByUserId: user.id,
+        requestedByName: user.fullName,
+        requestedAt: new Date().toISOString(),
+        amountPkr: totalAmount,
+        previousValue: pr.id,
+        proposedValue: `PKR ${totalAmount.toLocaleString()} (${qty} units)`,
+        justification: `Converted from ${pr.id}; requires independent Purchasing authorization.`,
+        referenceId: po.id,
+        status: 'Pending',
+      });
+    }
+
+    addAudit({
+      actorUserId: user.id,
+      actorName: user.fullName,
+      actorRole: ROLE_DEFINITIONS[user.roleId].label,
+      branchId: pr.branchId,
+      module: 'purchasing',
+      action: 'CONVERT_PR_TO_PO',
+      target: `${pr.id} -> ${po.poNumber}`,
+      outcome: 'Success',
+      detail: `Converted ${pr.id} to ${po.poNumber} (PKR ${totalAmount.toLocaleString()}).`,
+    });
+
+    res.status(201).json({ purchaseOrder: po, requisition: pr });
   });
 
   app.post('/api/mgmt/purchasing/orders', requireAuth, (req: AuthedRequest, res) => {
@@ -1457,6 +1948,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       );
       if (stockRec) {
         stockRec.onHand += accepted;
+        stockRec.warehouseQty += accepted;
         stockRec.damaged += damaged;
       }
 
@@ -1468,6 +1960,8 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
           branchId: po.branchId,
           type: 'GRN',
           quantityDelta: accepted,
+          sourceLocation: 'Supplier Delivery Dock',
+          destinationLocation: `${stockRec?.locationCode || po.branchId} (Backroom Warehouse)`,
           referenceId: po.poNumber,
           actorName: user.fullName,
           reason: `Inbound GRN received (${damaged} damaged quarantined)`,
@@ -1498,22 +1992,35 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     };
     db.goodsReceipts.unshift(grn);
 
-    // Update linked supplier invoice 3-way match status
-    const inv = db.supplierInvoices.find((i) => i.poId === po.id);
+    // Link or auto-create supplier invoice with 3-way match evaluation
+    let inv = db.supplierInvoices.find((i) => i.poId === po.id);
+    const totalAcceptedAmount = po.items.reduce((sum, it) => sum + it.receivedQty * it.unitCost, 0);
+    const matchStatus = evaluateThreeWayMatch(
+      po,
+      po.items.map((it) => ({ productId: it.productId, acceptedQty: it.receivedQty })),
+      inv ? inv.billedAmount : totalAcceptedAmount
+    );
     if (inv) {
-      const totalAcceptedAmount = po.items.reduce(
-        (sum, it) => sum + it.receivedQty * it.unitCost,
-        0
-      );
       inv.grnAcceptedAmount = totalAcceptedAmount;
-      inv.threeWayMatchStatus = evaluateThreeWayMatch(
-        po,
-        po.items.map((it) => ({ productId: it.productId, acceptedQty: it.receivedQty })),
-        inv.billedAmount
-      );
+      inv.threeWayMatchStatus = matchStatus;
+    } else {
+      inv = {
+        id: `inv-sup-${Date.now()}`,
+        invoiceNumber: `INV-${po.poNumber.slice(-3)}-${100 + db.supplierInvoices.length}`,
+        poId: po.id,
+        poNumber: po.poNumber,
+        supplierId: po.supplierId,
+        branchId: po.branchId,
+        billedAmount: totalAcceptedAmount,
+        grnAcceptedAmount: totalAcceptedAmount,
+        threeWayMatchStatus: matchStatus,
+        paymentStatus: 'Unpaid',
+        dueDate: '2026-12-10',
+      };
+      db.supplierInvoices.unshift(inv);
     }
 
-    res.status(201).json({ grn, po });
+    res.status(201).json({ grn, po, invoice: inv });
   });
 
   // ==================== ONLINE ORDERS FULFILLMENT ====================
@@ -1539,10 +2046,16 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     }
     line.pickedQty = Math.min(line.quantity, Math.max(0, Math.floor(Number(pickedQty))));
     line.flaggedMissing = Boolean(flaggedMissing);
-    if (substituteNote !== undefined) line.substituteNote = substituteNote;
+    if (substituteNote !== undefined) line.substituteNote = substituteNote.trim();
     order.assignedPickerName = user.fullName;
     if (order.stage === 'Confirmed' || order.stage === 'Placed') {
       order.stage = 'Picking';
+    }
+    if (line.flaggedMissing) {
+      order.stage = 'Exception';
+      order.exceptionReason = line.substituteNote
+        ? `Missing/Substitution: ${line.substituteNote}`
+        : `Item ${line.name} flagged missing during picking`;
     }
     res.json({ order });
   });
@@ -1556,11 +2069,15 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     const user = checkPermOrDeny(req, res, 'orders', 'edit', order.branchId);
     if (!user) return;
 
-    const { stage, packingVerified } = req.body as {
+    const { stage, packingVerified, paymentStatus, exceptionReason } = req.body as {
       stage: OnlineFulfillmentStage;
       packingVerified?: boolean;
+      paymentStatus?: OnlineFulfillmentOrder['paymentStatus'];
+      exceptionReason?: string;
     };
     if (packingVerified !== undefined) order.packingVerified = packingVerified;
+    if (paymentStatus) order.paymentStatus = paymentStatus;
+    if (exceptionReason !== undefined) order.exceptionReason = exceptionReason;
 
     if (stage === 'Packed' && !order.packingVerified) {
       order.packingVerified = true;
@@ -1568,12 +2085,14 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
 
     if ((stage === 'Dispatched' || stage === 'Completed') && order.reservationStatus === 'Reserved') {
       for (const line of order.items) {
+        const deductUnits = line.pickedQty > 0 ? line.pickedQty : line.quantity;
         const stockRec = db.stock.find(
           (s) => s.productId === line.productId && s.branchId === order.branchId
         );
         if (stockRec) {
           stockRec.reserved = Math.max(0, stockRec.reserved - line.quantity);
-          stockRec.onHand = Math.max(0, stockRec.onHand - line.quantity);
+          stockRec.onHand = Math.max(0, stockRec.onHand - deductUnits);
+          stockRec.floorQty = Math.max(0, stockRec.floorQty - deductUnits);
         }
         db.stockMovements.unshift({
           id: `mov-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -1581,13 +2100,18 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
           productId: line.productId,
           branchId: order.branchId,
           type: 'ONLINE_DISPATCH',
-          quantityDelta: -line.quantity,
+          quantityDelta: -deductUnits,
+          sourceLocation: `${stockRec?.locationCode || order.branchId}`,
+          destinationLocation: `Customer (${order.fulfillmentMethod})`,
           referenceId: order.orderNumber,
           actorName: user.fullName,
           reason: `Fulfillment moved to ${stage}`,
         });
       }
       order.reservationStatus = 'Deducted';
+      if (stage === 'Completed' && order.paymentStatus === 'Pending') {
+        order.paymentStatus = 'Paid';
+      }
     } else if (stage === 'Cancelled' && order.reservationStatus === 'Reserved') {
       for (const line of order.items) {
         const stockRec = db.stock.find(
@@ -1610,7 +2134,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
       action: 'UPDATE_ORDER_STAGE',
       target: order.orderNumber,
       outcome: 'Success',
-      detail: `Order stage changed to ${stage} (Stock: ${order.reservationStatus}).`,
+      detail: `Order stage changed to ${stage} (Stock: ${order.reservationStatus}, Payment: ${order.paymentStatus}).`,
     });
 
     res.json({ order });
@@ -1646,6 +2170,33 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     res.json({ shift });
   });
 
+  app.post('/api/mgmt/finance/bank-settlements/:id/reconcile', requireAuth, (req: AuthedRequest, res) => {
+    const bnk = db.bankSettlements.find((b) => b.id === req.params.id);
+    if (!bnk) {
+      res.status(404).json({ error: 'Bank settlement batch not found.' });
+      return;
+    }
+    const user = checkPermOrDeny(req, res, 'finance', 'verify', bnk.branchId);
+    if (!user) return;
+    const bankAmount = req.body?.bankSettledAmount !== undefined ? Number(req.body.bankSettledAmount) : bnk.bankSettledAmount;
+    bnk.bankSettledAmount = Math.round(bankAmount);
+    bnk.variance = bnk.bankSettledAmount - bnk.posCardExpected;
+    bnk.status = bnk.variance === 0 ? 'Matched' : 'Variance Flagged';
+    bnk.reconciledByName = user.fullName;
+    addAudit({
+      actorUserId: user.id,
+      actorName: user.fullName,
+      actorRole: ROLE_DEFINITIONS[user.roleId].label,
+      branchId: bnk.branchId,
+      module: 'finance',
+      action: 'RECONCILE_BANK_SETTLEMENT',
+      target: bnk.batchRef,
+      outcome: 'Success',
+      detail: `Bank settlement verified (${bnk.status}, variance PKR ${bnk.variance}).`,
+    });
+    res.json({ bankSettlement: bnk });
+  });
+
   app.post('/api/mgmt/finance/expenses', requireAuth, (req: AuthedRequest, res) => {
     const { branchId, category, description, amount } = req.body as {
       branchId: string;
@@ -1673,6 +2224,34 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     res.status(201).json({ expense: exp });
   });
 
+  app.post('/api/mgmt/finance/invoices/:id/prepare', requireAuth, (req: AuthedRequest, res) => {
+    const inv = db.supplierInvoices.find((i) => i.id === req.params.id);
+    if (!inv) {
+      res.status(404).json({ error: 'Supplier invoice not found.' });
+      return;
+    }
+    const user = checkPermOrDeny(req, res, 'finance', 'submit', inv.branchId);
+    if (!user) return;
+    if (inv.paymentStatus === 'Paid') {
+      res.status(400).json({ error: 'Invoice already paid.' });
+      return;
+    }
+    inv.paymentStatus = 'Prepared (Pending Release)';
+    inv.preparedByName = user.fullName;
+    addAudit({
+      actorUserId: user.id,
+      actorName: user.fullName,
+      actorRole: ROLE_DEFINITIONS[user.roleId].label,
+      branchId: inv.branchId,
+      module: 'finance',
+      action: 'PREPARE_SUPPLIER_PAYMENT',
+      target: inv.invoiceNumber,
+      outcome: 'Success',
+      detail: `Prepared payment batch for ${inv.invoiceNumber} awaiting authorized release.`,
+    });
+    res.json({ invoice: inv });
+  });
+
   app.post('/api/mgmt/finance/invoices/:id/pay', requireAuth, (req: AuthedRequest, res) => {
     const inv = db.supplierInvoices.find((i) => i.id === req.params.id);
     if (!inv) {
@@ -1682,14 +2261,15 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     const user = checkPermOrDeny(req, res, 'finance', 'approve', inv.branchId);
     if (!user) return;
 
-    if (inv.threeWayMatchStatus !== 'Matched' && user.roleId !== 'director_accounts' && user.roleId !== 'ceo') {
+    if (inv.threeWayMatchStatus !== 'Matched' && user.roleId !== 'director_accounts' && user.roleId !== 'ceo' && user.roleId !== 'owner_partner') {
       res.status(400).json({
-        error: `3-Way Match exception (${inv.threeWayMatchStatus}). Only Director Accounts or CEO can override mismatched supplier invoices.`,
+        error: `3-Way Match exception (${inv.threeWayMatchStatus}). Only Director Accounts, Owner, or CEO can override mismatched supplier invoices.`,
       });
       return;
     }
 
     inv.paymentStatus = 'Paid';
+    inv.approvedByName = user.fullName;
     inv.paidAt = new Date().toISOString();
     addAudit({
       actorUserId: user.id,
@@ -1747,6 +2327,45 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     res.json({ leaveRequest: leave });
   });
 
+  app.post('/api/mgmt/staff/attendance', requireAuth, (req: AuthedRequest, res) => {
+    const { userId, branchId, shiftWindow, status } = req.body as {
+      userId: string;
+      branchId: string;
+      shiftWindow: string;
+      status?: 'On Shift' | 'Scheduled' | 'Completed' | 'Leave Approved';
+    };
+    const actor = checkPermOrDeny(req, res, 'staff', 'edit', branchId);
+    if (!actor) return;
+    const target = db.staffUsers.find((u) => u.id === userId);
+    if (!target) {
+      res.status(404).json({ error: 'Staff member not found.' });
+      return;
+    }
+    const rec = {
+      id: `att-${Date.now()}`,
+      userId: target.id,
+      employeeCode: target.employeeCode,
+      fullName: target.fullName,
+      roleLabel: target.department,
+      branchId: branchId || target.branchId,
+      shiftWindow: shiftWindow || '10:00 AM – 06:00 PM',
+      status: status || ('Scheduled' as const),
+    };
+    db.attendance.unshift(rec);
+    addAudit({
+      actorUserId: actor.id,
+      actorName: actor.fullName,
+      actorRole: ROLE_DEFINITIONS[actor.roleId].label,
+      branchId: rec.branchId,
+      module: 'staff',
+      action: 'ASSIGN_SHIFT_ROSTER',
+      target: target.employeeCode,
+      outcome: 'Success',
+      detail: `Scheduled ${target.fullName} for ${rec.shiftWindow} (${rec.branchId}).`,
+    });
+    res.status(201).json({ attendance: rec });
+  });
+
   app.patch('/api/mgmt/branches/checklist/:id', requireAuth, (req: AuthedRequest, res) => {
     const item = db.checklists.find((c) => c.id === req.params.id);
     if (!item) {
@@ -1759,6 +2378,58 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     item.completedBy = item.completed ? user.fullName : undefined;
     item.completedAt = item.completed ? new Date().toISOString() : undefined;
     res.json({ checklistItem: item });
+  });
+
+  app.post('/api/mgmt/branches/maintenance', requireAuth, (req: AuthedRequest, res) => {
+    const { branchId, equipment, issue, priority } = req.body as {
+      branchId: string;
+      equipment: string;
+      issue: string;
+      priority?: 'Normal' | 'Urgent';
+    };
+    const user = checkPermOrDeny(req, res, 'branches', 'edit', branchId);
+    if (!user) return;
+    if (!equipment?.trim() || !issue?.trim()) {
+      res.status(400).json({ error: 'Equipment name and issue summary are required.' });
+      return;
+    }
+    const ticket = {
+      id: `mnt-${Date.now()}`,
+      branchId,
+      equipment: equipment.trim(),
+      issue: issue.trim(),
+      priority: priority === 'Urgent' ? ('Urgent' as const) : ('Normal' as const),
+      reportedByName: user.fullName,
+      assignedToName: 'Naveed Arain (Demo)',
+      status: 'Open' as const,
+      createdAt: new Date().toISOString(),
+    };
+    db.maintenanceTickets.unshift(ticket);
+    addAudit({
+      actorUserId: user.id,
+      actorName: user.fullName,
+      actorRole: ROLE_DEFINITIONS[user.roleId].label,
+      branchId,
+      module: 'branches',
+      action: 'LOG_MAINTENANCE_TICKET',
+      target: ticket.equipment,
+      outcome: 'Success',
+      detail: `Opened supermarket equipment ticket (${ticket.priority}): ${ticket.issue}`,
+    });
+    res.status(201).json({ maintenanceTicket: ticket });
+  });
+
+  app.patch('/api/mgmt/branches/maintenance/:id', requireAuth, (req: AuthedRequest, res) => {
+    const ticket = db.maintenanceTickets.find((m) => m.id === req.params.id);
+    if (!ticket) {
+      res.status(404).json({ error: 'Maintenance ticket not found.' });
+      return;
+    }
+    const user = checkPermOrDeny(req, res, 'branches', 'edit', ticket.branchId);
+    if (!user) return;
+    if (req.body?.status) ticket.status = req.body.status;
+    if (req.body?.assignedToName) ticket.assignedToName = String(req.body.assignedToName);
+    res.json({ maintenanceTicket: ticket });
   });
 
   app.post('/api/mgmt/customers/cases', requireAuth, (req: AuthedRequest, res) => {
@@ -1804,6 +2475,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     const user = checkPermOrDeny(req, res, 'customers', 'edit', c.branchId);
     if (!user) return;
     if (req.body?.status) c.status = req.body.status;
+    if (req.body?.refundDisposition) c.refundDisposition = req.body.refundDisposition;
     if (req.body?.requestRefundAmount && Number(req.body.requestRefundAmount) > 0) {
       db.approvals.unshift({
         id: `apr-ref-${Date.now()}`,
@@ -1816,7 +2488,7 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
         amountPkr: Math.round(Number(req.body.requestRefundAmount)),
         previousValue: c.orderNumber || c.caseNumber,
         proposedValue: `PKR ${Math.round(Number(req.body.requestRefundAmount)).toLocaleString()} Refund`,
-        justification: c.notes,
+        justification: `${c.notes} (${c.refundDisposition || 'Restock Sellable'})`,
         referenceId: c.id,
         status: 'Pending',
       });
@@ -1863,7 +2535,6 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     approval.decidedAt = new Date().toISOString();
     approval.decisionNote = note;
 
-    // Apply underlying approved operational change
     if (decision === 'Approved') {
       if (approval.type === 'PRICE_CHANGE' && approval.referenceId) {
         const prod = db.products.find((p) => p.id === approval.referenceId);
@@ -1879,11 +2550,12 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
           po.approvedByName = user.fullName;
         }
       } else if (approval.type === 'STOCK_WRITE_OFF' && approval.referenceId?.includes('::')) {
-        const [bId, pId, deltaStr] = approval.referenceId.split('::');
+        const [bId, pId, deltaStr, countId] = approval.referenceId.split('::');
         const stockRec = db.stock.find((s) => s.branchId === bId && s.productId === pId);
         const delta = Number(deltaStr || 0);
         if (stockRec && Number.isFinite(delta)) {
           stockRec.onHand = Math.max(0, stockRec.onHand + delta);
+          stockRec.warehouseQty = Math.max(0, stockRec.warehouseQty + delta);
           db.stockMovements.unshift({
             id: `mov-${Date.now()}`,
             timestamp: new Date().toISOString(),
@@ -1891,10 +2563,52 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
             branchId: bId,
             type: 'ADJUSTMENT',
             quantityDelta: delta,
+            sourceLocation: stockRec.locationCode,
+            destinationLocation: delta < 0 ? 'Shrinkage Write-Off' : stockRec.locationCode,
             referenceId: approval.id,
             actorName: user.fullName,
-            reason: `Approved write-off/adjustment: ${approval.justification}`,
+            reason: `Approved adjustment/write-off: ${approval.justification}`,
           });
+        }
+        if (countId) {
+          const cnt = db.cycleCounts.find((c) => c.id === countId);
+          if (cnt) cnt.status = 'Adjusted';
+        }
+      } else if (approval.type === 'REFUND_REQUEST' && approval.referenceId) {
+        totalRefundDeductions += approval.amountPkr;
+        const cCase = db.customerCases.find((c) => c.id === approval.referenceId);
+        if (cCase) {
+          cCase.status = 'Resolved';
+          if (cCase.orderNumber) {
+            const ord = db.onlineOrders.find((o) => o.orderNumber === cCase.orderNumber);
+            if (ord) {
+              ord.paymentStatus = 'Refunded';
+              for (const line of ord.items) {
+                const st = db.stock.find((s) => s.productId === line.productId && s.branchId === ord.branchId);
+                if (st) {
+                  if (cCase.refundDisposition === 'Damaged Quarantine') {
+                    st.damaged += line.quantity;
+                  } else {
+                    st.onHand += line.quantity;
+                    st.floorQty += line.quantity;
+                  }
+                }
+                db.stockMovements.unshift({
+                  id: `mov-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                  timestamp: new Date().toISOString(),
+                  productId: line.productId,
+                  branchId: ord.branchId,
+                  type: 'RETURN',
+                  quantityDelta: cCase.refundDisposition === 'Damaged Quarantine' ? 0 : line.quantity,
+                  sourceLocation: 'Customer Return',
+                  destinationLocation: cCase.refundDisposition === 'Damaged Quarantine' ? 'Damaged Quarantine' : 'Sales Floor',
+                  referenceId: ord.orderNumber,
+                  actorName: user.fullName,
+                  reason: `Approved customer refund (${cCase.refundDisposition || 'Restock Sellable'})`,
+                });
+              }
+            }
+          }
         }
       }
     }
@@ -1993,6 +2707,28 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     res.json({ staffUser: stripCredential(target) });
   });
 
+  app.post('/api/mgmt/settings/sync-simulate-issue', requireAuth, (req: AuthedRequest, res) => {
+    const user = checkPermOrDeny(req, res, 'settings', 'administer');
+    if (!user) return;
+    const target = db.syncJobs.find((j) => j.channel === 'Website Catalogue Sync');
+    if (target) {
+      target.status = 'Attention Required';
+      target.detail = 'Simulated feed timeout — awaiting MIS diagnostic retry.';
+    }
+    addAudit({
+      actorUserId: user.id,
+      actorName: user.fullName,
+      actorRole: ROLE_DEFINITIONS[user.roleId].label,
+      branchId: 'all',
+      module: 'sync',
+      action: 'SIMULATE_SYNC_ALERT',
+      target: 'Website Catalogue Sync',
+      outcome: 'Success',
+      detail: 'Marked sync feed Attention Required for MIS failover recovery drill.',
+    });
+    res.json({ syncJobs: db.syncJobs });
+  });
+
   app.post('/api/mgmt/settings/sync-retry', requireAuth, (req: AuthedRequest, res) => {
     const user = req.staffUser!;
     if (!hasPermission(user.roleId, 'settings', 'view') && !hasPermission(user.roleId, 'products', 'submit')) {
@@ -2003,9 +2739,18 @@ export function createApiApp(initialDb?: ErpDatabaseState) {
     for (const job of db.syncJobs) {
       job.lastRunAt = now;
       job.status = 'Healthy';
-      if (job.channel === 'Website Catalogue Sync') job.recordsSynced = db.products.length;
-      if (job.channel === 'Inventory Availability Feed') job.recordsSynced = db.stock.length;
-      if (job.channel === 'Online Orders Intake') job.recordsSynced = db.onlineOrders.length;
+      if (job.channel === 'Website Catalogue Sync') {
+        job.recordsSynced = db.products.length;
+        job.detail = 'Authoritative SKU & selling price feed synchronized with storefront.';
+      }
+      if (job.channel === 'Inventory Availability Feed') {
+        job.recordsSynced = db.stock.length;
+        job.detail = 'Sellable vs reserved stock availability active across 3 branches.';
+      }
+      if (job.channel === 'Online Orders Intake') {
+        job.recordsSynced = db.onlineOrders.length;
+        job.detail = 'Public storefront checkout connected to reservation & fulfillment queue.';
+      }
     }
     addAudit({
       actorUserId: user.id,

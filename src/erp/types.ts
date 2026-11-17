@@ -29,12 +29,20 @@ export type StaffRoleId =
   | 'cashier'
   | 'senior_cashier'
   | 'pos_supervisor'
+  | 'sales_assistant'
   | 'department_supervisor'
   | 'receiving_clerk'
+  | 'stock_controller'
+  | 'inventory_auditor'
   | 'inventory_manager'
+  | 'purchasing_officer'
   | 'purchasing_manager'
+  | 'accounts_payable'
   | 'accounts_manager'
+  | 'internal_auditor'
   | 'hr_manager'
+  | 'facilities_admin'
+  | 'order_picker'
   | 'online_orders_manager'
   | 'customer_service'
   | 'branch_manager'
@@ -43,7 +51,8 @@ export type StaffRoleId =
   | 'director_accounts'
   | 'director_admin'
   | 'director_mis'
-  | 'ceo';
+  | 'ceo'
+  | 'owner_partner';
 
 export type RoleTier = 'frontline' | 'operational' | 'technical' | 'executive';
 
@@ -56,6 +65,7 @@ export interface RoleDefinition {
   canViewCostAndMargin: boolean;
   maxPosDiscountPercent: number;
   approvalLimitPkr: number;
+  isReadOnlyAudit?: boolean;
   modules: Partial<Record<ManagementModuleId, PermissionAction[]>>;
 }
 
@@ -80,6 +90,7 @@ export interface SupplierRecord {
   city: string;
   paymentTermsDays: number;
   onTimeRatePercent: number;
+  qualityScorePercent: number;
   status: 'Active' | 'On Hold';
 }
 
@@ -108,7 +119,10 @@ export interface BranchStockRecord {
   productId: string;
   branchId: string;
   locationCode: string; // e.g. 'HYD-A04-S2'
+  zone: 'Sales Floor' | 'Backroom Warehouse';
   onHand: number;
+  floorQty: number;
+  warehouseQty: number;
   reserved: number;
   damaged: number;
   inTransit: number;
@@ -121,11 +135,54 @@ export interface StockMovement {
   timestamp: string;
   productId: string;
   branchId: string;
-  type: 'GRN' | 'POS_SALE' | 'ONLINE_RESERVE' | 'ONLINE_DISPATCH' | 'TRANSFER_OUT' | 'TRANSFER_IN' | 'ADJUSTMENT' | 'RETURN';
+  type:
+    | 'GRN'
+    | 'PUTAWAY_FLOOR'
+    | 'POS_SALE'
+    | 'ONLINE_RESERVE'
+    | 'ONLINE_DISPATCH'
+    | 'TRANSFER_OUT'
+    | 'TRANSFER_IN'
+    | 'ADJUSTMENT'
+    | 'RETURN';
   quantityDelta: number;
+  sourceLocation?: string;
+  destinationLocation?: string;
   referenceId: string;
   actorName: string;
   reason: string;
+}
+
+export interface StockTransferRecord {
+  id: string;
+  transferRef: string;
+  productId: string;
+  productName: string;
+  fromBranchId: string;
+  toBranchId: string;
+  dispatchedQty: number;
+  receivedQty: number;
+  damagedInTransitQty: number;
+  status: 'In Transit' | 'Completed' | 'Completed with Variance';
+  dispatchedByName: string;
+  dispatchedAt: string;
+  receivedByName?: string;
+  receivedAt?: string;
+  varianceNote?: string;
+}
+
+export interface CycleCountRecord {
+  id: string;
+  branchId: string;
+  productId: string;
+  productName: string;
+  systemQty: number;
+  physicalQty: number;
+  variance: number;
+  countedByName: string;
+  countedAt: string;
+  status: 'Matched' | 'Pending Approval' | 'Adjusted';
+  notes: string;
 }
 
 export interface PurchaseRequisition {
@@ -189,9 +246,23 @@ export interface SupplierInvoiceRecord {
   billedAmount: number;
   grnAcceptedAmount: number;
   threeWayMatchStatus: 'Matched' | 'Quantity Variance' | 'Amount Variance' | 'Awaiting GRN';
-  paymentStatus: 'Unpaid' | 'Scheduled' | 'Paid';
+  paymentStatus: 'Unpaid' | 'Prepared (Pending Release)' | 'Paid';
+  preparedByName?: string;
+  approvedByName?: string;
   dueDate: string;
   paidAt?: string;
+}
+
+export interface BankSettlementRecord {
+  id: string;
+  batchRef: string;
+  branchId: string;
+  date: string;
+  posCardExpected: number;
+  bankSettledAmount: number;
+  variance: number;
+  status: 'Matched' | 'Pending Review' | 'Variance Flagged';
+  reconciledByName?: string;
 }
 
 export interface CashierShift {
@@ -281,6 +352,7 @@ export interface OnlineFulfillmentOrder {
   fulfillmentMethod: 'delivery' | 'pickup';
   addressSummary: string;
   paymentMethod: 'cod' | 'card-counter';
+  paymentStatus: 'Pending' | 'Paid' | 'Failed' | 'Refunded';
   stage: OnlineFulfillmentStage;
   reservationStatus: 'Reserved' | 'Released' | 'Deducted';
   packingVerified: boolean;
@@ -325,6 +397,7 @@ export interface CustomerServiceCase {
   status: 'Open' | 'In Review' | 'Resolved';
   assignedTo: string;
   notes: string;
+  refundDisposition?: 'Restock Sellable' | 'Damaged Quarantine';
   createdAt: string;
 }
 
@@ -366,6 +439,18 @@ export interface BranchChecklistItem {
   completedAt?: string;
 }
 
+export interface MaintenanceTicket {
+  id: string;
+  branchId: string;
+  equipment: string;
+  issue: string;
+  priority: 'Normal' | 'Urgent';
+  reportedByName: string;
+  assignedToName: string;
+  status: 'Open' | 'In Progress' | 'Verified Resolved';
+  createdAt: string;
+}
+
 export interface StaffAttendanceRecord {
   id: string;
   userId: string;
@@ -405,7 +490,11 @@ export interface AuditLogEntry {
 
 export interface SyncJobRecord {
   id: string;
-  channel: 'Website Catalogue Sync' | 'Website Pricing Feed' | 'Online Orders Intake' | 'Inventory Availability Feed';
+  channel:
+    | 'Website Catalogue Sync'
+    | 'Website Pricing Feed'
+    | 'Online Orders Intake'
+    | 'Inventory Availability Feed';
   lastRunAt: string;
   status: 'Healthy' | 'Attention Required';
   recordsSynced: number;

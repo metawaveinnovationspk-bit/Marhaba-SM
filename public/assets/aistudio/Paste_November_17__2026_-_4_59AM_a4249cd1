@@ -1,0 +1,1732 @@
+# MARHABA HYDERABAD
+## UNIFIED MANAGEMENT PORTAL + RESTAURANT & PLAY LAND ENTERPRISE SYSTEMS
+### MetaWave Innovations LTD | Master Design, Engineering & Operational Development Directive
+
+**PROJECT:** Existing Marhaba Google AI Studio Website & Management Application
+
+**MODE:** UPDATE AND EXTEND EXISTING PROJECT.
+
+**CRITICAL:** The Supermarket Management System is already developed and accepted. Do not redesign, restructure, rewrite or interfere with its existing modules, business logic, roles, permissions, data or workflows.
+
+**NEW DELIVERABLES:**
+
+1. Unified Marhaba Management Access Portal.
+2. Complete Restaurant Management System.
+3. Complete Play Land Management System.
+4. Secure shared authentication and role-based navigation.
+5. Complete demonstration, workflow testing, responsive UI and QA.
+
+---
+
+# 01. ACT AS AN ENTERPRISE-LEVEL EXPERT TEAM
+
+Act simultaneously as:
+
+- Principal Enterprise Software Architect.
+- Senior Hospitality Management Systems Consultant.
+- Restaurant Operations Director.
+- Executive Chef & Kitchen Operations Consultant.
+- Restaurant POS and Kitchen Display Systems Specialist.
+- Food Inventory and Cost Control Specialist.
+- Family Entertainment Center Operations Consultant.
+- Ticketing, Admissions and Attraction Management Specialist.
+- Amusement Attraction Safety and Maintenance Systems Consultant.
+- Enterprise Role-Based Access Control Architect.
+- Principal UI/UX and Creative Design Director.
+- Senior Full-Stack Engineer.
+- Database and Systems Integration Engineer.
+- Security and Performance Engineer.
+- Software QA and Business Process Testing Lead.
+
+Apply professional principles from modern restaurant POS/KDS systems, enterprise ERP solutions, family entertainment management platforms, Material Design 3, WCAG 2.2, OWASP, and established UX research.
+
+Your job is not to simply design dashboards.
+
+**Understand the business → Understand the employee → Understand the process → Design the interaction → Build the system → Test the complete workflow.**
+
+Think professionally, work systematically and preserve working features.
+
+# 02. UNDERSTAND THE BUSINESS
+
+Marhaba is an established retail and family destination with a published business history dating back to 1998.
+
+Its Hyderabad location provides three major experiences:
+
+- Marhaba Supermarket.
+- Marhaba Rooftop Restaurant.
+- Marhaba Play Land.
+
+Its published principles emphasize trust with customers, partners, the community and employees.
+
+The new management environment must reflect that responsibility.
+
+The Restaurant requires reliable hospitality and kitchen operations.
+
+The Play Land requires efficient ticketing, supervised attractions, equipment readiness and family convenience.
+
+The Supermarket already has its dedicated management application.
+
+Do not mix these operational requirements unnecessarily.
+
+The management experience must remain professional, easy to understand, secure, friendly, responsive and efficient.
+
+# 03. MOST IMPORTANT — PRESERVE THE SUPERMARKET SYSTEM
+
+Before implementing anything:
+
+1. Inspect the existing codebase.
+2. Identify the current Management button and route.
+3. Inspect existing Supermarket Management routes.
+4. Identify existing authentication and role dependencies.
+5. Record the current system's working features.
+6. Establish regression checks.
+
+**DO NOT MODIFY:**
+
+- Supermarket dashboards.
+- Supermarket POS.
+- Products and categories.
+- Existing inventory.
+- Purchasing and suppliers.
+- Accounts and finance.
+- Staff roles and permissions.
+- Supermarket reporting.
+- Existing approved UI/UX.
+- Existing business logic and data models.
+
+The Supermarket system must remain fully operational.
+
+Only integrate it into the new common Management Portal through controlled navigation and authentication.
+
+If a shared login integration requires changes, use compatible adapters and route guards rather than rewriting the existing Supermarket modules.
+
+After integration, run regression tests on the existing Supermarket system.
+
+# 04. NEW MANAGEMENT PORTAL — PRIMARY ENTRY
+
+When users click the **Management** button in the public Marhaba website header, open the new unified Management Portal.
+
+Suggested route:
+
+`/management`
+
+This is a dedicated professional staff and management access page.
+
+It must not appear as a complicated ERP dashboard before authentication.
+
+## Page design
+
+Create a premium, clean, welcoming experience using Marhaba's existing brand identity.
+
+Layout structure:
+
+**SECTION A — Brand Header**
+
+- Marhaba logo.
+- Title: Marhaba Management Portal.
+- Supporting text: Secure Access for Staff & Management.
+- Location: Hyderabad.
+- Subtle Back to Website link.
+
+**SECTION B — Staff & Management Sign In**
+
+Create a beautifully refined login container.
+
+Fields:
+
+- Email Address.
+- Password.
+
+Actions:
+
+- Show / Hide Password.
+- Sign In.
+- Forgot Password, when password recovery is configured.
+
+Use:
+
+- Professional field labels.
+- Soft corner radii.
+- Clear focus states.
+- Balanced padding.
+- Subtle borders.
+- Gentle shadows.
+- Readable typography.
+- Clear validation.
+- Helpful authentication errors.
+
+Do not create a huge empty login panel.
+
+Do not overload the screen with decorative illustrations.
+
+Make it simple, premium and trustworthy.
+
+**SECTION C — Management Systems**
+
+Immediately BELOW the Staff Sign In container, create a dedicated section titled:
+
+**Management Systems**
+
+Subtitle:
+
+**Marhaba Hyderabad — Business Operations**
+
+Display three professionally designed interactive system cards.
+
+### CARD 1 — SUPERMARKET MANAGEMENT
+
+Title: Supermarket Management.
+
+Description: Retail Operations, POS, Inventory, Purchasing & Finance.
+
+Icon: Shopping Basket / Store.
+
+Action: Access Supermarket.
+
+Connect this card to the EXISTING Supermarket Management System.
+
+Do not change its internal application.
+
+### CARD 2 — RESTAURANT MANAGEMENT
+
+Title: Restaurant Management.
+
+Description: Dining, Kitchen, Orders, Menu & Hospitality Operations.
+
+Icon: Utensils.
+
+Action: Access Restaurant.
+
+Open the dedicated Restaurant Management access flow.
+
+### CARD 3 — PLAY LAND MANAGEMENT
+
+Title: Play Land Management.
+
+Description: Tickets, Attractions, Operations & Family Experiences.
+
+Icon: Ticket / Family Entertainment.
+
+Action: Access Play Land.
+
+Open the dedicated Play Land Management access flow.
+
+## Card design rules
+
+- Maintain one coherent visual system.
+- Use soft surfaces and subtle depth.
+- Apply elegant iconography.
+- Maintain consistent card heights.
+- Use gentle corner radii.
+- Display concise descriptions.
+- Provide clear interactive states.
+- Avoid oversized icons or excessive gradients.
+- Use thoughtful spacing and alignment.
+- Keep the interface professional.
+
+Desktop: Three balanced cards in one row when space permits.
+
+Tablet: Adaptive cards without cramped text.
+
+Mobile: Clean, comfortable stacked cards.
+
+Each entire card must be keyboard- and touch-accessible.
+
+Do not create hidden or confusing click areas.
+
+# 05. UNIFIED LOGIN AND DEMO ROLE SELECTION
+
+The Management Portal must support two clearly distinguished access paths.
+
+## PATH A — REAL STAFF LOGIN
+
+Email + Password.
+
+After successful authentication:
+
+1. Identify staff member.
+2. Load assigned management systems.
+3. Load authorized role and branch.
+4. Determine available workspace access.
+5. Redirect to the appropriate dashboard.
+
+If a user has access to one system, open that system directly.
+
+If a user has access to multiple systems, show a clean workspace selector.
+
+Do not require unnecessary repeated logins.
+
+Authentication must be validated securely by the backend.
+
+## PATH B — DEMONSTRATION ACCESS
+
+This is necessary for MWI's Google AI Studio sales demonstration.
+
+Clicking any Management System card while unauthenticated should open that system's dedicated access page.
+
+Suggested routes:
+
+- `/management/supermarket/login`
+- `/management/restaurant/login`
+- `/management/play-land/login`
+
+If existing Supermarket routes differ, retain them and adapt navigation without rewriting the module.
+
+Each system-specific login page must contain:
+
+1. System identity.
+2. Staff email.
+3. Password.
+4. Sign In.
+5. Demo Role Selection.
+6. Back to Management Portal.
+
+### Demo Role Selection
+
+Provide an elegant role selector for demonstration.
+
+The user can select a sample employee role to explore its interface and daily workflows.
+
+Display:
+
+- Role name.
+- Department.
+- Short responsibility.
+- Open Demo Workspace.
+
+Demo role selection must operate ONLY within an explicitly isolated demonstration environment.
+
+It must never grant real production privileges.
+
+Use isolated demo accounts, authorized test sessions and fictional operational records.
+
+Never expose actual staff passwords or commercially sensitive data.
+
+In production, disable unrestricted role selection entirely.
+
+**CRITICAL:** Hiding a module in the UI is not security. Enforce authorization on routes, APIs, business actions and records.
+
+# 06. SHARED MANAGEMENT APPLICATION ARCHITECTURE
+
+Create:
+
+**One Management Gateway.**
+
+**Three Separate Operational Workspaces.**
+
+Use a shared identity layer and consistent design foundations, while preserving separate business modules.
+
+Suggested architecture:
+
+`/management`
+- Portal.
+- Authentication.
+- Workspace selection.
+
+`/management/supermarket`
+- Existing system, preserved.
+
+`/management/restaurant`
+- New restaurant operations.
+
+`/management/play-land`
+- New entertainment operations.
+
+Shared services may include:
+
+- Authorized staff identity.
+- Role assignments.
+- Branch scope.
+- Notifications.
+- Audit events.
+- System navigation.
+
+Business-specific data must remain controlled.
+
+Do not accidentally give Restaurant users access to Supermarket finance or Play Land operators access to Restaurant purchasing records.
+
+A CEO or authorized director may view consolidated reporting only according to approved permissions.
+
+# 07. RESTAURANT MANAGEMENT SYSTEM — BUSINESS OBJECTIVE
+
+Build a complete, high-quality restaurant operations platform.
+
+It must coordinate the full hospitality cycle:
+
+**Customer Arrival → Reservation / Seating → Order → Kitchen → Service → Billing → Payment → Closing → Reporting.**
+
+The experience must support real restaurant operations, not merely display attractive food images.
+
+Create a dedicated Restaurant Management System featuring:
+
+1. Today / Overview.
+2. Tables & Floor.
+3. Reservations.
+4. POS & Orders.
+5. Kitchen Display.
+6. Menu & Pricing.
+7. Recipes & Food Inventory.
+8. Purchasing & Suppliers.
+9. Deals & Dining Events.
+10. Staff & Shifts.
+11. Customers & Service.
+12. Accounts & Reconciliation.
+13. Reports & Analytics.
+14. Settings & MIS.
+
+Use role-based visibility to keep individual workspaces simple.
+
+# 08. RESTAURANT — COMPLETE OPERATIONAL ROLES
+
+Create configurable roles.
+
+## Front of House
+
+**Host / Receptionist**
+- Guest arrivals.
+- Table availability.
+- Reservations.
+- Waiting list.
+- Seating coordination.
+
+**Waiter / Server**
+- Assigned tables.
+- Take orders.
+- Send orders to kitchen.
+- Track food status.
+- Request bill.
+- Assist guests.
+
+**Food Runner**
+- Ready orders.
+- Assigned table.
+- Delivery confirmation.
+
+**Restaurant Cashier**
+- Billing.
+- Discounts within permission.
+- Payments.
+- Receipts.
+- Shift closing.
+
+**Floor Supervisor**
+- Table supervision.
+- Staff coordination.
+- Service issues.
+- Authorized order corrections.
+
+## Kitchen
+
+**Head Chef / Executive Chef**
+- Kitchen operations.
+- Recipes.
+- Preparation standards.
+- Food availability.
+- Ingredient usage.
+- Kitchen performance.
+
+**Sous Chef**
+- Kitchen coordination.
+- Station supervision.
+- Food preparation flow.
+
+**Station Chef / Line Cook**
+- Assigned kitchen orders.
+- Preparation.
+- Cooking progress.
+- Completion.
+
+**Prep Cook**
+- Preparation tasks.
+- Ingredient preparation.
+- Assigned stock consumption.
+
+**Kitchen Expeditor**
+- Final order checks.
+- Course coordination.
+- Ready-for-service confirmation.
+
+**Steward / Kitchen Support**
+- Cleaning.
+- Equipment and hygiene tasks.
+- Assigned operational duties.
+
+## Management and Support
+
+**Restaurant Inventory Controller**
+- Ingredients.
+- Receiving.
+- Waste.
+- Stock counts.
+- Expiry.
+
+**Restaurant Purchasing Officer**
+- Supplier orders.
+- Ingredients.
+- Deliveries.
+
+**Restaurant Accounts Officer**
+- Sales reconciliation.
+- Expenses.
+- Payments.
+- Reports.
+
+**Reservation / Guest Relations Officer**
+- Booking requests.
+- Guest inquiries.
+- Complaints.
+
+**Restaurant Manager**
+- Overall restaurant operations.
+- Staff.
+- Tables.
+- Orders.
+- Kitchen coordination.
+- Authorized approvals.
+
+**General Manager / Authorized Director**
+- Revenue.
+- Food costs.
+- Operations.
+- Staff.
+- Financial reports.
+
+**MIS Administrator**
+- Technical configuration.
+- Devices.
+- Integrations.
+- Authorized application support.
+
+These are configurable system roles, not claims that Marhaba currently employs every title.
+
+For every role, design the exact necessary sidebar tabs, daily tasks, permissions and dashboard.
+
+Do not make every role use the Restaurant Manager dashboard.
+
+# 09. RESTAURANT — TABLES, RESERVATIONS & SEATING
+
+Create a visual floor and table management interface.
+
+Support:
+
+- Floor / Zone.
+- Table number.
+- Seating capacity.
+- Available.
+- Reserved.
+- Occupied.
+- Awaiting cleaning.
+- Temporarily unavailable.
+
+Allow authorized staff to:
+
+- Assign guests.
+- Open a table session.
+- Move guests.
+- Combine tables where supported.
+- Transfer table responsibility.
+- Request cleaning.
+- Close a table.
+
+The floor layout must be configurable.
+
+Do not invent Marhaba's real floor plan.
+
+## Reservations
+
+Track:
+
+- Guest name.
+- Phone.
+- Date.
+- Time.
+- Party size.
+- Special requests.
+- Reservation source.
+- Assigned table, when applicable.
+- Booking status.
+
+Statuses:
+
+Requested → Confirmed → Seated → Completed.
+
+Exception states:
+
+Cancelled / No-show / Declined.
+
+Prevent overlapping allocations beyond configured capacity.
+
+Do not treat a submitted booking request as a confirmed reservation.
+
+# 10. RESTAURANT — POS & ORDER MANAGEMENT
+
+Design a fast and intuitive restaurant POS.
+
+Essential functions:
+
+- Open order.
+- Select table.
+- Select waiter.
+- Browse menu.
+- Search dishes.
+- Add dishes.
+- Select portions.
+- Configure modifiers.
+- Add special preparation notes.
+- Specify quantities.
+- Send to kitchen.
+- Add items to existing order.
+- Review order status.
+- Generate bill.
+- Split bill.
+- Combine permitted checks.
+- Accept payments.
+- Print receipt.
+- Close order.
+
+Support dine-in, takeaway and delivery only when configured as real services.
+
+## POS interface design
+
+Left:
+- Menu categories.
+- Search.
+- Dish selections.
+
+Center:
+- Relevant menu items.
+
+Right:
+- Current order.
+- Quantities.
+- Modifiers.
+- Totals.
+- Send to Kitchen.
+- Payment action.
+
+Adapt responsively.
+
+Keep ordering fast.
+
+Avoid disruptive modal dialogs and unnecessary navigation.
+
+## Bill handling
+
+Support:
+
+- Item totals.
+- Discounts.
+- Taxes.
+- Configured service charges.
+- Split by item or person.
+- Multiple authorized tender types.
+- Refunds.
+- Void approval.
+- Payment verification.
+- Receipt generation.
+
+Record every sensitive adjustment with a reason and authorized user.
+
+# 11. RESTAURANT — KITCHEN DISPLAY SYSTEM
+
+The Kitchen Display System must be one of the strongest parts of this application.
+
+Create a clean, readable kitchen workspace.
+
+## Kitchen order lifecycle
+
+New Order → Accepted → Preparing → Ready → Served.
+
+Support cancelled or delayed exceptions separately.
+
+Each ticket should display:
+
+- Order number.
+- Table / Order type.
+- Ordered items.
+- Quantity.
+- Modifiers.
+- Preparation notes.
+- Order time.
+- Elapsed time.
+- Priority.
+- Assigned station.
+
+## Kitchen stations
+
+Make stations configurable:
+
+- BBQ / Grill.
+- Pakistani / Desi.
+- Chinese.
+- Italian.
+- Turkish / Middle Eastern.
+- Beverages.
+- Desserts.
+- Other actual stations.
+
+These are proposed configurations, not a claim that Marhaba operates each station independently.
+
+Route dishes to assigned stations.
+
+A chef should see only relevant cooking tasks.
+
+Support updates and additions to existing tickets with clear versioning.
+
+Avoid duplicate kitchen tickets caused by retries.
+
+Do not allow ordinary kitchen staff to mark financial transactions as paid.
+
+Use large, readable status controls and fast interactions suitable for kitchen environments.
+
+# 12. RESTAURANT — MENU, RECIPES & FOOD COSTING
+
+Create a comprehensive menu management system.
+
+Use the actual restaurant menu if accessible.
+
+Otherwise, clearly label sample dishes as DEMO.
+
+## Menu records
+
+- Dish ID.
+- Name.
+- Cuisine.
+- Category.
+- Image.
+- Description.
+- Portion.
+- Price.
+- Variations.
+- Modifiers.
+- Availability.
+- Preparation station.
+- Recipe association.
+- Food cost.
+- Approval status.
+
+## Recipe records
+
+- Dish.
+- Ingredients.
+- Quantity.
+- Measurement unit.
+- Yield.
+- Portion cost.
+- Preparation loss assumptions.
+- Standard serving.
+- Recipe version.
+
+Support accurate ingredient usage and food costing.
+
+## Food inventory
+
+Manage:
+
+- Raw ingredients.
+- Purchased goods.
+- Receiving.
+- Storage.
+- Batches.
+- Expiry.
+- Kitchen transfers.
+- Consumption.
+- Wastage.
+- Stock counts.
+- Reorder alerts.
+
+Do not automatically deduct ingredients multiple times during order edits.
+
+Use consistent, auditable consumption rules.
+
+Support menu items becoming unavailable when ingredients are insufficient.
+
+Allow authorized staff to mark dishes temporarily unavailable.
+
+## Restaurant purchasing
+
+Support purchase requisitions, supplier orders, goods receiving, discrepancies and invoices.
+
+If ingredients are transferred from the Supermarket, use a controlled, authorized inter-business transfer integration.
+
+Do not directly modify existing Supermarket inventory records.
+
+# 13. RESTAURANT — MANAGEMENT, FINANCE & REPORTING
+
+Build meaningful dashboards for:
+
+- Restaurant Manager.
+- Head Chef.
+- Cashier Supervisor.
+- Accounts.
+- Authorized executives.
+
+## Important KPIs
+
+- Daily sales.
+- Number of orders.
+- Covers / guests served.
+- Average bill value.
+- Table turnover.
+- Preparation time.
+- Order delays.
+- Most ordered dishes.
+- Food cost percentage.
+- Ingredient wastage.
+- Voids and discounts.
+- Payment reconciliation.
+- Staff operations.
+- Customer complaints.
+
+Only calculate metrics from valid operational data.
+
+## Restaurant daily closing
+
+Cashier Shift → Sales Review → Cash Declaration → Payment Reconciliation → Supervisor Verification → Accounts Posting.
+
+Track cash overages and shortages.
+
+Maintain complete transaction history.
+
+# 14. RESTAURANT — COMPLETE REAL-WORLD TESTING
+
+Test at least:
+
+1. Walk-in guest receives a table.
+2. Waiter creates an order.
+3. Kitchen receives the correct ticket.
+4. Different dishes route to different stations.
+5. Chef begins preparation.
+6. Order status updates.
+7. Food runner receives ready order.
+8. Guest adds another dish.
+9. Waiter requests a bill.
+10. Cashier splits the bill.
+11. Customer pays.
+12. Receipt is generated.
+13. Table closes.
+14. Inventory consumption is recorded correctly.
+15. Accounts receives the sale.
+16. Manager sees the transaction.
+17. Customer makes a reservation.
+18. Reservation becomes confirmed.
+19. Ingredient is unavailable.
+20. Dish becomes temporarily unavailable.
+21. Order is cancelled with proper authorization.
+22. A payment fails.
+23. A cashier closes a shift.
+24. Management reviews daily restaurant performance.
+
+Verify data integrity and role permissions throughout.
+
+# 15. PLAY LAND MANAGEMENT — BUSINESS OBJECTIVE
+
+Build an exceptionally practical family entertainment management system.
+
+The Play Land system must coordinate:
+
+**Visitor Inquiry → Package Selection → Ticket Sale → Entry Validation → Activity Access → Visit Management → Exit → Reconciliation.**
+
+It must also support safe operations, maintenance, incident management and parent convenience.
+
+The software must help employees manage the entertainment environment responsibly.
+
+Do not treat Play Land as merely a ticket-selling website.
+
+# 16. PLAY LAND — COMPLETE MODULE STRUCTURE
+
+Create:
+
+1. Today / Operations Dashboard.
+2. Ticket Counter & POS.
+3. Admissions & Check-In.
+4. Attractions & Rides.
+5. Sessions & Capacity.
+6. Packages & Pricing.
+7. Safety & Inspections.
+8. Equipment & Maintenance.
+9. Birthdays & Events.
+10. Customers & Parent Support.
+11. Staff & Shifts.
+12. Cash & Reconciliation.
+13. Reports & Analytics.
+14. Settings & MIS.
+
+Show only relevant tabs to each role.
+
+Do not display all 14 modules in every user's sidebar.
+
+# 17. PLAY LAND — COMPLETE OPERATIONAL ROLES
+
+Create configurable roles.
+
+## Frontline
+
+**Ticket Cashier**
+- Sell tickets.
+- Select packages.
+- Process authorized payments.
+- Print or issue tickets.
+- Close cashier shift.
+
+**Admissions / Gate Attendant**
+- Scan tickets.
+- Validate admission.
+- Check permitted session.
+- Record entry.
+- Identify invalid or used tickets.
+
+**Ride / Attraction Operator**
+- View assigned attraction.
+- Follow approved opening checks.
+- Verify guest eligibility.
+- Manage attraction sessions.
+- Report faults.
+- Stop operation when required.
+
+**Play Area Attendant**
+- Monitor assigned play area.
+- Assist visitors.
+- Report operational concerns.
+- Support guest guidance.
+
+**Guest Relations Officer**
+- Answer parent questions.
+- Handle ticket issues.
+- Manage lost-property requests.
+- Record complaints and assistance cases.
+
+## Supervision
+
+**Attractions Supervisor**
+- Monitor attractions.
+- Review operating readiness.
+- Manage staff assignments.
+- Control approved operations.
+
+**Admissions Supervisor**
+- Supervise gate entries.
+- Handle ticket exceptions.
+- Monitor entry queues.
+
+**Safety / Inspection Officer**
+- Conduct assigned inspections.
+- Record safety concerns.
+- Verify applicable inspection requirements.
+- Restrict unsafe attractions.
+
+**Maintenance Technician**
+- Inspect equipment.
+- Record faults.
+- Complete authorized repair tasks.
+- Submit maintenance evidence.
+
+**Maintenance Supervisor**
+- Review work orders.
+- Coordinate repairs.
+- Verify authorized technical completion.
+
+## Events & Administration
+
+**Birthday / Events Coordinator**
+- Manage party inquiries.
+- Packages.
+- Scheduling.
+- Guest requirements.
+- Event coordination.
+
+**Staff Coordinator**
+- Manage assigned shifts and duties.
+
+**Accounts Officer**
+- Reconcile ticket sales.
+- Process approved refunds.
+- Review payment records.
+
+## Management
+
+**Play Land Operations Manager**
+- Daily operations.
+- Tickets.
+- Attractions.
+- Staff.
+- Capacity.
+- Safety exceptions.
+- Guest service.
+
+**General Manager / Authorized Executive**
+- Performance.
+- Revenue.
+- Operations.
+- Compliance oversight.
+- Approved financial controls.
+
+**MIS Administrator**
+- Ticketing configurations.
+- Devices.
+- System access.
+- Integrations.
+- Technical monitoring.
+
+Actual positions and responsibility assignments require Marhaba confirmation.
+
+# 18. PLAY LAND — TICKETING & PACKAGES
+
+Develop a professional ticketing POS.
+
+Support:
+
+- Ticket types.
+- Child tickets.
+- Adult tickets where applicable.
+- Session-based tickets.
+- Individual attraction tickets where applicable.
+- Group packages.
+- Family packages.
+- Birthday packages.
+- Discounts.
+- Payment.
+- Receipt.
+- QR / Barcode ticket, if implemented.
+- Wristband integration, if actual hardware is supported.
+
+Do not invent official Marhaba prices or packages.
+
+## Ticket purchase workflow
+
+Choose Package → Select Participants → Validate Date / Session → Confirm Capacity → Payment → Issue Ticket → Admission.
+
+Use reliable ticket IDs.
+
+Prevent duplicate ticket issuance from retried payment requests.
+
+Support cancelled, refunded, expired and partially used ticket states.
+
+Tickets should not become valid merely because an unverified payment was initiated.
+
+# 19. PLAY LAND — ADMISSIONS & ENTRY MANAGEMENT
+
+Design a simple gate-attendant interface.
+
+Support:
+
+- Scan QR / Barcode.
+- Manual lookup where authorized.
+- Validate ticket.
+- Confirm session.
+- Confirm ticket status.
+- Check admission eligibility.
+- Record check-in.
+- Show permitted access.
+
+Use clear states:
+
+- Valid.
+- Already Used.
+- Not Yet Valid.
+- Expired.
+- Cancelled.
+- Invalid.
+- Requires Supervisor.
+
+Prevent duplicate admissions when the ticket permits only one entry.
+
+Any re-entry behavior must follow configured policies.
+
+If an entry attempt fails due to network problems, ensure retry logic does not create duplicate admissions.
+
+# 20. PLAY LAND — ATTRACTIONS & RIDES
+
+Create a complete configurable attraction directory.
+
+## Attraction details
+
+- Attraction ID.
+- Name.
+- Type.
+- Location / Zone.
+- Description.
+- Images.
+- Capacity.
+- Session duration.
+- Age restrictions.
+- Height or weight restrictions, where applicable.
+- Guardian requirements.
+- Operating instructions.
+- Inspection requirements.
+- Maintenance status.
+- Availability.
+- Assigned operator.
+
+Actual attraction data and limits must come from verified Marhaba records and equipment documentation.
+
+Never invent ride safety requirements.
+
+## Attraction status
+
+- Closed.
+- Pending Inspection.
+- Ready / Authorized to Open.
+- Operating.
+- Paused.
+- Out of Service.
+- Under Maintenance.
+- Incident Hold.
+
+The system must prevent ticket admissions or operational starts for attractions marked unavailable or under a critical safety hold.
+
+Only properly authorized personnel may release an attraction after required checks and technical clearance.
+
+A software status change does not replace a physical inspection or competent human judgment.
+
+# 21. PLAY LAND — SAFETY & MAINTENANCE
+
+This is an essential operational subsystem.
+
+## Daily attraction opening
+
+Assigned Operator → Pre-Opening Checklist → Issue Reporting → Supervisor Review → Required Technical Clearance → Authorized Opening.
+
+## Fault workflow
+
+Fault Reported → Attraction Stopped / Restricted → Maintenance Request → Technician Inspection → Repair → Verification → Authorized Return to Service.
+
+Keep a traceable history of:
+
+- Inspection records.
+- Faults.
+- Maintenance work.
+- Downtime.
+- Responsible personnel.
+- Corrective actions.
+- Clearance approvals.
+
+Safety-critical faults must not be dismissed through ordinary UI overrides.
+
+## Incidents
+
+Support appropriate recording and escalation of:
+
+- Guest injuries.
+- Equipment faults.
+- Safety concerns.
+- Missing-child alerts.
+- Unauthorized access.
+- Other operational incidents.
+
+Provide rapid staff notification and approved escalation procedures.
+
+Protect sensitive information, especially information relating to children.
+
+Do not include unrestricted child-location tracking, biometric surveillance or unnecessary personal data collection.
+
+# 22. PLAY LAND — CAPACITY, SESSIONS & VISIT PLANNING
+
+Build a practical capacity management system.
+
+Support:
+
+- Operating dates.
+- Session schedules.
+- Zone capacity.
+- Attraction capacity.
+- Ticket allocation.
+- Admissions.
+- Active occupancy where measurable.
+- Session completion.
+- Restricted availability.
+
+Do not oversell sessions.
+
+Use actual capacity limits when configured.
+
+## Parent convenience
+
+Build staff tools that help answer:
+
+- Which activities are suitable for a child's age?
+- Which packages are available?
+- What is included?
+- When can the family visit?
+- Which attractions are temporarily unavailable?
+- What are the applicable supervision requirements?
+- What facilities are available?
+
+Only show verified facilities and policies.
+
+Make guest assistance fast and easy.
+
+# 23. PLAY LAND — BIRTHDAYS & EVENTS
+
+Create a dedicated events management module.
+
+Support:
+
+- Birthday inquiries.
+- Event bookings.
+- Event dates.
+- Participant counts.
+- Package selection.
+- Venue/resource availability.
+- Decoration requirements where offered.
+- Food coordination where applicable.
+- Payment status.
+- Event staff assignments.
+- Confirmation status.
+- Event checklist.
+
+Use this lifecycle:
+
+Inquiry → Review → Availability Check → Quotation → Customer Acceptance → Authorized Confirmation → Event Preparation → Event Completion.
+
+Do not confirm unavailable dates or unapproved packages.
+
+If food is provided through Marhaba Restaurant, create a future-ready inter-business service request.
+
+Do not directly modify Restaurant inventory, orders or payments without authorized integration.
+
+# 24. PLAY LAND — FINANCE & REPORTING
+
+Build accurate operational reporting.
+
+KPIs may include:
+
+- Daily ticket sales.
+- Paid admissions.
+- Visitor count.
+- Occupancy.
+- Package performance.
+- Attraction utilization.
+- Event revenue.
+- Refunds.
+- Cashier variance.
+- Equipment downtime.
+- Maintenance backlog.
+- Recorded incidents.
+- Guest complaints.
+
+Build separate views for:
+
+- Ticket Cashier.
+- Admissions Supervisor.
+- Attractions Supervisor.
+- Maintenance.
+- Play Land Manager.
+- Accounts.
+- Authorized Executives.
+
+Use real transaction and activity records.
+
+Do not fabricate performance.
+
+# 25. PLAY LAND — COMPLETE REAL-WORLD TESTING
+
+Test:
+
+1. Customer selects a family package.
+2. Cashier calculates the correct price.
+3. Payment is confirmed.
+4. Tickets are issued.
+5. Customer arrives at gate.
+6. Attendant scans ticket.
+7. Entry is validated.
+8. Duplicate scan is rejected.
+9. Child's eligible attractions are identified.
+10. Operator performs required checks.
+11. Supervisor authorizes attraction opening.
+12. Guest enters permitted attraction.
+13. Capacity limits are respected.
+14. Attraction becomes unavailable.
+15. Ticketing system responds appropriately.
+16. Fault is reported.
+17. Attraction is placed out of service.
+18. Maintenance technician records repair.
+19. Authorized clearance is completed.
+20. Attraction is returned to service.
+21. Parent submits a birthday inquiry.
+22. Coordinator verifies availability.
+23. Event is confirmed through approved process.
+24. Cashier closes ticket sales shift.
+25. Accounts reconciles payments.
+26. Manager reviews daily results.
+
+Also test missing information, invalid tickets, failed payments, cancelled sessions, refund requests and sensitive incident records.
+
+# 26. MULTI-SYSTEM DATA & FINANCE GOVERNANCE
+
+The three management systems must remain operationally separated.
+
+## Supermarket
+
+Retail products, POS transactions, inventory and purchasing.
+
+## Restaurant
+
+Menu, dishes, food inventory, dining orders, kitchen transactions and restaurant finance.
+
+## Play Land
+
+Tickets, admissions, attractions, events and entertainment transactions.
+
+Shared reporting may be introduced for authorized executives.
+
+However:
+
+- Do not merge cashier tills incorrectly.
+- Do not mix separate payment records.
+- Do not combine inventory ledgers without a defined business process.
+- Do not double-count inter-business transactions.
+- Do not give unrestricted cross-system permissions.
+- Do not allow one system to silently modify another system's data.
+
+Use authorized APIs and defined integration contracts.
+
+Any financial consolidation must follow verified legal entities, accounting policies and ownership structure.
+
+# 27. GLOBAL UI/UX QUALITY STANDARD
+
+Both new systems must feel professionally designed, modern and exceptionally easy to use.
+
+Use the established Marhaba visual identity.
+
+## Design standards
+
+- Elegant typography.
+- Friendly visual language.
+- Soft, refined corners.
+- Comfortable spacing.
+- Clean backgrounds.
+- Subtle borders.
+- Professional data tables.
+- Simple, informative cards.
+- Consistent statuses.
+- Clear action buttons.
+- Smooth but restrained transitions.
+- Responsive navigation.
+- Accessible controls.
+
+Avoid:
+
+- Excessive decorative dashboards.
+- Random gradients.
+- Harsh colors.
+- Unnecessary charts.
+- Overly complicated sidebars.
+- Tiny text.
+- Repetitive cards.
+- Crowded tables.
+- Too many popup dialogs.
+- Slow or distracting animations.
+
+## Restaurant design character
+
+Professional hospitality operations.
+
+Warm, calm, sophisticated and highly practical.
+
+Kitchen screens should emphasize legibility, order priority and speed.
+
+Waiter screens should be touch-friendly and efficient.
+
+## Play Land design character
+
+Friendly, welcoming and energetic without being childish or visually chaotic.
+
+Ticket counter interfaces should be simple.
+
+Admissions screens should provide immediate clear results.
+
+Safety and maintenance screens should prioritize accuracy, alerts and restricted access.
+
+# 28. SMART ROLE-BASED SIDEBARS
+
+Do not show every module to every employee.
+
+Examples:
+
+## Restaurant Waiter
+
+- My Tables.
+- New Order.
+- Active Orders.
+- Order Status.
+- Assistance.
+
+## Restaurant Chef
+
+- Kitchen Queue.
+- Assigned Station.
+- Preparing.
+- Ready Orders.
+- Ingredient Alerts.
+
+## Restaurant Manager
+
+- Overview.
+- Tables.
+- Orders.
+- Kitchen.
+- Menu.
+- Inventory.
+- Staff.
+- Reports.
+- Approvals.
+
+## Play Land Ticket Cashier
+
+- Ticket Counter.
+- My Sales.
+- My Shift.
+- Refund Requests.
+- Assistance.
+
+## Play Land Ride Operator
+
+- My Attraction.
+- Opening Checks.
+- Sessions.
+- Fault Reporting.
+- Assistance.
+
+## Play Land Manager
+
+- Overview.
+- Tickets.
+- Admissions.
+- Attractions.
+- Sessions.
+- Safety.
+- Maintenance.
+- Events.
+- Staff.
+- Reports.
+
+Use configurable role definitions and permission scopes.
+
+Keep routine actions easy to reach.
+
+# 29. SECURITY & AUTHENTICATION
+
+Implement:
+
+- Secure staff authentication.
+- Server-side authorization.
+- Per-system access permissions.
+- Branch-level restrictions.
+- Role-based access.
+- Safe sessions.
+- Session expiration.
+- Appropriate password hashing.
+- Secure recovery workflows.
+- Rate limiting.
+- Audit logs.
+- Sensitive-action approvals.
+- Secure API access.
+- CSRF protection where applicable.
+- Protection against unauthorized cross-system access.
+
+Use established authentication infrastructure rather than inventing insecure custom security mechanisms.
+
+Demo role selection must be isolated from real authentication.
+
+Do not include real credentials in client-side code.
+
+Never allow selecting CEO, Accounts or MIS roles to grant real privileges without authorization.
+
+# 30. PERFORMANCE & RELIABILITY
+
+Engineer both systems for real operational workloads.
+
+Prioritize:
+
+- Fast screen loading.
+- Efficient database queries.
+- Appropriate indexes.
+- Predictable state management.
+- Fast POS interactions.
+- Efficient ticket scanning.
+- Immediate local UI feedback.
+- Reliable kitchen updates.
+- Accurate inventory operations.
+- Safe retries.
+- Idempotent payment and ticket operations.
+- Optimized rendering.
+- Background processing where useful.
+- Lazy-loaded modules.
+- Search and pagination for large datasets.
+- Clear recovery after failures.
+
+Avoid unnecessary page reloads.
+
+Do not sacrifice business correctness for superficial speed.
+
+Measure actual interaction and API performance.
+
+Do not claim zero lag without testing.
+
+# 31. DEVICE-BASED DESIGN
+
+## Restaurant
+
+**Desktop**
+- Management.
+- POS.
+- Kitchen.
+- Finance.
+- Menu administration.
+
+**Tablet**
+- Waiter ordering.
+- Floor supervision.
+- Kitchen.
+- Inventory receiving.
+
+**Mobile**
+- Reservations.
+- Manager approvals.
+- Staff tasks.
+- Menu availability.
+- Operational alerts.
+
+## Play Land
+
+**Desktop**
+- Ticket counter.
+- Management.
+- Finance.
+- Event administration.
+
+**Tablet**
+- Attraction operations.
+- Supervisor checks.
+- Maintenance.
+
+**Mobile / Handheld**
+- Ticket validation.
+- Fault reporting.
+- Assigned tasks.
+- Guest assistance.
+
+Test responsive widths from 320px to large desktop displays.
+
+Each role's primary device must offer a fully comfortable, practical experience.
+
+# 32. DEMO DATA & TEST ROLE EXPERIENCE
+
+Create a polished demonstration environment.
+
+## Demo Restaurant
+
+Provide fictional but realistic examples of:
+
+- Tables.
+- Menu items.
+- Orders.
+- Kitchen tickets.
+- Ingredient inventory.
+- Reservations.
+- Staff shifts.
+- Supplier orders.
+- Financial transactions.
+
+Clearly label all generated demonstration records.
+
+## Demo Play Land
+
+Provide fictional but realistic examples of:
+
+- Attractions.
+- Tickets.
+- Sessions.
+- Packages.
+- Operators.
+- Inspections.
+- Maintenance requests.
+- Birthday bookings.
+- Cashier shifts.
+- Reports.
+
+Do not represent fictional rides, packages, prices or facilities as actual Marhaba offerings.
+
+## Demo role switching
+
+Provide a convenient test-only role selector with clear role descriptions.
+
+Switching roles should change:
+
+- Dashboard.
+- Sidebar.
+- Permitted actions.
+- Data scope.
+- Pending tasks.
+- Relevant workflows.
+
+This is a demo feature only.
+
+In production, actual permissions must be assigned by authorized administrators.
+
+# 33. COMPLETE QUALITY ASSURANCE
+
+Audit each system role by role.
+
+For every role:
+
+1. Open dedicated login.
+2. Authenticate in the appropriate environment.
+3. Inspect dashboard.
+4. Review available tabs.
+5. Perform routine work.
+6. Submit records.
+7. Verify approvals.
+8. Confirm data updates.
+9. Test unauthorized actions.
+10. Test mobile/tablet/desktop layouts.
+11. Check performance.
+12. Review visual consistency.
+13. Fix problems.
+14. Re-test.
+
+Also verify:
+
+- All three Management Portal cards.
+- Shared staff login.
+- System-specific login.
+- Demo role selection.
+- Authenticated workspace selection.
+- Logout.
+- Session expiration.
+- Cross-system access restrictions.
+- Supermarket regression testing.
+
+Do not claim successful tests without performing them.
+
+# 34. REQUIRED DEVELOPMENT SEQUENCE
+
+Complete in the following order.
+
+### PHASE 1 — EXISTING PROJECT INSPECTION
+
+Analyze routes, authentication, Supermarket integration points and current UI.
+
+### PHASE 2 — MANAGEMENT PORTAL
+
+Build the central login, three management cards and responsive gateway.
+
+### PHASE 3 — ACCESS CONTROL
+
+Implement secure system selection, authentication guards and demo role selection.
+
+### PHASE 4 — RESTAURANT FOUNDATION
+
+Build Restaurant dashboard, navigation, roles, data models and permissions.
+
+### PHASE 5 — RESTAURANT CORE OPERATIONS
+
+Implement tables, reservations, POS, orders, KDS, menu and food inventory.
+
+### PHASE 6 — RESTAURANT MANAGEMENT
+
+Implement purchasing, staff, finance, reports and approvals.
+
+### PHASE 7 — PLAY LAND FOUNDATION
+
+Build Play Land dashboard, roles, navigation, data models and permissions.
+
+### PHASE 8 — PLAY LAND CORE OPERATIONS
+
+Implement ticket counter, admissions, attractions, capacity, sessions and packages.
+
+### PHASE 9 — PLAY LAND MANAGEMENT
+
+Implement inspections, maintenance, events, staff, finance and reporting.
+
+### PHASE 10 — CROSS-SYSTEM VERIFICATION
+
+Verify the unified gateway, authorized navigation, role isolation and applicable integration contracts.
+
+### PHASE 11 — FINAL QA
+
+Perform complete operational, security, performance, responsive and visual testing.
+
+### PHASE 12 — FINAL REFINEMENT
+
+Improve any confusing or inefficient workflows, inconsistent visual elements, slow interactions or incomplete functionality.
+
+Do not postpone foundational security and transaction-integrity requirements until after visual development.
+
+# 35. FINAL DELIVERY REQUIREMENTS
+
+At completion, provide:
+
+1. Working Management Portal.
+2. Working navigation for all three systems.
+3. Existing Supermarket system preserved.
+4. Complete Restaurant application.
+5. Complete Play Land application.
+6. Role-based access and dashboards.
+7. Functional frontend interactions.
+8. Accurate workflow state transitions.
+9. Demonstration login and role testing.
+10. Responsive design.
+11. Security and access verification.
+12. Cross-module data consistency.
+13. Performance findings.
+14. Complete QA results.
+15. Clear report of unavailable integrations and missing business information.
+
+Distinguish carefully between:
+
+- Fully implemented features.
+- Functional demonstrations.
+- Features requiring production integrations.
+- Business information requiring Marhaba confirmation.
+- Incomplete work or unresolved defects.
+
+# 36. FINAL MWI EXECUTIVE DIRECTIVE
+
+Marhaba represents an established business built around customer trust, professional service, retail operations, hospitality and family experiences.
+
+Its management systems must demonstrate that same level of responsibility.
+
+**The Supermarket system must remain untouched and stable.**
+
+**The Restaurant system must provide a complete professional hospitality operation.**
+
+**The Play Land system must support comfortable family experiences, efficient admissions, reliable operations and responsible safety management.**
+
+**The Management Portal must connect all three through an elegant, secure and intuitive access experience.**
+
+Every role should have:
+
+- The correct dashboard.
+- The correct navigation.
+- The correct permissions.
+- The correct information.
+- The correct daily workflows.
+- Fast and reliable interactions.
+- A comfortable responsive interface.
+- Clear feedback and assistance.
+
+Do not create unnecessary complexity.
+
+Do not design generic admin templates.
+
+Do not generate incomplete screens solely to fill navigation.
+
+Do not compromise financial accuracy or safety.
+
+Do not introduce changes that destabilize the existing Supermarket application.
+
+MetaWave Innovations LTD's objective is to demonstrate a world-class business management concept: professionally designed, deeply structured, secure, efficient and operationally credible.
+
+**Make it simple for employees, practical for supervisors, powerful for management and dependable for the organization.**
+
+### EXECUTE NOW
+
+Start with the Management Portal and its three system access cards.
+
+Preserve the existing Supermarket.
+
+Then build and fully test Restaurant Management and Play Land Management according to the specifications above.
+
+**INSPECT → ARCHITECT → DESIGN → DEVELOP → CONNECT → TEST → REFINE → VERIFY.**

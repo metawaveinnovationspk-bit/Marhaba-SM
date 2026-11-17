@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { BadgePercent, CheckCircle2, Lock, Plus, Search, X } from 'lucide-react';
+import { ArrowUpDown, BadgePercent, CheckCircle2, Lock, Plus, Search, X } from 'lucide-react';
 import { hasPermission } from '../../erp/permissions';
 import { formatPKR } from '../../utils/commerce';
 import { managementApi, type ManagementBootstrapPayload } from './managementApi';
@@ -13,6 +13,9 @@ interface CatalogOffersModuleProps {
 export function CatalogOffersModule({ mode, data, onRefresh }: CatalogOffersModuleProps) {
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'sku' | 'name' | 'sellingPrice'>('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [page, setPage] = useState(1);
   const [addOpen, setAddOpen] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -41,7 +44,7 @@ export function CatalogOffersModule({ mode, data, onRefresh }: CatalogOffersModu
 
   const filteredProducts = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return data.products.filter((p) => {
+    const filtered = data.products.filter((p) => {
       if (deptFilter !== 'all' && p.departmentId !== deptFilter) return false;
       if (!q) return true;
       return (
@@ -51,7 +54,27 @@ export function CatalogOffersModule({ mode, data, onRefresh }: CatalogOffersModu
         p.brand.toLowerCase().includes(q)
       );
     });
-  }, [data.products, search, deptFilter]);
+    return [...filtered].sort((a, b) => {
+      const mul = sortDir === 'asc' ? 1 : -1;
+      if (sortBy === 'sellingPrice') return (a.sellingPrice - b.sellingPrice) * mul;
+      return a[sortBy].localeCompare(b[sortBy]) * mul;
+    });
+  }, [data.products, search, deptFilter, sortBy, sortDir]);
+
+  const PAGE_SIZE = 15;
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pagedProducts = filteredProducts.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  const toggleSort = (col: 'sku' | 'name' | 'sellingPrice') => {
+    if (sortBy === col) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(col);
+      setSortDir('asc');
+    }
+    setPage(1);
+  };
 
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -284,14 +307,20 @@ export function CatalogOffersModule({ mode, data, onRefresh }: CatalogOffersModu
             <input
               type="search"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               placeholder="Search SKU, GTIN barcode, brand, or product name..."
               className="w-full h-10 pl-9 pr-3 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs"
             />
           </div>
           <select
             value={deptFilter}
-            onChange={(e) => setDeptFilter(e.target.value)}
+            onChange={(e) => {
+              setDeptFilter(e.target.value);
+              setPage(1);
+            }}
             className="h-10 px-3 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs font-medium"
           >
             <option value="all">All Departments ({data.products.length})</option>
@@ -437,8 +466,26 @@ export function CatalogOffersModule({ mode, data, onRefresh }: CatalogOffersModu
           <table className="w-full text-left text-xs">
             <thead className="bg-[#FAF9F6] text-[#57534E] border-b border-[#E6E2DA]">
               <tr>
-                <th className="py-3 px-4 font-semibold">SKU &amp; Barcode</th>
-                <th className="py-3 px-4 font-semibold">Product</th>
+                <th className="py-3 px-4 font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => toggleSort('sku')}
+                    className="inline-flex items-center gap-1 hover:text-[#1C1917]"
+                  >
+                    <span>SKU &amp; Barcode</span>
+                    <ArrowUpDown className="w-3 h-3" />
+                  </button>
+                </th>
+                <th className="py-3 px-4 font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => toggleSort('name')}
+                    className="inline-flex items-center gap-1 hover:text-[#1C1917]"
+                  >
+                    <span>Product</span>
+                    <ArrowUpDown className="w-3 h-3" />
+                  </button>
+                </th>
                 <th className="py-3 px-4 font-semibold">Department</th>
                 {showCostMargin && (
                   <>
@@ -446,44 +493,93 @@ export function CatalogOffersModule({ mode, data, onRefresh }: CatalogOffersModu
                     <th className="py-3 px-4 font-semibold text-right">Margin</th>
                   </>
                 )}
-                <th className="py-3 px-4 font-semibold text-right">Selling Price</th>
+                <th className="py-3 px-4 font-semibold text-right">
+                  <button
+                    type="button"
+                    onClick={() => toggleSort('sellingPrice')}
+                    className="inline-flex items-center gap-1 hover:text-[#1C1917] ml-auto"
+                  >
+                    <span>Selling Price</span>
+                    <ArrowUpDown className="w-3 h-3" />
+                  </button>
+                </th>
                 <th className="py-3 px-4 font-semibold">Reorder Pt</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E6E2DA]">
-              {filteredProducts.map((p) => (
-                <tr key={p.id} className="hover:bg-[#FAF9F6]">
-                  <td className="py-2.5 px-4 font-mono">
-                    <p className="font-semibold text-[#1C1917]">{p.sku}</p>
-                    <p className="text-[11px] text-[#57534E]">{p.barcode}</p>
-                  </td>
-                  <td className="py-2.5 px-4">
-                    <p className="font-semibold text-[#1C1917]">{p.name}</p>
-                    <p className="text-[11px] text-[#57534E]">
-                      {p.brand} · {p.unitLabel}
-                    </p>
-                  </td>
-                  <td className="py-2.5 px-4 text-[#57534E]">{p.departmentName}</td>
-                  {showCostMargin && (
-                    <>
-                      <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#57534E]">
-                        {p.purchaseCost !== null ? formatPKR(p.purchaseCost) : '—'}
-                      </td>
-                      <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#166534]">
-                        {p.marginPercent !== null ? `${p.marginPercent}%` : '—'}
-                      </td>
-                    </>
-                  )}
-                  <td className="py-2.5 px-4 text-right font-bold tabular-nums text-[#1C1917]">
-                    {formatPKR(p.sellingPrice)}
-                  </td>
-                  <td className="py-2.5 px-4 font-mono tabular-nums text-[#57534E]">
-                    {p.reorderPoint}
+              {pagedProducts.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={showCostMargin ? 7 : 5}
+                    className="py-8 px-4 text-center text-xs text-[#57534E]"
+                  >
+                    No catalogue SKUs match your search or department filter.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                pagedProducts.map((p) => (
+                  <tr key={p.id} className="hover:bg-[#FAF9F6]">
+                    <td className="py-2.5 px-4 font-mono">
+                      <p className="font-semibold text-[#1C1917]">{p.sku}</p>
+                      <p className="text-[11px] text-[#57534E]">{p.barcode}</p>
+                    </td>
+                    <td className="py-2.5 px-4">
+                      <p className="font-semibold text-[#1C1917]">{p.name}</p>
+                      <p className="text-[11px] text-[#57534E]">
+                        {p.brand} · {p.unitLabel}
+                      </p>
+                    </td>
+                    <td className="py-2.5 px-4 text-[#57534E]">{p.departmentName}</td>
+                    {showCostMargin && (
+                      <>
+                        <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#57534E]">
+                          {p.purchaseCost !== null ? formatPKR(p.purchaseCost) : '—'}
+                        </td>
+                        <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#166534]">
+                          {p.marginPercent !== null ? `${p.marginPercent}%` : '—'}
+                        </td>
+                      </>
+                    )}
+                    <td className="py-2.5 px-4 text-right font-bold tabular-nums text-[#1C1917]">
+                      {formatPKR(p.sellingPrice)}
+                    </td>
+                    <td className="py-2.5 px-4 font-mono tabular-nums text-[#57534E]">
+                      {p.reorderPoint}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
+        </div>
+        <div className="px-4 py-3 border-t border-[#E6E2DA] bg-[#FAF9F6] flex flex-wrap items-center justify-between gap-2 text-xs text-[#57534E]">
+          <span className="tabular-nums">
+            Showing {filteredProducts.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1}–
+            {Math.min(safePage * PAGE_SIZE, filteredProducts.length)} of {filteredProducts.length} SKUs
+          </span>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={safePage <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="px-3 py-1 rounded-lg border border-[#E6E2DA] bg-[#FFFFFF] font-semibold text-[#1C1917] disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span className="font-mono text-[11px]">
+                {safePage} / {totalPages}
+              </span>
+              <button
+                type="button"
+                disabled={safePage >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                className="px-3 py-1 rounded-lg border border-[#E6E2DA] bg-[#FFFFFF] font-semibold text-[#1C1917] disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

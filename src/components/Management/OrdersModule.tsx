@@ -13,6 +13,7 @@ interface OrdersModuleProps {
 export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
   const [stageFilter, setStageFilter] = useState<'active' | 'completed' | 'all'>('active');
   const [selectedOrderId, setSelectedOrderId] = useState<string>(data.onlineOrders[0]?.id || '');
+  const [subNotes, setSubNotes] = useState<Record<string, string>>({});
   const [feedback, setFeedback] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -33,12 +34,18 @@ export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
     orderId: string,
     productId: string,
     pickedQty: number,
-    flaggedMissing: boolean
+    flaggedMissing: boolean,
+    substituteNote?: string
   ) => {
     setBusy(true);
     setFeedback(null);
     try {
-      await managementApi.updateOrderPick(orderId, { productId, pickedQty, flaggedMissing });
+      await managementApi.updateOrderPick(orderId, {
+        productId,
+        pickedQty,
+        flaggedMissing,
+        substituteNote,
+      });
       await onRefresh();
     } catch (err) {
       setFeedback({ type: 'err', text: err instanceof Error ? err.message : 'Pick update failed.' });
@@ -47,18 +54,23 @@ export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
     }
   };
 
-  const handleStageChange = async (orderId: string, stage: OnlineFulfillmentStage) => {
+  const handleStageChange = async (
+    orderId: string,
+    stage: OnlineFulfillmentStage,
+    extra?: { paymentStatus?: OnlineFulfillmentOrder['paymentStatus']; exceptionReason?: string }
+  ) => {
     setBusy(true);
     setFeedback(null);
     try {
       const res = await managementApi.updateOrderStage(
         orderId,
         stage,
-        stage === 'Packed' || stage === 'Ready for Pickup' || stage === 'Dispatched'
+        stage === 'Packed' || stage === 'Ready for Pickup' || stage === 'Dispatched',
+        extra
       );
       setFeedback({
         type: 'ok',
-        text: `Order ${res.order.orderNumber} moved to "${res.order.stage}" (Stock: ${res.order.reservationStatus}).`,
+        text: `Order ${res.order.orderNumber} updated: Stage "${res.order.stage}" · Payment "${res.order.paymentStatus}" · Stock "${res.order.reservationStatus}".`,
       });
       await onRefresh();
     } catch (err) {
@@ -131,9 +143,22 @@ export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
                     <span className="font-mono text-xs font-bold text-[#1C1917]">
                       {o.orderNumber}
                     </span>
-                    <span className="px-2 py-0.5 rounded bg-[#9B1C2E]/10 text-[#9B1C2E] text-[11px] font-semibold">
-                      {o.stage}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                          o.paymentStatus === 'Failed'
+                            ? 'bg-[#9B1C2E]/10 text-[#9B1C2E]'
+                            : o.paymentStatus === 'Paid'
+                            ? 'bg-[#166534]/10 text-[#166534]'
+                            : 'bg-[#B45309]/10 text-[#B45309]'
+                        }`}
+                      >
+                        {o.paymentStatus}
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-[#9B1C2E]/10 text-[#9B1C2E] text-[11px] font-semibold">
+                        {o.stage}
+                      </span>
+                    </div>
                   </div>
                   <p className="mt-1 text-xs font-semibold text-[#1C1917]">{o.customerName}</p>
                   <div className="mt-1 flex items-center justify-between text-[11px] text-[#57534E]">
@@ -168,12 +193,21 @@ export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
                     {activeOrder.customerName} ({activeOrder.customerPhone}) · {activeOrder.addressSummary}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="flex flex-wrap gap-1.5">
                   <span className="inline-block px-2.5 py-1 rounded-md bg-[#FAF9F6] border border-[#E6E2DA] text-xs font-semibold text-[#1C1917]">
                     Stock: {activeOrder.reservationStatus}
                   </span>
+                  <span className="inline-block px-2.5 py-1 rounded-md bg-[#FAF9F6] border border-[#E6E2DA] text-xs font-semibold text-[#1C1917]">
+                    Pay: {activeOrder.paymentStatus}
+                  </span>
                 </div>
               </div>
+
+              {activeOrder.exceptionReason && (
+                <div className="p-3 rounded-xl bg-[#B45309]/10 border border-[#B45309]/25 text-xs text-[#B45309] font-medium">
+                  Exception Notice: {activeOrder.exceptionReason}
+                </div>
+              )}
 
               {/* Pick Checklist */}
               <div>
@@ -182,56 +216,72 @@ export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
                 </h4>
                 <div className="divide-y divide-[#E6E2DA] border border-[#E6E2DA] rounded-xl overflow-hidden">
                   {activeOrder.items.map((line) => (
-                    <div
-                      key={line.productId}
-                      className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-                    >
-                      <div>
-                        <p className="font-bold text-[#1C1917]">{line.name}</p>
-                        <p className="text-[11px] font-mono text-[#57534E]">
-                          Bin: {line.locationCode} · SKU: {line.sku} · Ordered: {line.quantity}
-                        </p>
+                    <div key={line.productId} className="p-3.5 space-y-2 text-xs">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <p className="font-bold text-[#1C1917]">{line.name}</p>
+                          <p className="text-[11px] font-mono text-[#57534E]">
+                            Bin: {line.locationCode} · SKU: {line.sku} · Ordered: {line.quantity}
+                          </p>
+                          {line.substituteNote && (
+                            <p className="mt-0.5 text-[11px] text-[#B45309]">
+                              Substitution Note: {line.substituteNote}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="font-mono font-semibold text-[#166534] whitespace-nowrap">
+                            Picked {line.pickedQty}/{line.quantity}
+                          </span>
+                          {canEditOrders && !['Completed', 'Cancelled'].includes(activeOrder.stage) && (
+                            <>
+                              <button
+                                type="button"
+                                disabled={busy || line.pickedQty >= line.quantity}
+                                onClick={() =>
+                                  handlePickLine(activeOrder.id, line.productId, line.quantity, false)
+                                }
+                                className="px-2.5 py-1.5 rounded-lg bg-[#166534] text-white font-semibold disabled:opacity-40 inline-flex items-center gap-1 whitespace-nowrap shrink-0"
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                <span>Pick Full</span>
+                              </button>
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() =>
+                                  handlePickLine(
+                                    activeOrder.id,
+                                    line.productId,
+                                    line.pickedQty,
+                                    !line.flaggedMissing,
+                                    subNotes[line.productId]
+                                  )
+                                }
+                                className={`px-2.5 py-1.5 rounded-lg border font-semibold inline-flex items-center gap-1 whitespace-nowrap shrink-0 ${
+                                  line.flaggedMissing
+                                    ? 'border-[#B45309] bg-[#B45309]/10 text-[#B45309]'
+                                    : 'border-[#E6E2DA] text-[#57534E]'
+                                }`}
+                              >
+                                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                                <span>{line.flaggedMissing ? 'Missing Flagged' : 'Flag Issue'}</span>
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="font-mono font-semibold text-[#166534] whitespace-nowrap">
-                          Picked {line.pickedQty}/{line.quantity}
-                        </span>
-                        {canEditOrders && !['Completed', 'Cancelled'].includes(activeOrder.stage) && (
-                          <>
-                            <button
-                              type="button"
-                              disabled={busy || line.pickedQty >= line.quantity}
-                              onClick={() =>
-                                handlePickLine(activeOrder.id, line.productId, line.quantity, false)
-                              }
-                              className="px-2.5 py-1.5 rounded-lg bg-[#166534] text-white font-semibold disabled:opacity-40 inline-flex items-center gap-1 whitespace-nowrap shrink-0"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                              <span>Pick Full</span>
-                            </button>
-                            <button
-                              type="button"
-                              disabled={busy}
-                              onClick={() =>
-                                handlePickLine(
-                                  activeOrder.id,
-                                  line.productId,
-                                  line.pickedQty,
-                                  !line.flaggedMissing
-                                )
-                              }
-                              className={`px-2.5 py-1.5 rounded-lg border font-semibold inline-flex items-center gap-1 whitespace-nowrap shrink-0 ${
-                                line.flaggedMissing
-                                  ? 'border-[#B45309] bg-[#B45309]/10 text-[#B45309]'
-                                  : 'border-[#E6E2DA] text-[#57534E]'
-                              }`}
-                            >
-                              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                              <span>{line.flaggedMissing ? 'Missing Flagged' : 'Flag Issue'}</span>
-                            </button>
-                          </>
-                        )}
-                      </div>
+                      {canEditOrders && !['Completed', 'Cancelled'].includes(activeOrder.stage) && (
+                        <input
+                          type="text"
+                          value={subNotes[line.productId] ?? line.substituteNote ?? ''}
+                          onChange={(e) =>
+                            setSubNotes((prev) => ({ ...prev, [line.productId]: e.target.value }))
+                          }
+                          placeholder="Optional customer-approved substitution note before flagging issue..."
+                          className="w-full h-8 px-2.5 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-[11px]"
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -244,7 +294,7 @@ export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
                     type="button"
                     disabled={busy || activeOrder.stage === 'Packed'}
                     onClick={() => handleStageChange(activeOrder.id, 'Packed')}
-                    className="px-3.5 py-2 rounded-lg border border-[#E6E2DA] text-xs font-semibold hover:border-[#9B1C2E] inline-flex items-center gap-1.5"
+                    className="px-3.5 py-2 rounded-lg border border-[#E6E2DA] text-xs font-semibold hover:border-[#9B1C2E] inline-flex items-center gap-1.5 whitespace-nowrap"
                   >
                     <PackageCheck className="w-3.5 h-3.5 text-[#166534]" />
                     <span>Mark Packing Verified</span>
@@ -258,7 +308,7 @@ export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
                         activeOrder.fulfillmentMethod === 'pickup' ? 'Ready for Pickup' : 'Dispatched'
                       )
                     }
-                    className="px-3.5 py-2 rounded-lg bg-[#9B1C2E] text-white text-xs font-semibold hover:bg-[#7F1524] inline-flex items-center gap-1.5"
+                    className="px-3.5 py-2 rounded-lg bg-[#9B1C2E] text-white text-xs font-semibold hover:bg-[#7F1524] inline-flex items-center gap-1.5 whitespace-nowrap"
                   >
                     <Truck className="w-3.5 h-3.5" />
                     <span>
@@ -271,16 +321,31 @@ export function OrdersModule({ data, onRefresh }: OrdersModuleProps) {
                     type="button"
                     disabled={busy}
                     onClick={() => handleStageChange(activeOrder.id, 'Completed')}
-                    className="px-3.5 py-2 rounded-lg bg-[#166534] text-white text-xs font-semibold hover:bg-[#14532D]"
+                    className="px-3.5 py-2 rounded-lg bg-[#166534] text-white text-xs font-semibold hover:bg-[#14532D] whitespace-nowrap"
                   >
                     Complete Order
                   </button>
+                  {activeOrder.paymentStatus !== 'Failed' && activeOrder.stage !== 'Completed' && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() =>
+                        handleStageChange(activeOrder.id, 'Exception', {
+                          paymentStatus: 'Failed',
+                          exceptionReason: 'Payment authorization failed at counter / gateway',
+                        })
+                      }
+                      className="px-3.5 py-2 rounded-lg border border-[#B45309]/40 text-[#B45309] text-xs font-semibold hover:bg-[#B45309]/8 whitespace-nowrap"
+                    >
+                      Mark Payment Failed
+                    </button>
+                  )}
                   {activeOrder.stage !== 'Cancelled' && activeOrder.stage !== 'Completed' && (
                     <button
                       type="button"
                       disabled={busy}
                       onClick={() => handleStageChange(activeOrder.id, 'Cancelled')}
-                      className="px-3.5 py-2 rounded-lg border border-[#9B1C2E]/30 text-[#9B1C2E] text-xs font-semibold hover:bg-[#9B1C2E]/8"
+                      className="px-3.5 py-2 rounded-lg border border-[#9B1C2E]/30 text-[#9B1C2E] text-xs font-semibold hover:bg-[#9B1C2E]/8 whitespace-nowrap"
                     >
                       Cancel &amp; Release Stock
                     </button>

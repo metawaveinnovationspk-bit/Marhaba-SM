@@ -2,14 +2,17 @@ import { PRODUCTS, SHOP_DEPARTMENTS, VERIFIED_BRANCHES } from '../data/marhabaDa
 import type {
   ApprovalRequest,
   AuditLogEntry,
+  BankSettlementRecord,
   BranchChecklistItem,
   BranchStockRecord,
   BusinessExpense,
   CashierShift,
   CustomerServiceCase,
+  CycleCountRecord,
   ErpProduct,
   GoodsReceiptNote,
   LeaveRequestRecord,
+  MaintenanceTicket,
   OnlineFulfillmentOrder,
   PosSaleRecord,
   PromotionCampaign,
@@ -18,6 +21,7 @@ import type {
   StaffAttendanceRecord,
   StaffUser,
   StockMovement,
+  StockTransferRecord,
   SupplierInvoiceRecord,
   SupplierRecord,
   SyncJobRecord,
@@ -28,6 +32,7 @@ export interface StaffCredentialSeed extends StaffUser {
 }
 
 export const INITIAL_STAFF_USERS: StaffCredentialSeed[] = [
+  // FRONTLINE SALES & FLOOR
   {
     id: 'usr-cashier-hyd',
     employeeCode: 'MRH-EMP-042',
@@ -40,12 +45,34 @@ export const INITIAL_STAFF_USERS: StaffCredentialSeed[] = [
     demoPin: 'demo1234',
   },
   {
+    id: 'usr-senior-cashier-hyd',
+    employeeCode: 'MRH-EMP-038',
+    fullName: 'Bilquis Javed (Demo)',
+    email: 'senior.cashier@marhaba.demo',
+    roleId: 'senior_cashier',
+    department: 'Checkout Operations',
+    branchId: 'hyderabad',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
     id: 'usr-pos-sup-hyd',
     employeeCode: 'MRH-EMP-019',
     fullName: 'Kamran Siddiqui',
     email: 'pos.sup@marhaba.demo',
     roleId: 'pos_supervisor',
     department: 'Checkout Operations',
+    branchId: 'hyderabad',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
+    id: 'usr-sales-asst-hyd',
+    employeeCode: 'MRH-EMP-071',
+    fullName: 'Fahad Memon (Demo)',
+    email: 'sales.assistant@marhaba.demo',
+    roleId: 'sales_assistant',
+    department: 'Grocery & Dairy Floor',
     branchId: 'hyderabad',
     active: true,
     demoPin: 'demo1234',
@@ -73,12 +100,80 @@ export const INITIAL_STAFF_USERS: StaffCredentialSeed[] = [
     demoPin: 'demo1234',
   },
   {
+    id: 'usr-order-picker',
+    employeeCode: 'MRH-EMP-066',
+    fullName: 'Saqib Brohi (Demo)',
+    email: 'picker.hyd@marhaba.demo',
+    roleId: 'order_picker',
+    department: 'E-Commerce Fulfillment',
+    branchId: 'hyderabad',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
+    id: 'usr-cs-hyd',
+    employeeCode: 'MRH-EMP-063',
+    fullName: 'Ayesha Ansari',
+    email: 'support@marhaba.demo',
+    roleId: 'customer_service',
+    department: 'Customer Care',
+    branchId: 'hyderabad',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
+    id: 'usr-facilities-hyd',
+    employeeCode: 'MRH-EMP-078',
+    fullName: 'Naveed Arain (Demo)',
+    email: 'maintenance@marhaba.demo',
+    roleId: 'facilities_admin',
+    department: 'Branch Administration & Maintenance',
+    branchId: 'hyderabad',
+    active: true,
+    demoPin: 'demo1234',
+  },
+
+  // OPERATIONAL MANAGEMENT
+  {
+    id: 'usr-stock-ctrl-hyd',
+    employeeCode: 'MRH-EMP-049',
+    fullName: 'Tariq Jamali (Demo)',
+    email: 'stock.controller@marhaba.demo',
+    roleId: 'stock_controller',
+    department: 'Inventory & Warehouse',
+    branchId: 'hyderabad',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
+    id: 'usr-inv-auditor',
+    employeeCode: 'MRH-AUD-002',
+    fullName: 'Farhan Raza (Demo)',
+    email: 'inv.auditor@marhaba.demo',
+    roleId: 'inventory_auditor',
+    department: 'Inventory Audit',
+    branchId: 'all',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
     id: 'usr-inv-mgr',
     employeeCode: 'MRH-MGR-008',
     fullName: 'Adnan Sheikh',
     email: 'inventory@marhaba.demo',
     roleId: 'inventory_manager',
     department: 'Inventory & Warehouse',
+    branchId: 'all',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
+    id: 'usr-purch-off',
+    employeeCode: 'MRH-EMP-024',
+    fullName: 'Danish Ali (Demo)',
+    email: 'buyer@marhaba.demo',
+    roleId: 'purchasing_officer',
+    department: 'Procurement & Vendors',
     branchId: 'all',
     active: true,
     demoPin: 'demo1234',
@@ -95,12 +190,34 @@ export const INITIAL_STAFF_USERS: StaffCredentialSeed[] = [
     demoPin: 'demo1234',
   },
   {
+    id: 'usr-ap-officer',
+    employeeCode: 'MRH-EMP-029',
+    fullName: 'Rabia Siddiqui (Demo)',
+    email: 'ap@marhaba.demo',
+    roleId: 'accounts_payable',
+    department: 'Accounts & Finance',
+    branchId: 'all',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
     id: 'usr-acc-mgr',
     employeeCode: 'MRH-MGR-004',
     fullName: 'Hina Lakhani',
     email: 'accounts@marhaba.demo',
     roleId: 'accounts_manager',
     department: 'Accounts & Finance',
+    branchId: 'all',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
+    id: 'usr-hr-mgr',
+    employeeCode: 'MRH-MGR-007',
+    fullName: 'Sadia Khalid (Demo)',
+    email: 'hr@marhaba.demo',
+    roleId: 'hr_manager',
+    department: 'Human Resources',
     branchId: 'all',
     active: true,
     demoPin: 'demo1234',
@@ -127,17 +244,8 @@ export const INITIAL_STAFF_USERS: StaffCredentialSeed[] = [
     active: true,
     demoPin: 'demo1234',
   },
-  {
-    id: 'usr-cs-hyd',
-    employeeCode: 'MRH-EMP-063',
-    fullName: 'Ayesha Ansari',
-    email: 'support@marhaba.demo',
-    roleId: 'customer_service',
-    department: 'Customer Care',
-    branchId: 'hyderabad',
-    active: true,
-    demoPin: 'demo1234',
-  },
+
+  // TECHNICAL & MIS
   {
     id: 'usr-data-op',
     employeeCode: 'MRH-TEC-011',
@@ -145,6 +253,31 @@ export const INITIAL_STAFF_USERS: StaffCredentialSeed[] = [
     email: 'catalog@marhaba.demo',
     roleId: 'product_data_operator',
     department: 'MIS & Product Data',
+    branchId: 'all',
+    active: true,
+    demoPin: 'demo1234',
+  },
+  {
+    id: 'usr-dir-mis',
+    employeeCode: 'MRH-DIR-005',
+    fullName: 'Shahzad Ahmed Memon',
+    email: 'shahzad.mis@marhaba.demo',
+    roleId: 'director_mis',
+    department: 'Management Information Systems',
+    branchId: 'all',
+    active: true,
+    isPublishedLeadership: true,
+    demoPin: 'demo1234',
+  },
+
+  // EXECUTIVE BOARD & INTERNAL AUDIT
+  {
+    id: 'usr-int-auditor',
+    employeeCode: 'MRH-AUD-001',
+    fullName: 'Kamaluddin Shaikh (Demo)',
+    email: 'audit@marhaba.demo',
+    roleId: 'internal_auditor',
+    department: 'Internal Audit & Compliance',
     branchId: 'all',
     active: true,
     demoPin: 'demo1234',
@@ -186,18 +319,6 @@ export const INITIAL_STAFF_USERS: StaffCredentialSeed[] = [
     demoPin: 'demo1234',
   },
   {
-    id: 'usr-dir-mis',
-    employeeCode: 'MRH-DIR-005',
-    fullName: 'Shahzad Ahmed Memon',
-    email: 'shahzad.mis@marhaba.demo',
-    roleId: 'director_mis',
-    department: 'Management Information Systems',
-    branchId: 'all',
-    active: true,
-    isPublishedLeadership: true,
-    demoPin: 'demo1234',
-  },
-  {
     id: 'usr-ceo',
     employeeCode: 'MRH-DIR-001',
     fullName: 'Riaz Ahmed Memon',
@@ -207,6 +328,17 @@ export const INITIAL_STAFF_USERS: StaffCredentialSeed[] = [
     branchId: 'all',
     active: true,
     isPublishedLeadership: true,
+    demoPin: 'demo1234',
+  },
+  {
+    id: 'usr-owner-partner',
+    employeeCode: 'MRH-OWN-002',
+    fullName: 'Board Partner Representative (Demo)',
+    email: 'partner@marhaba.demo',
+    roleId: 'owner_partner',
+    department: 'Ownership & Governance',
+    branchId: 'all',
+    active: true,
     demoPin: 'demo1234',
   },
 ];
@@ -221,6 +353,7 @@ export const INITIAL_SUPPLIERS: SupplierRecord[] = [
     city: 'Karachi',
     paymentTermsDays: 21,
     onTimeRatePercent: 96,
+    qualityScorePercent: 98,
     status: 'Active',
   },
   {
@@ -232,6 +365,7 @@ export const INITIAL_SUPPLIERS: SupplierRecord[] = [
     city: 'Karachi',
     paymentTermsDays: 15,
     onTimeRatePercent: 98,
+    qualityScorePercent: 94,
     status: 'Active',
   },
   {
@@ -243,6 +377,7 @@ export const INITIAL_SUPPLIERS: SupplierRecord[] = [
     city: 'Hyderabad',
     paymentTermsDays: 30,
     onTimeRatePercent: 91,
+    qualityScorePercent: 95,
     status: 'Active',
   },
   {
@@ -254,6 +389,7 @@ export const INITIAL_SUPPLIERS: SupplierRecord[] = [
     city: 'Hyderabad',
     paymentTermsDays: 14,
     onTimeRatePercent: 89,
+    qualityScorePercent: 92,
     status: 'Active',
   },
 ];
@@ -293,7 +429,7 @@ function buildErpProducts(): ErpProduct[] {
         p.departmentId === 'fresh-food' || p.departmentId === 'grocery-pantry'
           ? 'Essential Exempt (Demo Configurable)'
           : 'Standard GST (Demo Configurable)',
-      status: p.inStock ? 'Active' : 'Active',
+      status: 'Active',
       reorderPoint: index % 4 === 0 ? 18 : 12,
       dataTier: p.dataTier,
     };
@@ -309,6 +445,8 @@ function buildBranchStock(erpProducts: ErpProduct[]): BranchStockRecord[] {
         (bIdx === 0 && (pIdx === 1 || pIdx === 6)) ||
         (bIdx === 1 && pIdx === 4);
       const baseOnHand = isOutOfStock ? 0 : lowItem ? 7 : 28 + ((pIdx * 5 + bIdx * 9) % 45);
+      const floorQty = Math.min(baseOnHand, Math.max(0, Math.round(baseOnHand * 0.45)));
+      const warehouseQty = Math.max(0, baseOnHand - floorQty);
       const isPerishable =
         prod.departmentId === 'dairy-bakery' ||
         prod.departmentId === 'fresh-food' ||
@@ -317,9 +455,9 @@ function buildBranchStock(erpProducts: ErpProduct[]): BranchStockRecord[] {
       const expiryDate = !isPerishable
         ? ''
         : pIdx === 1 && bIdx === 0
-        ? '2026-12-03' // near-expiry demo alert
+        ? '2026-12-03'
         : pIdx === 10 && bIdx === 0
-        ? '2026-11-22' // urgent near-expiry
+        ? '2026-11-22'
         : '2027-04-15';
 
       records.push({
@@ -328,10 +466,13 @@ function buildBranchStock(erpProducts: ErpProduct[]): BranchStockRecord[] {
         locationCode: `${branch.id === 'hyderabad' ? 'HYD' : branch.id === 'karachi-p10' ? 'K10' : 'KP2'}-A${String(
           (pIdx % 9) + 1
         ).padStart(2, '0')}`,
+        zone: floorQty > 0 ? 'Sales Floor' : 'Backroom Warehouse',
         onHand: baseOnHand,
+        floorQty,
+        warehouseQty,
         reserved: pIdx === 0 && bIdx === 0 ? 2 : 0,
         damaged: pIdx === 3 && bIdx === 0 ? 2 : 0,
-        inTransit: lowItem ? 15 : 0,
+        inTransit: bIdx === 1 && pIdx === 4 ? 15 : 0,
         batchNumber: `B-2611-${String(100 + pIdx)}`,
         expiryDate,
       });
@@ -346,10 +487,13 @@ export interface ErpDatabaseState {
   products: ErpProduct[];
   stock: BranchStockRecord[];
   stockMovements: StockMovement[];
+  stockTransfers: StockTransferRecord[];
+  cycleCounts: CycleCountRecord[];
   requisitions: PurchaseRequisition[];
   purchaseOrders: PurchaseOrder[];
   goodsReceipts: GoodsReceiptNote[];
   supplierInvoices: SupplierInvoiceRecord[];
+  bankSettlements: BankSettlementRecord[];
   shifts: CashierShift[];
   posSales: PosSaleRecord[];
   onlineOrders: OnlineFulfillmentOrder[];
@@ -358,6 +502,7 @@ export interface ErpDatabaseState {
   customerCases: CustomerServiceCase[];
   approvals: ApprovalRequest[];
   checklists: BranchChecklistItem[];
+  maintenanceTickets: MaintenanceTicket[];
   attendance: StaffAttendanceRecord[];
   leaveRequests: LeaveRequestRecord[];
   auditLogs: AuditLogEntry[];
@@ -378,10 +523,10 @@ export function createInitialErpDatabase(): ErpDatabaseState {
       cashierName: 'Usman Tariq',
       openedAt: '2026-11-16T05:00:00Z',
       openingFloat: 15000,
-      cashSalesTotal: 8910,
+      cashSalesTotal: 8880,
       cardSalesTotal: 4180,
       refundsTotal: 0,
-      expectedCash: 23910,
+      expectedCash: 23880,
       status: 'Open',
     },
     {
@@ -394,11 +539,11 @@ export function createInitialErpDatabase(): ErpDatabaseState {
       openedAt: '2026-11-15T05:00:00Z',
       closedAt: '2026-11-15T17:00:00Z',
       openingFloat: 15000,
-      cashSalesTotal: 34200,
+      cashSalesTotal: 33440,
       cardSalesTotal: 19800,
       refundsTotal: 0,
-      expectedCash: 49200,
-      declaredCash: 48750,
+      expectedCash: 48440,
+      declaredCash: 47990,
       variance: -450,
       status: 'Pending Reconciliation',
     },
@@ -511,6 +656,39 @@ export function createInitialErpDatabase(): ErpDatabaseState {
     },
   ];
 
+  const stockTransfers: StockTransferRecord[] = [
+    {
+      id: 'trf-901',
+      transferRef: 'TRF-2026-901',
+      productId: products[4].id,
+      productName: products[4].name,
+      fromBranchId: 'hyderabad',
+      toBranchId: 'karachi-p10',
+      dispatchedQty: 15,
+      receivedQty: 0,
+      damagedInTransitQty: 0,
+      status: 'In Transit',
+      dispatchedByName: 'Adnan Sheikh',
+      dispatchedAt: '2026-11-16T06:00:00Z',
+    },
+  ];
+
+  const cycleCounts: CycleCountRecord[] = [
+    {
+      id: 'cnt-301',
+      branchId: 'hyderabad',
+      productId: products[3].id,
+      productName: products[3].name,
+      systemQty: 32,
+      physicalQty: 30,
+      variance: -2,
+      countedByName: 'Tariq Jamali (Demo)',
+      countedAt: '2026-11-16T07:20:00Z',
+      status: 'Pending Approval',
+      notes: '2 cartons dented during overnight aisle restock.',
+    },
+  ];
+
   const purchaseOrders: PurchaseOrder[] = [
     {
       id: 'po-2026-014',
@@ -565,12 +743,12 @@ export function createInitialErpDatabase(): ErpDatabaseState {
       requestedByUserId: 'usr-inv-mgr',
       requestedByName: 'Adnan Sheikh',
       createdAt: '2026-11-16T07:10:00Z',
-      status: 'Pending Approval',
+      status: 'Approved',
       supplierId: 'sup-fmcg-dist',
       items: [
         { productId: products[6].id, quantity: 48, estimatedUnitCost: products[6].purchaseCost },
       ],
-      notes: 'Beverage shelf alert at Qasim Chowk below reorder threshold.',
+      notes: 'Beverage shelf alert at Qasim Chowk below reorder threshold — ready to convert to PO.',
     },
   ];
 
@@ -624,6 +802,30 @@ export function createInitialErpDatabase(): ErpDatabaseState {
     },
   ];
 
+  const bankSettlements: BankSettlementRecord[] = [
+    {
+      id: 'bnk-hyd-01',
+      batchRef: 'BNK-HYD-20261116',
+      branchId: 'hyderabad',
+      date: '2026-11-16',
+      posCardExpected: 4180,
+      bankSettledAmount: 4180,
+      variance: 0,
+      status: 'Matched',
+      reconciledByName: 'Hina Lakhani',
+    },
+    {
+      id: 'bnk-k10-01',
+      batchRef: 'BNK-K10-20261115',
+      branchId: 'karachi-p10',
+      date: '2026-11-15',
+      posCardExpected: 19800,
+      bankSettledAmount: 19550,
+      variance: -250,
+      status: 'Pending Review',
+    },
+  ];
+
   const onlineOrders: OnlineFulfillmentOrder[] = [
     {
       id: 'ord-web-901',
@@ -635,6 +837,7 @@ export function createInitialErpDatabase(): ErpDatabaseState {
       fulfillmentMethod: 'delivery',
       addressSummary: 'Flat 3B, Phase 2 Qasimabad, Hyderabad',
       paymentMethod: 'cod',
+      paymentStatus: 'Pending',
       stage: 'Confirmed',
       reservationStatus: 'Reserved',
       packingVerified: false,
@@ -674,6 +877,7 @@ export function createInitialErpDatabase(): ErpDatabaseState {
       fulfillmentMethod: 'pickup',
       addressSummary: 'Store Pickup Counter — Precinct 10-A',
       paymentMethod: 'card-counter',
+      paymentStatus: 'Paid',
       stage: 'Ready for Pickup',
       reservationStatus: 'Reserved',
       packingVerified: true,
@@ -845,7 +1049,32 @@ export function createInitialErpDatabase(): ErpDatabaseState {
     },
   ];
 
-  const attendance: StaffAttendanceRecord[] = INITIAL_STAFF_USERS.slice(0, 10).map((u, idx) => ({
+  const maintenanceTickets: MaintenanceTicket[] = [
+    {
+      id: 'mnt-101',
+      branchId: 'hyderabad',
+      equipment: 'Dairy Open Chiller Bay #2 (Supermarket)',
+      issue: 'Compressor thermostat drifting above 5°C alert band.',
+      priority: 'Urgent',
+      reportedByName: 'Zainab Soomro',
+      assignedToName: 'Naveed Arain (Demo)',
+      status: 'In Progress',
+      createdAt: '2026-11-16T06:45:00Z',
+    },
+    {
+      id: 'mnt-102',
+      branchId: 'hyderabad',
+      equipment: 'POS Lane #3 Barcode Scanner',
+      issue: 'USB cradle loose connection resolved with spare cable.',
+      priority: 'Normal',
+      reportedByName: 'Usman Tariq',
+      assignedToName: 'Naveed Arain (Demo)',
+      status: 'Verified Resolved',
+      createdAt: '2026-11-15T14:20:00Z',
+    },
+  ];
+
+  const attendance: StaffAttendanceRecord[] = INITIAL_STAFF_USERS.slice(0, 14).map((u, idx) => ({
     id: `att-${idx}`,
     userId: u.id,
     employeeCode: u.employeeCode,
@@ -878,6 +1107,8 @@ export function createInitialErpDatabase(): ErpDatabaseState {
       branchId: 'hyderabad',
       type: 'GRN',
       quantityDelta: 34,
+      sourceLocation: 'Supplier Dock',
+      destinationLocation: 'HYD-A02 (Warehouse)',
       referenceId: 'GRN-HYD-2026-019',
       actorName: 'Imran Qazi',
       reason: 'Accepted units from PO-2026-015',
@@ -889,6 +1120,8 @@ export function createInitialErpDatabase(): ErpDatabaseState {
       branchId: 'hyderabad',
       type: 'POS_SALE',
       quantityDelta: -4,
+      sourceLocation: 'HYD-A09 (Sales Floor)',
+      destinationLocation: 'Customer Checkout',
       referenceId: 'RCP-HYD-1002',
       actorName: 'Usman Tariq',
       reason: 'Completed counter sale',
@@ -957,10 +1190,13 @@ export function createInitialErpDatabase(): ErpDatabaseState {
     products,
     stock,
     stockMovements,
+    stockTransfers,
+    cycleCounts,
     requisitions,
     purchaseOrders,
     goodsReceipts,
     supplierInvoices,
+    bankSettlements,
     shifts,
     posSales,
     onlineOrders,
@@ -969,6 +1205,7 @@ export function createInitialErpDatabase(): ErpDatabaseState {
     customerCases,
     approvals,
     checklists,
+    maintenanceTickets,
     attendance,
     leaveRequests,
     auditLogs,

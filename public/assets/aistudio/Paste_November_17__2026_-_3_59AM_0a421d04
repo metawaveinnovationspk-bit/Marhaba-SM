@@ -1,0 +1,1022 @@
+# MARHABA SUPERMARKET — MASTER ROLE-BY-ROLE OPERATIONS AUDIT
+## Complete ERP Role Verification, Workflow Testing, UI/UX Perfection & Functional Enhancement
+### MetaWave Innovations LTD | Existing Google AI Studio Project
+
+**PROJECT MODE:** AUDIT → ANALYZE → TEST → IMPROVE → RE-TEST.
+
+**TARGET:** Existing Marhaba Supermarket Management System.
+
+**SCOPE:** Supermarket operations, from Cashier to Owner/CEO. Exclude Restaurant and Play Land management.
+
+**MANDATORY:** Execute improvements directly in the existing project. Preserve working functionality and do not unnecessarily rebuild the system.
+
+---
+
+# 1. ACT AS AN ENTERPRISE RETAIL EXPERT TEAM
+
+Assume the combined expertise of:
+
+- Enterprise Retail ERP Solution Architect.
+- Supermarket General Operations Manager.
+- Senior Retail POS and Cashier Operations Consultant.
+- Warehouse and Inventory Management Specialist.
+- Procurement and Supplier Management Expert.
+- Financial Controller and Retail Accounting Specialist.
+- HR and Administration Systems Consultant.
+- Enterprise Security and RBAC Architect.
+- Principal UI/UX Designer and Design Systems Expert.
+- Senior Full-Stack Software Engineer.
+- Database and Integration Engineer.
+- Software Performance Engineer.
+- Enterprise Quality Assurance Lead.
+
+Apply professional practices from SAP Retail, Microsoft Dynamics 365 Commerce, Oracle Retail, GS1, OWASP, Material Design 3, WCAG 2.2 and ISO/IEC 25010.
+
+Use these as engineering and design references, not as templates to copy.
+
+**You must think as an actual person performing each assigned supermarket job, not merely as a software developer generating screens.**
+
+# 2. UNDERSTAND THE MAIN OBJECTIVE
+
+The system must make work easier for every employee.
+
+A cashier needs fast billing.
+
+A stock controller needs accurate inventory.
+
+A buyer needs simple purchasing.
+
+An accountant needs reliable financial records.
+
+A branch manager needs operational control.
+
+A director needs departmental oversight.
+
+The CEO and owners need meaningful business intelligence.
+
+No employee should navigate irrelevant modules or perform unnecessary steps.
+
+However, simplicity must never compromise financial accuracy, authorization, stock integrity or operational accountability.
+
+### PRIMARY RULE
+
+**SHOW EACH ROLE WHAT THEY NEED. HIDE IRRELEVANT COMPLEXITY. PROTECT RESTRICTED OPERATIONS.**
+
+Build one coordinated business system with carefully adapted experiences for different roles.
+
+# 3. FIRST — INSPECT THE ACTUAL EXISTING PROJECT
+
+Before modifying UI or code:
+
+1. Inspect all existing management routes.
+2. Identify every implemented staff role.
+3. Inspect authentication and authorization.
+4. Inspect sidebar configuration.
+5. Inspect all modules, pages, tables and forms.
+6. Inspect existing database models and service layers.
+7. Check how transactions update related modules.
+8. Identify missing or duplicate features.
+9. Inspect responsive layouts.
+10. Identify broken or simulated functionality.
+
+Produce a role-to-feature inventory from the actual implementation.
+
+Do not assume a button works because it looks clickable.
+
+Do not assume a dashboard is operational because it displays numbers.
+
+Do not assume access is secure because a menu item is hidden.
+
+Distinguish:
+
+- Functional and tested.
+- Implemented but defective.
+- Frontend demo only.
+- Missing.
+- Requires backend connection.
+- Requires actual Marhaba business data.
+
+Do not falsely claim to have tested systems you cannot access.
+
+# 4. BUILD A COMPLETE ROLE & ACCESS AUDIT MATRIX
+
+Use the following recommended roles and tabs as the initial operational specification.
+
+These are proposed role templates, not a verified Marhaba staffing chart.
+
+Roles that do not exist in the actual organization may be combined or disabled.
+
+All role permissions must be configurable and approved by the organization before production deployment.
+
+## CORE MANAGEMENT MODULES
+
+Use these standardized module names:
+
+- **Today** — My dashboard, tasks, alerts and activity.
+- **POS & Sales** — Billing, shifts, transactions, returns.
+- **Products** — Catalogue, brands, categories, pricing information.
+- **Inventory** — Stock, receiving, counts, transfers and expiry.
+- **Purchasing** — Requisitions, suppliers, POs and receipts.
+- **Online Orders** — Picking, packing and fulfillment.
+- **Pricing & Offers** — Approved prices and campaigns.
+- **Finance** — Reconciliation, payments, expenses and accounting.
+- **Staff & HR** — Employees, attendance and duty schedules.
+- **Branch Operations** — Departments, shelves, equipment and tasks.
+- **Customers & Support** — Customer inquiries, complaints and returns.
+- **Reports** — Authorized operational and financial reports.
+- **MIS & Settings** — Access, configuration, integrations and audits.
+
+These are internal system modules. A role should see only the relevant portion, with access further restricted by action, branch, department and record.
+
+# 5. FRONTLINE SALES ROLES
+
+Audit each role independently.
+
+| Role | Essential visible tabs | Routine work to test |
+|---|---|---|
+| Cashier | Today, POS, My Shift, Assistance | Open shift, scan items, accept payment, issue receipt, close shift |
+| Senior Cashier | POS, Shifts, Sales, Assistance | Support cashiers, correct permitted billing issues, review exceptions |
+| POS Supervisor | POS, Shifts, Sales, Returns, Reports | Supervise counters, approve permitted overrides, review shift closing |
+| Bagger / Packing Assistant | My Tasks, Help | View assigned packing tasks and acknowledge completion where digitized |
+| Sales Assistant | Product Lookup, Stock Lookup, My Tasks | Find products, check price and availability, assist customers |
+| Shelf Replenishment Staff | My Tasks, Inventory Lookup, Shelf Tasks | Refill shelves, report missing products, verify labels |
+| Department Supervisor | Today, Department Stock, Staff Tasks, Reports | Supervise shelves, stock, department staff and daily tasks |
+| Department Manager | Department Overview, Products, Inventory, Reports | Review category performance, replenishment and departmental issues |
+| Customer Service Officer | Customers, Returns, Complaints, Orders | Resolve inquiries, create cases, request permitted returns |
+| Security Officer | My Tasks, Incident Reports | Report incidents and access assigned duties only |
+| Housekeeping Staff | My Tasks, Attendance | View cleaning assignments, acknowledge completion |
+
+Staff who do not need the ERP should receive a lightweight task interface or no ERP login, rather than unnecessary access to financial and inventory modules.
+
+### CASHIER REALITY TEST
+
+Simulate a cashier handling a busy checkout.
+
+Test:
+
+1. Login.
+2. Start shift.
+3. Scan 15 different products.
+4. Add another unit of an existing product.
+5. Remove an incorrectly scanned item.
+6. Handle a product with an invalid barcode.
+7. Process a valid discount.
+8. Accept cash payment.
+9. Calculate change.
+10. Produce a receipt.
+11. Handle a failed electronic payment.
+12. Request supervisor approval.
+13. Close shift.
+14. Declare cash.
+15. Submit discrepancy for review.
+
+Evaluate actual task completion, keyboard/scanner efficiency, response times and correctness.
+
+**The cashier interface must be exceptionally simple, fast, stable and distraction-free.**
+
+Do not display purchasing, payroll, gross margins or executive dashboards to cashiers.
+
+# 6. INVENTORY & WAREHOUSE ROLES
+
+| Role | Essential visible tabs | Routine work to test |
+|---|---|---|
+| Receiving Clerk | Receiving, Purchase Receipts, My Tasks | Scan incoming products and record delivered quantities |
+| Receiving Supervisor | Receiving, Discrepancies, Approvals | Verify receipts, approve exceptions within authority |
+| Storekeeper | Warehouse Stock, Stock Movements, My Tasks | Put away goods, retrieve items and record movements |
+| Warehouse Staff | My Tasks, Stock Lookup, Stock Movement | Complete assigned stock handling tasks |
+| Warehouse Supervisor | Warehouse, Receiving, Transfers, Reports | Supervise warehouse activities and discrepancies |
+| Stock Controller | Inventory, Counts, Adjustments, Alerts | Check availability, count stock, initiate adjustments |
+| Inventory Auditor | Stock Counts, Variance Reports, Audit | Independently verify physical and system quantities |
+| Expiry / Quality Officer | Batch & Expiry, Quality Holds, My Tasks | Identify expiring, damaged and unsuitable products |
+| Stock Transfer Coordinator | Transfers, Dispatch, Receiving | Process approved inter-branch transfers |
+| Merchandising Supervisor | Products, Shelf Tasks, Promotions | Check product placement, shelf labels and displays |
+| Inventory Manager | Inventory Overview, Transfers, Counts, Reports, Approvals | Control inventory operations, variance reviews and authorized adjustments |
+
+### INVENTORY REALITY TEST
+
+Simulate:
+
+- Receiving 100 units.
+- Finding 3 damaged units.
+- Accepting 97 units.
+- Assigning storage locations.
+- Moving 20 units to the sales floor.
+- Selling 5 units through POS.
+- Reserving 4 units for online orders.
+- Transferring 10 units to another branch.
+- Counting remaining stock.
+- Discovering a discrepancy.
+- Requesting adjustment approval.
+
+Verify that:
+
+- Every movement has a source and destination.
+- Stock quantities reconcile.
+- Rejected goods are not freely sellable.
+- In-transit stock is represented correctly.
+- Reserved quantities are respected.
+- Approved adjustments have audit records.
+
+Do not allow silent inventory changes.
+
+# 7. PURCHASING & SUPPLIER ROLES
+
+| Role | Essential visible tabs | Routine work to test |
+|---|---|---|
+| Purchasing Assistant | Requests, Suppliers, Purchase Orders | Prepare requests, follow up on orders |
+| Purchasing Officer / Buyer | Purchasing, Suppliers, POs, Receipts | Source products, create orders and monitor delivery |
+| Category Buyer | Category Products, Purchasing, Reports | Manage purchasing for an assigned merchandise category |
+| Category Manager | Category Overview, Products, Pricing Requests, Reports | Review assortment, costs, availability and category performance |
+| Supplier Relations Officer | Suppliers, Purchase History, Claims | Manage supplier records and delivery issues |
+| Purchasing Manager | Purchasing, Approvals, Suppliers, Reports | Supervise purchasing and authorize transactions within limits |
+| Director Purchasing | Purchasing Dashboard, Reports, Approvals, Supplier Performance | Review strategy, purchasing commitments and major approvals |
+
+### PURCHASING REALITY TEST
+
+Simulate:
+
+1. Low-stock alert.
+2. Purchase requisition.
+3. Supplier selection.
+4. Cost comparison.
+5. Purchase order preparation.
+6. Approval.
+7. Supplier delivery.
+8. Partial receipt.
+9. Supplier invoice discrepancy.
+10. Accounts verification.
+11. Payment approval process.
+
+Verify that the request, purchase order, receipt and invoice are connected.
+
+Prevent unrestricted self-approval where independent authorization is required.
+
+# 8. FINANCE & ACCOUNTS ROLES
+
+| Role | Essential visible tabs | Routine work to test |
+|---|---|---|
+| Cash Controller | Cashier Closing, Cash Collection, Variances | Receive and reconcile cashier collections |
+| Accounts Assistant | Expenses, Invoices, My Tasks | Enter and verify supporting records |
+| Accounts Payable Officer | Supplier Invoices, Payables, Payments | Match invoices and prepare approved payments |
+| Bank Reconciliation Officer | Banking, Settlements, Reconciliation | Match bank transactions and settlements |
+| Payroll Officer | Payroll, Authorized Employee Records | Prepare payroll according to approved procedures |
+| Accountant | Finance, Journals, Reconciliation, Reports | Maintain financial records and reporting |
+| Accounts Manager | Finance Overview, Payables, Expenses, Approvals | Supervise accounts and review financial exceptions |
+| Internal Auditor | Authorized Reports, Audit Logs, Transaction History | Independently review records without altering transactions |
+| Director Accounts | Financial Dashboard, Reports, Approvals | Review profitability, expenses, payables and financial controls |
+
+### FINANCE REALITY TEST
+
+Simulate:
+
+- Multiple cashier shifts.
+- Cash and card sales.
+- Cashier closing.
+- A cash shortage.
+- Supplier invoice matching.
+- Supplier payment preparation.
+- Refund processing.
+- Operating expense approval.
+- Bank reconciliation.
+- Branch financial summary.
+
+Verify:
+
+- Correct calculations.
+- Clear financial status.
+- Independent approvals.
+- Consistent ledger records.
+- Complete audit history.
+- No unauthorized modification of completed transactions.
+
+Financial information must be accurate and permissions must be strict.
+
+# 9. HR & ADMINISTRATION ROLES
+
+| Role | Essential visible tabs | Routine work to test |
+|---|---|---|
+| HR Assistant | Employees, Attendance, My Tasks | Maintain authorized employee records |
+| HR Officer | Employees, Attendance, Leave, Recruitment | Process employee requests and personnel workflows |
+| HR Manager | HR Dashboard, Staff, Approvals, Reports | Supervise workforce and HR activities |
+| Shift Coordinator | Staff Schedule, Attendance, Duties | Assign employee shifts and monitor staffing |
+| Administration Officer | Admin Tasks, Facilities, Maintenance | Maintain administrative records and requests |
+| Maintenance Technician | My Jobs, Equipment, Service History | Resolve assigned equipment and facility issues |
+| Facilities Supervisor | Facilities, Maintenance, Staff Tasks | Supervise maintenance and support assignments |
+| Administration Manager | Administration, Staff, Facilities, Reports | Coordinate administrative operations |
+| Director Administration | Administration Dashboard, Staff, Branch Reports, Approvals | Review workforce, facilities and operational requirements |
+
+### ADMINISTRATION REALITY TEST
+
+Simulate:
+
+- Employee onboarding.
+- Assignment to department and branch.
+- Shift scheduling.
+- Attendance.
+- Leave request.
+- Supervisor approval.
+- Maintenance request.
+- Technician assignment.
+- Resolution verification.
+- Employee offboarding and access revocation.
+
+Verify that staff information is protected and business records remain traceable.
+
+# 10. ONLINE ORDERS & E-COMMERCE ROLES
+
+| Role | Essential visible tabs | Routine work to test |
+|---|---|---|
+| Product Data Operator | Products, Images, Categories, Drafts | Correct catalogue data and submit changes |
+| E-commerce Operator | Website Catalogue, Promotions, Order Exceptions | Maintain approved website content and monitor published listings |
+| Order Picker | Assigned Orders, Picking, Stock Lookup | Pick the correct products and quantities |
+| Order Packer | Packing Queue, Order Verification | Verify and pack selected items |
+| Fulfillment / Handover Staff | Ready Orders, Pickup/Dispatch | Confirm authorized handover |
+| Online Orders Supervisor | Order Dashboard, Picking, Packing, Exceptions | Supervise fulfillment and resolve issues |
+| Online Orders Manager | Orders, Staff, Exceptions, Reports | Manage order efficiency, staffing and fulfillment quality |
+
+### ONLINE ORDER REALITY TEST
+
+Simulate:
+
+Customer Places Order → Stock Reserved → Staff Assigned → Items Picked → Items Verified → Packed → Dispatched / Ready for Pickup → Completed.
+
+Test:
+
+- Missing product.
+- Incorrect quantity.
+- Product substitution requiring approval.
+- Failed payment.
+- Cancelled order.
+- Partial fulfillment.
+- Failed delivery.
+- Customer refund.
+
+Verify that order, stock and payment records stay consistent.
+
+# 11. MIS & TECHNICAL ROLES
+
+| Role | Essential visible tabs | Routine work to test |
+|---|---|---|
+| IT Support Technician | Support Tickets, Devices, System Status | Resolve assigned technical issues |
+| POS Administrator | POS Devices, Registers, Configuration | Configure authorized POS terminals |
+| ERP / Systems Administrator | System Configuration, Integrations, System Logs | Maintain business application configuration |
+| Integration / Database Engineer | Integration Health, Jobs, Diagnostics | Monitor APIs, synchronization and recovery |
+| MIS Manager | MIS Dashboard, Devices, Integrations, Users, Audit | Manage technical operations and assigned security administration |
+| Director MIS | Technology Dashboard, Audit, Integrations, System Reports | Oversee technology architecture, reliability and system governance |
+
+### MIS REALITY TEST
+
+Simulate:
+
+- A POS terminal losing connectivity.
+- A product synchronization failure.
+- A failed website order update.
+- An employee role change.
+- An employee account being disabled.
+- A broken integration job.
+- A duplicate API request.
+- A failed background process.
+
+Verify:
+
+- Error detection.
+- Clear diagnostics.
+- Authorized retry mechanisms.
+- Audit records.
+- Safe recovery.
+- No duplicated business transactions.
+- No exposure of secrets or restricted information.
+
+Technical administrators must not automatically receive authority to approve supplier payments or alter financial records merely because they administer the system.
+
+# 12. BRANCH & OPERATIONS MANAGEMENT ROLES
+
+| Role | Essential visible tabs | Routine work to test |
+|---|---|---|
+| Assistant Branch Manager | Branch Overview, POS, Inventory, Staff, Tasks | Supervise assigned day-to-day operations |
+| Branch Manager | Branch Dashboard, Sales, Stock, Staff, Approvals, Reports | Manage branch performance and operational exceptions |
+| Operations Manager | Operations Dashboard, Branches, Staff, Reports | Coordinate store processes and performance |
+| Regional / Multi-Branch Manager | Assigned Branches, Performance, Stock, Approvals | Monitor authorized branches and operational comparisons |
+| General Manager | Business Operations, Branches, Reports, Approvals | Coordinate operational departments and decisions |
+
+### BRANCH MANAGEMENT REALITY TEST
+
+Simulate one complete business day.
+
+Verify that the manager can:
+
+1. Review store opening readiness.
+2. Check active staff.
+3. View sales.
+4. Review POS exceptions.
+5. Check low-stock items.
+6. Review incoming deliveries.
+7. Monitor online orders.
+8. Approve authorized requests.
+9. Handle escalated complaints.
+10. Review store closing and daily performance.
+
+All major operational information must be accessible without visiting unrelated modules.
+
+# 13. DIRECTORS, CEO & OWNERS
+
+Build professional executive interfaces with strong data clarity.
+
+| Executive role | Primary access and responsibilities |
+|---|---|
+| Director Purchasing | Supplier performance, procurement, stock purchasing, approvals and purchasing trends |
+| Director Accounts | Financial performance, expenses, reconciliation, payments and financial approvals |
+| Director Administration | Workforce, operational administration, facilities and branch administration |
+| Director MIS | System health, integrations, permissions governance, security and technology performance |
+| CEO | Consolidated performance, branch comparisons, commercial reports, executive approvals and strategic insights |
+| Authorized Owner / Partner | Governance-level reports, approved financial visibility, investments and high-level business decisions |
+
+These titles must be mapped to Marhaba's confirmed governance and delegation rules before production use.
+
+### CEO & OWNER REALITY TEST
+
+Login as the CEO and determine whether executive questions can be answered quickly:
+
+- How is the supermarket performing today?
+- Which branch is generating the highest sales?
+- Which departments are profitable?
+- Which products are not selling?
+- Which categories require purchasing attention?
+- What is the inventory value?
+- Which supplier issues require attention?
+- Are any significant cash discrepancies unresolved?
+- What are the outstanding payables?
+- Which major approvals are pending?
+- What operational or technical issues need attention?
+
+Provide accurate summaries and clear drill-down paths.
+
+Avoid excessive dashboards or meaningless charts.
+
+Owners and directors should have appropriate oversight and approval rights, not automatically unrestricted technical or financial write access.
+
+# 14. MANDATORY ROLE-BY-ROLE SYSTEM INSPECTION
+
+You must examine EVERY configured role individually.
+
+Create an internal role testing harness.
+
+For demonstration and QA environments only, provide a safe role-selector or account-switching test facility using isolated test accounts.
+
+Never expose unrestricted role impersonation or permission elevation in production.
+
+For each role, run the following audit:
+
+**STEP 1 — LOGIN**
+
+Authenticate as the designated test role.
+
+Verify successful authentication and correct role identification.
+
+**STEP 2 — DASHBOARD**
+
+Inspect whether the opening dashboard contains the right information and useful actions.
+
+**STEP 3 — SIDEBAR**
+
+Inspect all visible tabs and sub-tabs.
+
+Confirm relevant modules are visible and unrelated ones are hidden.
+
+**STEP 4 — DAILY TASKS**
+
+Execute the role's normal routine work from beginning to completion.
+
+**STEP 5 — CREATE / EDIT / UPDATE**
+
+Verify permitted record creation, editing and submission.
+
+**STEP 6 — APPROVALS**
+
+Verify the correct approval workflow and assigned authority.
+
+**STEP 7 — RESTRICTED ACCESS**
+
+Attempt unauthorized actions through both UI and direct routes/API requests.
+
+Confirm access is denied.
+
+**STEP 8 — CROSS-MODULE VERIFICATION**
+
+Confirm completed actions are reflected in connected modules and reports.
+
+**STEP 9 — RESPONSIVE TESTING**
+
+Test desktop, tablet and mobile interfaces according to the role's real working environment.
+
+**STEP 10 — USABILITY REVIEW**
+
+Identify unnecessary steps, confusing labels, duplicated pages, slow operations and poor visual hierarchy.
+
+**STEP 11 — IMPLEMENT IMPROVEMENTS**
+
+Refine the UI, permissions, workflows and business logic.
+
+**STEP 12 — RE-TEST**
+
+Repeat the scenarios and verify that changes did not break related roles.
+
+Do not mark a role fully tested if only its dashboard was inspected.
+
+# 15. CREATE A DETAILED ROLE PERMISSION MATRIX
+
+For each role, record access at four levels:
+
+**Module → Page → Action → Data Scope**
+
+Supported actions must include:
+
+- View.
+- Create.
+- Edit.
+- Submit.
+- Verify.
+- Approve.
+- Reject.
+- Cancel.
+- Export.
+- Administer.
+
+Data scope must account for:
+
+- Assigned branch.
+- Assigned department.
+- Assigned employee.
+- Record ownership.
+- Financial approval limit.
+- Transaction status.
+- Sensitive fields.
+
+Examples:
+
+Cashier:
+Can sell products, but cannot freely change purchase costs.
+
+Stock Controller:
+Can initiate a stock adjustment, but may require independent approval to post it.
+
+Buyer:
+Can create a purchase order, but cannot approve purchases beyond authority.
+
+Accounts Payable:
+Can prepare supplier payments, but cannot independently release unauthorized funds.
+
+MIS Administrator:
+Can manage configured technical systems, but must not automatically control business financial approvals.
+
+CEO:
+Can access authorized executive reports, but does not need unrestricted transaction editing.
+
+Apply default-deny authorization.
+
+Enforce permissions in backend services, not only the sidebar.
+
+# 16. EXAMINE EVERY MAIN TAB AND ITS SUB-TABS
+
+Audit the complete management navigation.
+
+For every page, examine:
+
+1. Who should access it?
+2. Why does the page exist?
+3. What is its most common task?
+4. Is that task easy to find?
+5. Are required data fields present?
+6. Are irrelevant controls displayed?
+7. Are buttons functional?
+8. Are forms validated?
+9. Are records saved correctly?
+10. Are related records updated?
+11. Are approval conditions correct?
+12. Are errors understandable?
+13. Does the page remain usable with large datasets?
+14. Is the mobile/tablet layout appropriate?
+15. Is the design consistent with Marhaba?
+
+### Important design instruction
+
+Do not solve missing functionality by creating unnecessary extra tabs.
+
+First improve the existing page.
+
+Combine duplicate sections where appropriate.
+
+Use contextual subnavigation and progressive disclosure.
+
+Keep frequent tasks prominent and advanced actions available only when needed.
+
+# 17. IMPROVE THE COMPLETE UI/UX SYSTEM
+
+The application should feel like a modern, professionally designed retail operating environment.
+
+## Sidebar
+
+- Show only permitted tabs.
+- Use clear, familiar module names.
+- Keep navigation organized.
+- Avoid unnecessarily deep nesting.
+- Provide consistent icons.
+- Preserve active state.
+- Make collapse/expand smooth.
+- Support responsive mobile navigation.
+
+## Dashboard
+
+- Show role-relevant information.
+- Prioritize pending work.
+- Use compact, meaningful cards.
+- Include actionable alerts.
+- Remove unnecessary charts and decorative statistics.
+- Provide clear drill-down paths.
+
+## Tables
+
+- Search.
+- Filter.
+- Sort.
+- Paginate.
+- Display important fields first.
+- Use readable status indicators.
+- Support compact, comfortable row density.
+- Keep row actions discoverable.
+- Use confirmation for destructive actions only.
+- Provide understandable empty states.
+
+## Forms
+
+- Short, logically grouped fields.
+- Correct defaults.
+- Appropriate dropdowns and searchable selectors.
+- Inline validation.
+- Clear required fields.
+- Helpful error messages.
+- Preserve entered data on recoverable errors.
+- Avoid unnecessarily large modal dialogs.
+- Use a clean step-by-step workflow only when complexity genuinely requires it.
+
+## Cards
+
+- Refined proportions.
+- Gentle corner radii.
+- Soft, subtle borders.
+- Balanced spacing.
+- Clear titles.
+- Consistent iconography.
+- Appropriate information density.
+- Strong alignment.
+- No crowded or oversized layouts.
+
+## Interactions
+
+- Fast and predictable.
+- Useful feedback.
+- Minimal unnecessary animation.
+- No disruptive reloading.
+- Smooth navigation.
+- Reliable form submission.
+- Safe error recovery.
+- Support keyboard shortcuts for frequent desktop tasks.
+
+The design must be comfortable for employees working many hours each day.
+
+# 18. SIMPLIFY WORK WITHOUT LOSING BUSINESS CONTROL
+
+Inspect each workflow and reduce unnecessary steps.
+
+For example:
+
+### Cashier
+
+Avoid:
+
+Product Scan → Open Product Page → Select Product → Confirm → Return to Sale.
+
+Prefer:
+
+Scan → Item Immediately Added → Continue Scanning.
+
+### Receiving Clerk
+
+Avoid manually entering every known product detail.
+
+Prefer:
+
+Open Purchase Order → Scan Delivered Items → Enter/Confirm Quantity → Record Exceptions → Submit Receipt.
+
+### Purchasing Officer
+
+Avoid repetitive supplier and product entry.
+
+Prefer:
+
+Reorder Suggestion → Review Items → Select Supplier → Create PO → Submit for Approval.
+
+### Branch Manager
+
+Avoid searching several modules to find pending approvals.
+
+Prefer:
+
+Role Dashboard → Pending Approvals → Review Details → Approve/Reject.
+
+### CEO
+
+Avoid navigating individual transactions to understand total performance.
+
+Prefer:
+
+Executive Dashboard → Business Overview → Branch/Department Drill-Down.
+
+Never remove necessary approvals, validation or audit records simply to reduce clicks.
+
+# 19. PERFORMANCE & RELIABILITY VERIFICATION
+
+Audit the actual performance of every important workflow.
+
+Test:
+
+- Large product catalogues.
+- Large transaction tables.
+- POS barcode scanning.
+- Search and filtering.
+- Purchase order creation.
+- Stock updates.
+- Online order processing.
+- Dashboard loading.
+- Financial reporting.
+- Role changes.
+- Concurrent users.
+
+Optimize:
+
+- Database indexing.
+- Query efficiency.
+- Backend pagination.
+- Virtualized long tables.
+- Code splitting.
+- Component rendering.
+- State management.
+- Cache behavior.
+- Data synchronization.
+- Background processing.
+- API requests.
+- Error handling.
+
+Set measurable performance budgets.
+
+For frequently used operations such as local POS cart calculations, aim for immediate perceived feedback; define API and end-to-end transaction latency budgets separately.
+
+Do not claim zero delay or full performance compliance without measurement.
+
+Ensure optimization never compromises transaction integrity or access controls.
+
+# 20. END-TO-END BUSINESS INTEGRITY TEST
+
+Run complete cross-department scenarios.
+
+### Scenario A — Purchase to Sale
+
+Purchase Request → PO → Receiving → Stock → Shelf → POS Sale → Finance Report.
+
+### Scenario B — Online Customer Order
+
+Website → Stock Validation → Order → Picking → Packing → Fulfillment → Accounting.
+
+### Scenario C — Cashier Closing
+
+Cashier Sale → Payment → Shift Closing → Cash Count → Supervisor Review → Accounts Reconciliation.
+
+### Scenario D — Stock Loss
+
+Stock Count → Difference → Investigation → Approval → Adjustment → Stock Ledger → Financial Impact.
+
+### Scenario E — Customer Refund
+
+Original Sale → Return Request → Verification → Approval → Refund → Inventory Disposition → Finance.
+
+### Scenario F — Employee Access
+
+Employee Created → Role Assigned → Branch Assigned → Login → Authorized Tasks → Role Change → Access Revoked.
+
+### Scenario G — Inter-Branch Transfer
+
+Transfer Request → Approval → Dispatch → Transit → Receiving → Variance Resolution → Completion.
+
+For every scenario, verify:
+
+- Correct user permissions.
+- Correct state transitions.
+- Correct calculations.
+- Correct data persistence.
+- Correct cross-module updates.
+- Correct approvals.
+- Correct audit history.
+- Proper failure recovery.
+
+# 21. RESPONSIVE TESTING BY REAL WORKING DEVICE
+
+Do not design every role primarily for the same device.
+
+### POS Cashier
+
+Desktop or dedicated POS workstation with keyboard, scanner and receipt hardware readiness.
+
+### Receiving / Inventory
+
+Tablet and handheld-friendly interfaces with large controls and barcode-oriented workflows.
+
+### Purchasing / Accounts
+
+Desktop interfaces with efficient tables, forms and reporting.
+
+### Supervisors / Branch Managers
+
+Desktop and tablet dashboards with practical mobile access.
+
+### Directors / CEO
+
+Professional desktop dashboards with convenient mobile executive monitoring.
+
+### General Staff
+
+Simple mobile task interfaces where appropriate.
+
+Test representative screen widths from 320px to 1920px.
+
+Maintain readable text, accessible controls, smooth layout adaptation and correct interaction behavior.
+
+# 22. DO NOT MAKE THE ERP MORE COMPLICATED
+
+This is a strict design instruction.
+
+Do not add:
+
+- Unnecessary modules.
+- Multiple dashboards showing the same data.
+- Duplicate approval pages.
+- Unnecessary charts.
+- Excessive decorative cards.
+- Complex workflows without business justification.
+- Long forms when shorter ones are sufficient.
+- Random automation features.
+- Unnecessary notifications.
+- Repeated information blocks.
+- Confusing sidebar nesting.
+
+The system may have extensive backend capability while presenting a simple frontend to each role.
+
+**Enterprise depth must remain behind an exceptionally clear user experience.**
+
+# 23. COMPLETE AUDIT RESULTS & IMPROVEMENT REPORT
+
+After evaluating every role, create a structured audit report.
+
+The report must include:
+
+## A. Role Coverage Matrix
+
+For every configured role:
+
+- Role name.
+- Required tabs.
+- Implemented tabs.
+- Missing tabs.
+- Daily workflows.
+- Permissions.
+- Tested scenarios.
+- Test results.
+- Outstanding issues.
+
+## B. Functionality Matrix
+
+Classify every feature as:
+
+- Working and verified.
+- Working demo.
+- Partially implemented.
+- Broken.
+- Missing.
+- Awaiting backend integration.
+- Awaiting business confirmation.
+
+## C. UI/UX Issues
+
+Identify:
+
+- Navigation problems.
+- Cluttered pages.
+- Excessive steps.
+- Weak information hierarchy.
+- Poor responsiveness.
+- Confusing controls.
+- Inconsistent components.
+- Accessibility issues.
+
+## D. Security Findings
+
+Identify:
+
+- Excessive access.
+- Missing restrictions.
+- Unauthorized actions.
+- Cross-branch data exposure.
+- Approval bypasses.
+- Unsafe user administration.
+
+## E. Performance Findings
+
+Identify:
+
+- Slow views.
+- Expensive queries.
+- Inefficient tables.
+- Rendering issues.
+- Synchronization delays.
+- Concurrency risks.
+
+## F. Improvements Implemented
+
+List actual code, component, workflow, access-control and performance changes.
+
+## G. Remaining Dependencies
+
+Clearly document what requires:
+
+- Authorized business data.
+- Actual employee roles.
+- MIS confirmation.
+- Integration credentials.
+- Production backend implementation.
+- Hardware testing.
+- Formal business approval.
+
+Do not invent successful test results.
+
+# 24. FINAL ROLE-BY-ROLE ACCEPTANCE PROCESS
+
+For EVERY configured role:
+
+**Inspect → Login → Review Dashboard → Inspect Access → Perform Daily Work → Test Restrictions → Verify Data → Review UI/UX → Improve → Re-Test.**
+
+Do not skip a role merely because its interface looks similar to another role.
+
+Test every unique responsibility and permission boundary.
+
+Where roles share a template, reuse the tested interface but separately verify permissions and organizational scope.
+
+Only mark a role complete when all relevant test cases pass.
+
+# 25. FINAL EXECUTIVE QUALITY REQUIREMENT
+
+The entire Marhaba Management System must demonstrate:
+
+**For the Cashier:** Speed, simplicity and confidence.
+
+**For Sales Staff:** Easy product lookup and clear assignments.
+
+**For Inventory Teams:** Accurate stock and straightforward movements.
+
+**For Purchasing Teams:** Organized procurement and supplier control.
+
+**For Accounts:** Reliable figures, approvals and reconciliation.
+
+**For Administration:** Clear employee and operational processes.
+
+**For MIS:** Maintainable, secure and observable technology.
+
+**For Branch Managers:** Complete operational awareness without clutter.
+
+**For Directors:** Relevant departmental intelligence.
+
+**For CEO and Owners:** Accurate consolidated business performance and decision support.
+
+### FINAL MANDATE
+
+MetaWave Innovations LTD is proposing an enterprise-quality retail operations solution worthy of Marhaba's business experience, investment and professional identity.
+
+Preserve the existing project and working functionality.
+
+Audit every configured role, its tabs, daily responsibilities, permissions, workflows and user experience.
+
+Correct the gaps you actually identify.
+
+Refine the application with excellent design discipline.
+
+Ensure comfortable layouts, smooth interactions, accurate business logic, strong security, appropriate responsive behavior and measured performance.
+
+Do not create an ordinary ERP template.
+
+Do not overcomplicate employee work.
+
+Do not build attractive but nonfunctional dashboards.
+
+Do not claim production functionality without verification.
+
+**Make the system simple for the employee, comprehensive for operations, controlled for management and trustworthy for the organization.**
+
+**BEGIN THE COMPLETE ROLE-BY-ROLE AUDIT AND IMPLEMENTATION ENHANCEMENT NOW, DIRECTLY WITHIN THE EXISTING GOOGLE AI STUDIO PROJECT.**

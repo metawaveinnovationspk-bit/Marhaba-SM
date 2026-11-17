@@ -1,14 +1,17 @@
 import type {
   ApprovalRequest,
   AuditLogEntry,
+  BankSettlementRecord,
   BranchChecklistItem,
   BranchStockRecord,
   BusinessExpense,
   CashierShift,
   CustomerServiceCase,
+  CycleCountRecord,
   ErpProduct,
   GoodsReceiptNote,
   LeaveRequestRecord,
+  MaintenanceTicket,
   ManagementModuleId,
   OnlineFulfillmentOrder,
   PosSaleRecord,
@@ -21,6 +24,7 @@ import type {
   StaffRoleId,
   StaffUser,
   StockMovement,
+  StockTransferRecord,
   SupplierInvoiceRecord,
   SupplierRecord,
   SyncJobRecord,
@@ -43,6 +47,7 @@ export interface FinanceSummary {
   posDiscounts: number;
   posNetSales: number;
   onlineOrdersRevenue: number;
+  refundsDeducted: number;
   totalRevenue: number;
   cashTenderTotal: number;
   cardTenderTotal: number;
@@ -52,6 +57,23 @@ export interface FinanceSummary {
   inventoryValuation: number;
   totalExpenses: number;
   unpaidPayables: number;
+}
+
+export interface DepartmentMarginRow {
+  departmentId: string;
+  departmentName: string;
+  revenue: number;
+  cogs: number;
+  marginPercent: number;
+}
+
+export interface SlowMovingSkuRow {
+  productId: string;
+  sku: string;
+  name: string;
+  departmentName: string;
+  stockUnits: number;
+  stockCostValue: number;
 }
 
 export interface ManagementBootstrapPayload {
@@ -70,11 +92,14 @@ export interface ManagementBootstrapPayload {
   products: RedactedErpProduct[];
   stock: BranchStockRecord[];
   stockMovements: StockMovement[];
+  stockTransfers: StockTransferRecord[];
+  cycleCounts: CycleCountRecord[];
   suppliers: SupplierRecord[];
   requisitions: PurchaseRequisition[];
   purchaseOrders: PurchaseOrder[];
   goodsReceipts: GoodsReceiptNote[];
   supplierInvoices: SupplierInvoiceRecord[];
+  bankSettlements: BankSettlementRecord[];
   shifts: CashierShift[];
   posSales: PosSaleRecord[];
   onlineOrders: OnlineFulfillmentOrder[];
@@ -83,6 +108,7 @@ export interface ManagementBootstrapPayload {
   customerCases: CustomerServiceCase[];
   approvals: ApprovalWithAuthority[];
   checklists: BranchChecklistItem[];
+  maintenanceTickets: MaintenanceTicket[];
   attendance: StaffAttendanceRecord[];
   leaveRequests: LeaveRequestRecord[];
   auditLogs: AuditLogEntry[];
@@ -90,6 +116,8 @@ export interface ManagementBootstrapPayload {
   staffUsers: StaffUser[];
   roleDefinitions?: Record<StaffRoleId, RoleDefinition>;
   financeSummary: FinanceSummary | null;
+  departmentMargins: DepartmentMarginRow[];
+  slowMovingSkus: SlowMovingSkuRow[];
   priorityAlerts: PriorityAlert[];
 }
 
@@ -207,6 +235,8 @@ export const managementApi = {
     paymentMethod: 'Cash' | 'Card' | 'Split';
     cashReceived: number;
     cardAmount: number;
+    cardTerminalFailed?: boolean;
+    supervisorOverrideId?: string;
   }) {
     return mgmtFetch<{ sale: PosSaleRecord; shift: CashierShift }>('/api/mgmt/pos/sales', {
       method: 'POST',
@@ -227,10 +257,14 @@ export const managementApi = {
     });
   },
 
-  processPosReturn(receiptNumber: string, reason: string) {
+  processPosReturn(
+    receiptNumber: string,
+    reason: string,
+    disposition: 'Restock Sellable' | 'Damaged Quarantine' = 'Restock Sellable'
+  ) {
     return mgmtFetch<{ sale: PosSaleRecord }>('/api/mgmt/pos/returns', {
       method: 'POST',
-      body: JSON.stringify({ receiptNumber, reason }),
+      body: JSON.stringify({ receiptNumber, reason, disposition }),
     });
   },
 
@@ -262,11 +296,48 @@ export const managementApi = {
     });
   },
 
-  transferStock(body: { productId: string; fromBranchId: string; toBranchId: string; quantity: number }) {
-    return mgmtFetch<{ transferRef: string }>('/api/mgmt/inventory/transfers', {
+  putawayStock(body: {
+    productId: string;
+    branchId: string;
+    quantity: number;
+    locationCode?: string;
+  }) {
+    return mgmtFetch<{ stockRec: BranchStockRecord }>('/api/mgmt/inventory/putaway', {
       method: 'POST',
       body: JSON.stringify(body),
     });
+  },
+
+  transferStock(body: { productId: string; fromBranchId: string; toBranchId: string; quantity: number }) {
+    return mgmtFetch<{ transferRef: string; transfer: StockTransferRecord }>('/api/mgmt/inventory/transfers', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  receiveStockTransfer(
+    id: string,
+    body?: { receivedQty?: number; damagedQty?: number; varianceNote?: string }
+  ) {
+    return mgmtFetch<{ transfer: StockTransferRecord }>(`/api/mgmt/inventory/transfers/${id}/receive`, {
+      method: 'POST',
+      body: JSON.stringify(body || {}),
+    });
+  },
+
+  submitCycleCount(body: {
+    productId: string;
+    branchId: string;
+    physicalQty: number;
+    notes?: string;
+  }) {
+    return mgmtFetch<{ cycleCount: CycleCountRecord; approval?: ApprovalRequest }>(
+      '/api/mgmt/inventory/cycle-counts',
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }
+    );
   },
 
   adjustStock(body: { productId: string; branchId: string; delta: number; reason: string }) {
@@ -286,6 +357,16 @@ export const managementApi = {
     });
   },
 
+  convertRequisitionToPo(id: string, supplierId?: string) {
+    return mgmtFetch<{ purchaseOrder: PurchaseOrder; requisition: PurchaseRequisition }>(
+      `/api/mgmt/purchasing/requisitions/${id}/convert-to-po`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ supplierId }),
+      }
+    );
+  },
+
   createPurchaseOrder(body: Record<string, unknown>) {
     return mgmtFetch<{ purchaseOrder: PurchaseOrder }>('/api/mgmt/purchasing/orders', {
       method: 'POST',
@@ -298,10 +379,13 @@ export const managementApi = {
     items: { productId: string; acceptedQty: number; damagedQty: number }[];
     discrepancyNote?: string;
   }) {
-    return mgmtFetch<{ grn: GoodsReceiptNote; po: PurchaseOrder }>('/api/mgmt/purchasing/grn', {
-      method: 'POST',
-      body: JSON.stringify(body),
-    });
+    return mgmtFetch<{ grn: GoodsReceiptNote; po: PurchaseOrder; invoice?: SupplierInvoiceRecord }>(
+      '/api/mgmt/purchasing/grn',
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }
+    );
   },
 
   updateOrderPick(
@@ -314,10 +398,15 @@ export const managementApi = {
     });
   },
 
-  updateOrderStage(orderId: string, stage: string, packingVerified?: boolean) {
+  updateOrderStage(
+    orderId: string,
+    stage: string,
+    packingVerified?: boolean,
+    extra?: { paymentStatus?: OnlineFulfillmentOrder['paymentStatus']; exceptionReason?: string }
+  ) {
     return mgmtFetch<{ order: OnlineFulfillmentOrder }>(`/api/mgmt/orders/${orderId}/stage`, {
       method: 'PATCH',
-      body: JSON.stringify({ stage, packingVerified }),
+      body: JSON.stringify({ stage, packingVerified, ...extra }),
     });
   },
 
@@ -328,11 +417,30 @@ export const managementApi = {
     });
   },
 
+  reconcileBankSettlement(id: string, bankSettledAmount?: number) {
+    return mgmtFetch<{ bankSettlement: BankSettlementRecord }>(
+      `/api/mgmt/finance/bank-settlements/${id}/reconcile`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ bankSettledAmount }),
+      }
+    );
+  },
+
   recordExpense(body: { branchId: string; category: string; description: string; amount: number }) {
     return mgmtFetch<{ expense: BusinessExpense }>('/api/mgmt/finance/expenses', {
       method: 'POST',
       body: JSON.stringify(body),
     });
+  },
+
+  prepareSupplierInvoice(invoiceId: string) {
+    return mgmtFetch<{ invoice: SupplierInvoiceRecord }>(
+      `/api/mgmt/finance/invoices/${invoiceId}/prepare`,
+      {
+        method: 'POST',
+      }
+    );
   },
 
   paySupplierInvoice(invoiceId: string) {
@@ -355,9 +463,40 @@ export const managementApi = {
     });
   },
 
+  assignAttendance(body: {
+    userId: string;
+    branchId: string;
+    shiftWindow: string;
+    status?: StaffAttendanceRecord['status'];
+  }) {
+    return mgmtFetch<{ attendance: StaffAttendanceRecord }>('/api/mgmt/staff/attendance', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
   toggleChecklist(id: string) {
     return mgmtFetch<{ checklistItem: BranchChecklistItem }>(`/api/mgmt/branches/checklist/${id}`, {
       method: 'PATCH',
+    });
+  },
+
+  createMaintenanceTicket(body: {
+    branchId: string;
+    equipment: string;
+    issue: string;
+    priority: 'Normal' | 'Urgent';
+  }) {
+    return mgmtFetch<{ maintenanceTicket: MaintenanceTicket }>('/api/mgmt/branches/maintenance', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  updateMaintenanceTicket(id: string, body: { status: MaintenanceTicket['status'] }) {
+    return mgmtFetch<{ maintenanceTicket: MaintenanceTicket }>(`/api/mgmt/branches/maintenance/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
     });
   },
 
@@ -368,7 +507,14 @@ export const managementApi = {
     });
   },
 
-  updateCustomerCase(id: string, body: { status?: string; requestRefundAmount?: number }) {
+  updateCustomerCase(
+    id: string,
+    body: {
+      status?: string;
+      requestRefundAmount?: number;
+      refundDisposition?: 'Restock Sellable' | 'Damaged Quarantine';
+    }
+  ) {
     return mgmtFetch<{ customerCase: CustomerServiceCase }>(`/api/mgmt/customers/cases/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(body),
@@ -393,6 +539,12 @@ export const managementApi = {
     return mgmtFetch<{ staffUser: StaffUser }>(`/api/mgmt/settings/users/${id}/role`, {
       method: 'PATCH',
       body: JSON.stringify(body),
+    });
+  },
+
+  simulateSyncIssue() {
+    return mgmtFetch<{ syncJobs: SyncJobRecord[] }>('/api/mgmt/settings/sync-simulate-issue', {
+      method: 'POST',
     });
   },
 

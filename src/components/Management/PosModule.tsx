@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   Barcode,
@@ -52,16 +52,43 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
   const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Card' | 'Split'>('Cash');
   const [cashTenderInput, setCashTenderInput] = useState('');
   const [cardSplitInput, setCardSplitInput] = useState('');
+  const [simulateCardFail, setSimulateCardFail] = useState(false);
+  const [selectedOverrideId, setSelectedOverrideId] = useState('');
   const [openingFloatInput, setOpeningFloatInput] = useState('15000');
   const [closingCashInput, setClosingCashInput] = useState('');
   const [closePanelOpen, setClosePanelOpen] = useState(false);
   const [returnReceiptInput, setReturnReceiptInput] = useState('');
   const [returnReasonInput, setReturnReasonInput] = useState('');
+  const [returnDisposition, setReturnDisposition] = useState<'Restock Sellable' | 'Damaged Quarantine'>(
+    'Restock Sellable'
+  );
+  const [ledgerSearch, setLedgerSearch] = useState('');
+  const [ledgerPage, setLedgerPage] = useState(1);
   const [feedback, setFeedback] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
   const [lastReceipt, setLastReceipt] = useState<PosSaleRecord | null>(null);
   const [busy, setBusy] = useState(false);
 
   const scanRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'F2' || (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA')) {
+        e.preventDefault();
+        scanRef.current?.focus();
+        scanRef.current?.select();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  const approvedOverrides = useMemo(
+    () =>
+      data.approvals.filter(
+        (a) => a.type === 'POS_DISCOUNT_OVERRIDE' && a.status === 'Approved' && a.branchId === branchId
+      ),
+    [data.approvals, branchId]
+  );
 
   const branchStockMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -137,9 +164,11 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
 
   const handleBarcodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const raw = scanInput.trim();
+    if (!raw) return;
     const match = lookupProductByBarcodeOrSku(
       data.products.map((p) => ({ ...p, purchaseCost: p.purchaseCost ?? 0 })),
-      scanInput
+      raw
     );
     if (match) {
       addProductToBasket(match.id);
@@ -149,6 +178,13 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
       addProductToBasket(filteredCatalog[0].id);
       setScanInput('');
       scanRef.current?.focus();
+    } else {
+      setFeedback({
+        type: 'err',
+        text: `Barcode / SKU "${raw}" was not found in the active supermarket catalogue.`,
+      });
+      scanRef.current?.focus();
+      scanRef.current?.select();
     }
   };
 
@@ -259,11 +295,15 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
         paymentMethod,
         cashReceived: cashAmt,
         cardAmount: cardAmt,
+        cardTerminalFailed: paymentMethod !== 'Cash' && simulateCardFail,
+        supervisorOverrideId: selectedOverrideId || undefined,
       });
       setLastReceipt(res.sale);
       setBasket([]);
       setCashTenderInput('');
       setCardSplitInput('');
+      setSelectedOverrideId('');
+      setSimulateCardFail(false);
       setFeedback({
         type: 'ok',
         text: `Receipt ${res.sale.receiptNumber} completed (${formatPKR(res.sale.grandTotal)}).`,
@@ -324,13 +364,14 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
     try {
       const res = await managementApi.processPosReturn(
         returnReceiptInput.trim(),
-        returnReasonInput.trim() || 'Counter return'
+        returnReasonInput.trim() || 'Counter return',
+        returnDisposition
       );
       setReturnReceiptInput('');
       setReturnReasonInput('');
       setFeedback({
         type: 'ok',
-        text: `Receipt ${res.sale.receiptNumber} marked Returned and stock restored.`,
+        text: `Receipt ${res.sale.receiptNumber} marked Returned (${returnDisposition}).`,
       });
       await onRefresh();
     } catch (err) {
@@ -339,6 +380,21 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
       setBusy(false);
     }
   };
+
+  const filteredSales = useMemo(() => {
+    const q = ledgerSearch.trim().toLowerCase();
+    if (!q) return data.posSales;
+    return data.posSales.filter(
+      (s) =>
+        s.receiptNumber.toLowerCase().includes(q) ||
+        s.cashierName.toLowerCase().includes(q) ||
+        s.paymentMethod.toLowerCase().includes(q)
+    );
+  }, [data.posSales, ledgerSearch]);
+
+  const PAGE_SIZE = 10;
+  const totalPages = Math.max(1, Math.ceil(filteredSales.length / PAGE_SIZE));
+  const pagedSales = filteredSales.slice((ledgerPage - 1) * PAGE_SIZE, ledgerPage * PAGE_SIZE);
 
   return (
     <div className="space-y-5">
@@ -360,7 +416,7 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
             </span>
           </div>
           <p className="mt-0.5 text-[11px] text-[#57534E]">
-            USB/HID Barcode scanner input ready · Receipt print preview &amp; drawer triggers are demo interfaces (no live thermal printer/fiscal box attached).
+            USB/HID Barcode scanner input ready (press <kbd className="px-1 py-0.5 bg-[#FAF9F6] border border-[#E6E2DA] rounded font-mono">F2</kbd> or <kbd className="px-1 py-0.5 bg-[#FAF9F6] border border-[#E6E2DA] rounded font-mono">/</kbd> to focus) · Receipt print preview &amp; drawer triggers are demo interfaces.
           </p>
         </div>
 
@@ -378,7 +434,7 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
                 type="button"
                 disabled={busy}
                 onClick={handleOpenShift}
-                className="h-9 px-3.5 rounded-lg bg-[#166534] text-white text-xs font-semibold hover:bg-[#14532D]"
+                className="h-9 px-3.5 rounded-lg bg-[#166534] text-white text-xs font-semibold hover:bg-[#14532D] whitespace-nowrap"
               >
                 Open Shift
               </button>
@@ -388,7 +444,7 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
             <button
               type="button"
               onClick={() => setClosePanelOpen((v) => !v)}
-              className="h-9 px-3.5 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs font-semibold text-[#1C1917] hover:border-[#9B1C2E]"
+              className="h-9 px-3.5 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs font-semibold text-[#1C1917] hover:border-[#9B1C2E] whitespace-nowrap"
             >
               {closePanelOpen ? 'Cancel Close' : 'Submit Shift Closing'}
             </button>
@@ -437,7 +493,7 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
               type="button"
               disabled={busy || !closingCashInput}
               onClick={handleCloseShift}
-              className="h-10 px-4 rounded-lg bg-[#9B1C2E] text-white text-xs font-semibold hover:bg-[#7F1524] disabled:opacity-50"
+              className="h-10 px-4 rounded-lg bg-[#9B1C2E] text-white text-xs font-semibold hover:bg-[#7F1524] disabled:opacity-50 whitespace-nowrap"
             >
               Confirm Close
             </button>
@@ -456,6 +512,7 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
                 ref={scanRef}
                 type="text"
                 autoFocus
+                aria-label="Scan barcode or search SKU"
                 value={scanInput}
                 onChange={(e) => setScanInput(e.target.value)}
                 placeholder="Scan GTIN barcode (e.g. 8961001011000) or search SKU / product..."
@@ -464,7 +521,7 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
             </div>
             <button
               type="submit"
-              className="px-4 h-11 rounded-xl bg-[#1C1917] text-white text-xs font-semibold hover:bg-[#292524]"
+              className="px-4 h-11 rounded-xl bg-[#1C1917] text-white text-xs font-semibold hover:bg-[#292524] whitespace-nowrap shrink-0"
             >
               Scan / Add
             </button>
@@ -624,21 +681,43 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
           )}
 
           {overCapLine && (
-            <div className="p-3 rounded-xl bg-[#B45309]/10 border border-[#B45309]/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-              <div className="flex items-start gap-2 text-[#B45309]">
-                <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>
-                  {overCapLine.discountPercent}% discount exceeds your {data.role.maxPosDiscountPercent}% role cap.
-                </span>
+            <div className="p-3 rounded-xl bg-[#B45309]/10 border border-[#B45309]/25 space-y-2 text-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-start gap-2 text-[#B45309]">
+                  <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>
+                    {overCapLine.discountPercent}% discount exceeds your {data.role.maxPosDiscountPercent}% role cap.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={handleRequestOverride}
+                  className="px-3 py-1.5 rounded-lg bg-[#B45309] text-white font-semibold whitespace-nowrap shrink-0"
+                >
+                  Request Supervisor Override
+                </button>
               </div>
-              <button
-                type="button"
-                disabled={busy}
-                onClick={handleRequestOverride}
-                className="px-3 py-1.5 rounded-lg bg-[#B45309] text-white font-semibold whitespace-nowrap"
-              >
-                Request Supervisor Override
-              </button>
+              {approvedOverrides.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <label htmlFor="pos-override-select" className="text-[11px] font-semibold text-[#1C1917]">
+                    Apply Approved Override:
+                  </label>
+                  <select
+                    id="pos-override-select"
+                    value={selectedOverrideId}
+                    onChange={(e) => setSelectedOverrideId(e.target.value)}
+                    className="h-8 px-2 rounded-lg border border-[#E6E2DA] bg-[#FFFFFF] text-xs"
+                  >
+                    <option value="">None selected</option>
+                    {approvedOverrides.map((ov) => (
+                      <option key={ov.id} value={ov.id}>
+                        {ov.title} (Approved by {ov.decidedByName})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           )}
 
@@ -675,6 +754,17 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
                 </button>
               ))}
             </div>
+
+            {paymentMethod !== 'Cash' && (
+              <label className="flex items-center gap-2 text-xs text-[#57534E] cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={simulateCardFail}
+                  onChange={(e) => setSimulateCardFail(e.target.checked)}
+                />
+                <span>Simulate Card Terminal Timeout / Failure (test fallback to Cash/Split)</span>
+              </label>
+            )}
 
             {paymentMethod !== 'Card' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -800,16 +890,43 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
                   placeholder="Return reason"
                   className="h-9 px-2.5 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs"
                 />
+                <select
+                  value={returnDisposition}
+                  onChange={(e) =>
+                    setReturnDisposition(e.target.value as 'Restock Sellable' | 'Damaged Quarantine')
+                  }
+                  aria-label="Return stock disposition"
+                  className="h-9 px-2.5 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs"
+                >
+                  <option value="Restock Sellable">Restock Sellable</option>
+                  <option value="Damaged Quarantine">Damaged Quarantine</option>
+                </select>
                 <button
                   type="submit"
                   disabled={busy || !returnReceiptInput.trim()}
-                  className="h-9 px-3 rounded-lg border border-[#9B1C2E] text-[#9B1C2E] text-xs font-semibold hover:bg-[#9B1C2E] hover:text-white inline-flex items-center gap-1"
+                  className="h-9 px-3 rounded-lg border border-[#9B1C2E] text-[#9B1C2E] text-xs font-semibold hover:bg-[#9B1C2E] hover:text-white inline-flex items-center gap-1 whitespace-nowrap"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Process Return</span>
                 </button>
               </form>
             )}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <input
+              type="search"
+              value={ledgerSearch}
+              onChange={(e) => {
+                setLedgerSearch(e.target.value);
+                setLedgerPage(1);
+              }}
+              placeholder="Search receipt #, cashier, or payment method..."
+              className="h-9 w-full sm:w-72 px-3 rounded-lg border border-[#E6E2DA] bg-[#FAF9F6] text-xs"
+            />
+            <span className="text-[11px] text-[#57534E] tabular-nums">
+              {filteredSales.length} receipts · Page {ledgerPage} of {totalPages}
+            </span>
           </div>
 
           <div className="overflow-x-auto">
@@ -824,32 +941,60 @@ export function PosModule({ data, onRefresh }: PosModuleProps) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E6E2DA]">
-                {data.posSales.slice(0, 10).map((s) => (
-                  <tr key={s.id} className="hover:bg-[#FAF9F6]">
-                    <td className="py-2.5 px-3 font-mono font-semibold text-[#1C1917]">
-                      {s.receiptNumber}
-                    </td>
-                    <td className="py-2.5 px-3 text-[#57534E]">{s.cashierName}</td>
-                    <td className="py-2.5 px-3 text-[#57534E]">{s.paymentMethod}</td>
-                    <td className="py-2.5 px-3">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
-                          s.status === 'Returned'
-                            ? 'bg-[#9B1C2E]/10 text-[#9B1C2E]'
-                            : 'bg-[#166534]/10 text-[#166534]'
-                        }`}
-                      >
-                        {s.status}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-semibold tabular-nums">
-                      {formatPKR(s.grandTotal)}
+                {pagedSales.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-6 px-3 text-center text-[#57534E]">
+                      No receipts match your filter.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  pagedSales.map((s) => (
+                    <tr key={s.id} className="hover:bg-[#FAF9F6]">
+                      <td className="py-2.5 px-3 font-mono font-semibold text-[#1C1917]">
+                        {s.receiptNumber}
+                      </td>
+                      <td className="py-2.5 px-3 text-[#57534E]">{s.cashierName}</td>
+                      <td className="py-2.5 px-3 text-[#57534E]">{s.paymentMethod}</td>
+                      <td className="py-2.5 px-3">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                            s.status === 'Returned'
+                              ? 'bg-[#9B1C2E]/10 text-[#9B1C2E]'
+                              : 'bg-[#166534]/10 text-[#166534]'
+                          }`}
+                        >
+                          {s.status}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-semibold tabular-nums">
+                        {formatPKR(s.grandTotal)}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-end gap-2 pt-1">
+              <button
+                type="button"
+                disabled={ledgerPage <= 1}
+                onClick={() => setLedgerPage((p) => Math.max(1, p - 1))}
+                className="px-3 py-1 rounded-lg border border-[#E6E2DA] text-xs font-semibold disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                disabled={ledgerPage >= totalPages}
+                onClick={() => setLedgerPage((p) => Math.min(totalPages, p + 1))}
+                className="px-3 py-1 rounded-lg border border-[#E6E2DA] text-xs font-semibold disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </section>
       </div>
     </div>

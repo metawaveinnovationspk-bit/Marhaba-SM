@@ -165,9 +165,85 @@ export function validateNewProductInput(
   return errors;
 }
 
+export function computeDepartmentMargins(
+  products: ErpProduct[],
+  sales: PosSaleRecord[],
+  branchId?: string
+): {
+  departmentId: string;
+  departmentName: string;
+  revenue: number;
+  cogs: number;
+  marginPercent: number;
+  estMarginPercent: number;
+  skuCount: number;
+}[] {
+  const inBranch = (bId: string) => !branchId || branchId === 'all' || bId === branchId;
+  const prodMap = new Map(products.map((p) => [p.id, p]));
+  const buckets = new Map<
+    string,
+    {
+      departmentId: string;
+      departmentName: string;
+      revenue: number;
+      cogs: number;
+      skuCount: number;
+      marginSum: number;
+    }
+  >();
+
+  for (const p of products) {
+    const cur = buckets.get(p.departmentId) || {
+      departmentId: p.departmentId,
+      departmentName: p.departmentName,
+      revenue: 0,
+      cogs: 0,
+      skuCount: 0,
+      marginSum: 0,
+    };
+    const mPct = p.sellingPrice > 0 ? ((p.sellingPrice - p.purchaseCost) / p.sellingPrice) * 100 : 0;
+    cur.skuCount += 1;
+    cur.marginSum += mPct;
+    buckets.set(p.departmentId, cur);
+  }
+
+  for (const sale of sales.filter((s) => inBranch(s.branchId) && s.status !== 'Returned')) {
+    for (const line of sale.items) {
+      const prod = prodMap.get(line.productId);
+      if (!prod) continue;
+      const cur = buckets.get(prod.departmentId);
+      if (cur) {
+        cur.revenue += line.lineTotal;
+        cur.cogs += prod.purchaseCost * line.quantity;
+      }
+    }
+  }
+
+  return Array.from(buckets.values())
+    .map((b) => {
+      const pct =
+        b.revenue > 0
+          ? Number((((b.revenue - b.cogs) / b.revenue) * 100).toFixed(1))
+          : b.skuCount > 0
+          ? Number((b.marginSum / b.skuCount).toFixed(1))
+          : 0;
+      return {
+        departmentId: b.departmentId,
+        departmentName: b.departmentName,
+        revenue: b.revenue,
+        cogs: b.cogs,
+        skuCount: b.skuCount,
+        marginPercent: pct,
+        estMarginPercent: pct,
+      };
+    })
+    .sort((a, b) => b.revenue - a.revenue || b.marginPercent - a.marginPercent);
+}
+
 export function computeFinanceSummary(params: {
   sales: PosSaleRecord[];
   onlineOrdersRevenue: number;
+  refundDeductions?: number;
   products: ErpProduct[];
   stock: BranchStockRecord[];
   expenses: BusinessExpense[];
@@ -218,7 +294,8 @@ export function computeFinanceSummary(params: {
     .filter((inv) => inBranch(inv.branchId) && inv.paymentStatus !== 'Paid')
     .reduce((sum, inv) => sum + inv.billedAmount, 0);
 
-  const totalRevenue = posNetSales + params.onlineOrdersRevenue;
+  const refundsDeducted = params.refundDeductions || 0;
+  const totalRevenue = Math.max(0, posNetSales + params.onlineOrdersRevenue - refundsDeducted);
   const grossMarginAmount = Math.max(0, posNetSales - estimatedCogs);
   const grossMarginPercent =
     posNetSales > 0 ? Number(((grossMarginAmount / posNetSales) * 100).toFixed(1)) : 0;
@@ -228,6 +305,7 @@ export function computeFinanceSummary(params: {
     posDiscounts,
     posNetSales,
     onlineOrdersRevenue: params.onlineOrdersRevenue,
+    refundsDeducted,
     totalRevenue,
     cashTenderTotal,
     cardTenderTotal,
